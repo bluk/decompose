@@ -1,0 +1,25 @@
+steps:
+  - name: 'gcr.io/$PROJECT_ID/swift-build-tools:4'
+    args:
+      - 'swift'
+      - 'build'
+    id: 'build'
+
+  - name: 'gcr.io/$PROJECT_ID/swift-build-tools:4'
+    args:
+      - 'swift'
+      - 'test'
+    id: 'test'
+
+  - name: 'gcr.io/$PROJECT_ID/swift-build-tools:4'
+    args:
+      - 'swiftlint'
+    id: 'lint'
+
+  - name: 'gcr.io/$PROJECT_ID/swift-build-tools:4'
+    args:
+      - 'swift'
+      - 'build'
+      - '-c'
+      - 'release'
+    id: 'build-release'
