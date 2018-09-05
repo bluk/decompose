@@ -1,8 +1,10 @@
-# Decompose
+# ➡️  Decompose
 
 [![Apache-2.0 License](https://img.shields.io/github/license/bluk/decompose.svg)](https://github.com/bluk/decompose/blob/master/LICENSE) [![Swift](https://img.shields.io/badge/swift-4.1-orange.svg)](https://swift.org) [![SPM Compatible](https://img.shields.io/badge/SPM-compatible-orange.svg)](https://github.com/apple/swift-package-manager) ![Platforms](https://img.shields.io/badge/Platforms-macOS%20%7C%20Linux%20%7C%20iOS%20%7C%20watchOS%20%7C%20tvOS-blue.svg)
 
 [![Build Status](https://travis-ci.com/bluk/decompose.svg?branch=master)](https://travis-ci.com/bluk/decompose)
+
+A(nother) parser combinator library.
 
 ## Getting Started
 
@@ -44,6 +46,11 @@ bundle install
 swift package generate-xcodeproj
 jazzy -o docs --module "decompose" --module-version <version> -g https://github.com/bluk/decompose
 ```
+
+## Related Links
+
+* [Parsec](https://hackage.haskell.org/package/parsec)
+* [Parsec: Direct Style Monadic Parser Combinators for the Real World](https://www.microsoft.com/en-us/research/people/daan/#!publications)
 
 ## License
 
