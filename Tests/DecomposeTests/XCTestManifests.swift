@@ -18,7 +18,7 @@ import XCTest
 /// Returns all the runnable tests
 public func allTests() -> [XCTestCaseEntry] {
     return [
-        testCase(DecomposeTests.allTests)
+        testCase(StringInputTests.allTests)
     ]
 }
 #endif
