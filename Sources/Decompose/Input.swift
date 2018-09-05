@@ -51,7 +51,7 @@ public extension Input {
 
 public struct StringInput: Input, Equatable, Hashable {
 
-    public init(input: String, position: Int = 0) {
+    public init(_ input: String, position: Int = 0) {
         self.value = input
         self.position = position
     }
@@ -82,6 +82,6 @@ public struct StringInput: Input, Equatable, Hashable {
     }
 
     public func consume(count: Int) -> StringInput {
-        return StringInput(input: value, position: position + count)
+        return StringInput(value, position: position + count)
     }
 }

@@ -17,7 +17,7 @@ import XCTest
 
 internal final class StringInputTests: XCTestCase {
     func testInit() {
-        let input = StringInput(input: "Hello, World!")
+        let input = StringInput("Hello, World!")
 
         XCTAssertEqual(input.position, 0)
         XCTAssertEqual(input.peek(), "H")
@@ -27,7 +27,7 @@ internal final class StringInputTests: XCTestCase {
     }
 
     func testInitWithPosition() {
-        let input = StringInput(input: "Hello, World!", position: 1)
+        let input = StringInput("Hello, World!", position: 1)
 
         XCTAssertEqual(input.position, 1)
         XCTAssertEqual(input.peek(), "e")
@@ -37,7 +37,7 @@ internal final class StringInputTests: XCTestCase {
     }
 
     func testPeekWithCount() {
-        let input = StringInput(input: "Hello, World!")
+        let input = StringInput("Hello, World!")
 
         XCTAssertEqual(input.position, 0)
         XCTAssertEqual(String(input.peek(count: 5)), "Hello")
@@ -46,7 +46,7 @@ internal final class StringInputTests: XCTestCase {
     }
 
     func testOriginalPositionNotAt0AndPeekWithCount() {
-        let input = StringInput(input: "Hello, World!", position: 7)
+        let input = StringInput("Hello, World!", position: 7)
 
         XCTAssertEqual(input.position, 7)
         XCTAssertEqual(String(input.peek(count: 5)), "World")
@@ -55,7 +55,7 @@ internal final class StringInputTests: XCTestCase {
     }
 
     func testConsume() {
-        let originalInput = StringInput(input: "Hello, World!")
+        let originalInput = StringInput("Hello, World!")
         let newInput = originalInput.consume()
 
         XCTAssertEqual(newInput.peek(), "e")
@@ -66,7 +66,7 @@ internal final class StringInputTests: XCTestCase {
     }
 
     func testOriginalPositionNotAt0AndConsume() {
-        let originalInput = StringInput(input: "Hello, World!", position: 7)
+        let originalInput = StringInput("Hello, World!", position: 7)
         let newInput = originalInput.consume()
 
         XCTAssertEqual(newInput.peek(), "o")
@@ -77,7 +77,7 @@ internal final class StringInputTests: XCTestCase {
     }
 
     func testConsumeWithCount() {
-        let originalInput = StringInput(input: "Hello, World!")
+        let originalInput = StringInput("Hello, World!")
         let newInput = originalInput.consume(count: 5)
 
         XCTAssertEqual(newInput.peek(), ",")
@@ -88,7 +88,7 @@ internal final class StringInputTests: XCTestCase {
     }
 
     func testOriginalPositionNotAt0AndConsumeWithCount() {
-        let originalInput = StringInput(input: "Hello, World!", position: 5)
+        let originalInput = StringInput("Hello, World!", position: 5)
         let newInput = originalInput.consume(count: 2)
 
         XCTAssertEqual(newInput.peek(), "W")
@@ -99,7 +99,7 @@ internal final class StringInputTests: XCTestCase {
     }
 
     func testEmptyString() {
-        let input = StringInput(input: "")
+        let input = StringInput("")
 
         XCTAssertTrue(input.isEmpty)
         XCTAssertEqual(input.position, 0)
@@ -110,7 +110,7 @@ internal final class StringInputTests: XCTestCase {
     func testConsumeTillEndOfString() {
         let testString = "Hello, World!"
 
-        var input = StringInput(input: testString)
+        var input = StringInput(testString)
         for (counter, char) in testString.enumerated() {
             XCTAssertFalse(input.isEmpty)
             XCTAssertEqual(input.position, counter)
@@ -125,7 +125,7 @@ internal final class StringInputTests: XCTestCase {
     }
 
     func testConsumePastEndOfString() {
-        let originalInput = StringInput(input: "Hello, World!")
+        let originalInput = StringInput("Hello, World!")
         let newInput = originalInput.consume(count: 13)
 
         XCTAssertTrue(newInput.isEmpty)

@@ -19,7 +19,7 @@ internal final class CombinatorsTest: XCTestCase {
 
     func testReturnValue() {
         guard let (result, remainder) = Combinators.returnValue("Hello, World!")
-            .parse(StringInput(input: "A")) else {
+            .parse(StringInput("A")) else {
             XCTFail("Could not unwrap value")
             return
         }
@@ -36,7 +36,7 @@ internal final class CombinatorsTest: XCTestCase {
 
             return Combinators.returnValue("bar")
         }
-        let input = StringInput(input: "test")
+        let input = StringInput("test")
         guard let (result, remainder) = boundParser.parse(input) else {
             XCTFail("Could not unwrap value")
             return
@@ -52,7 +52,7 @@ internal final class CombinatorsTest: XCTestCase {
             XCTFail("Function should not be called")
             return Combinators.returnValue("unused")
         }
-        let input = StringInput(input: "test")
+        let input = StringInput("test")
         let output = boundParser.parse(input)
 
         XCTAssertNil(output)
@@ -65,7 +65,7 @@ internal final class CombinatorsTest: XCTestCase {
 
             return Combinators.returnValue("bar")
         }
-        let input = StringInput(input: "test")
+        let input = StringInput("test")
 
         guard let (result, remainder) = boundParser.parse(input) else {
             XCTFail("Could not unwrap value")
@@ -83,7 +83,7 @@ internal final class CombinatorsTest: XCTestCase {
             return Combinators.returnValue("bar")
         }
         let boundParser: Parser<StringInput, StringInput, String> = originalParser >>= func1
-        let input = StringInput(input: "test")
+        let input = StringInput("test")
 
         guard let (result, remainder) = boundParser.parse(input) else {
             XCTFail("Could not unwrap value")
@@ -95,7 +95,7 @@ internal final class CombinatorsTest: XCTestCase {
 
     func testSatisfy() {
         let matchesF: Parser<StringInput, StringInput, Character> = Combinators.satisfy { $0 == "f" }
-        let input = StringInput(input: "foo")
+        let input = StringInput("foo")
 
         guard let (result, remainder) = matchesF.parse(input) else {
             XCTFail("Could not unwrap value")
@@ -108,7 +108,7 @@ internal final class CombinatorsTest: XCTestCase {
 
     func testSatisfyWhenItDoesNotParse() {
         let matchesF: Parser<StringInput, StringInput, Character> = Combinators.satisfy { $0 == "f" }
-        let input = StringInput(input: "bar")
+        let input = StringInput("bar")
 
         let output = matchesF.parse(input)
         XCTAssertNil(output)
