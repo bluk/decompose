@@ -16,6 +16,8 @@ import XCTest
 
 import DecomposeTests
 
-var tests = [XCTestCaseEntry]()
+private var tests = [XCTestCaseEntry]()
+
 tests += DecomposeTests.allTests()
+
 XCTMain(tests)

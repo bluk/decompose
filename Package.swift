@@ -17,7 +17,7 @@
 
 import PackageDescription
 
-let package = Package(
+internal let package = Package(
     name: "Decompose",
     products: [
         .library(

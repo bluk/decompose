@@ -15,6 +15,7 @@
 import XCTest
 
 #if !os(macOS)
+/// Returns all the runnable tests
 public func allTests() -> [XCTestCaseEntry] {
     return [
         testCase(DecomposeTests.allTests)

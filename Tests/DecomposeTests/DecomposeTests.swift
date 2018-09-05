@@ -12,10 +12,10 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 
-import XCTest
 @testable import Decompose
+import XCTest
 
-final class DecomposeTests: XCTestCase {
+internal final class DecomposeTests: XCTestCase {
     func testExample() {
         // This is an example of a functional test case.
         // Use XCTAssert and related functions to verify your tests produce the correct
