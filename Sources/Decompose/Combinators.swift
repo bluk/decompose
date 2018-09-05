@@ -19,4 +19,19 @@ public enum Combinators {
     public static func returnValue<Input1, Result>(value: Result) -> Parser<Input1, Input1, Result> {
         return Parser { (value, $0) }
     }
+
+    /// The parser (in the function parameter)'s parsed result is passed to a function which generates
+    /// a second parser, and then the second parser is invoked with the remaining input.
+    public static func bind<Input1, Input2, Input3, Result1, Result2>(
+        _ parser1: Parser<Input1, Input2, Result1>,
+        to func1: @escaping (Result1) -> Parser<Input2, Input3, Result2>)
+        -> Parser<Input1, Input3, Result2> {
+            return Parser<Input1, Input3, Result2> { input in
+                guard let (result1, remainder1) = parser1.parse(input) else {
+                    return nil
+                }
+                let parser2 = func1(result1)
+                return parser2.parse(remainder1)
+            }
+    }
 }

@@ -29,7 +29,74 @@ internal final class CombinatorsTest: XCTestCase {
         XCTAssertEqual(remainder.position, 0)
     }
 
+    func testBind() {
+        let originalParser: Parser<StringInput, StringInput, String> = Combinators.returnValue(value: "foo")
+        let boundParser: Parser<StringInput, StringInput, String> = Combinators.bind(originalParser) { result1 in
+            XCTAssertEqual(result1, "foo")
+
+            return Combinators.returnValue(value: "bar")
+        }
+        let input = StringInput(input: "test")
+        guard let (result, remainder) = boundParser.parse(input) else {
+            XCTFail("Could not unwrap value")
+            return
+        }
+
+        XCTAssertEqual(result, "bar")
+        XCTAssertEqual(remainder, input)
+    }
+
+    func testBindWhereOriginalParserFails() {
+        let originalParser: Parser<StringInput, StringInput, String> = Parser { _ in nil }
+        let boundParser: Parser<StringInput, StringInput, String> = Combinators.bind(originalParser) { _ in
+            XCTFail("Function should not be called")
+            return Combinators.returnValue(value: "unused")
+        }
+        let input = StringInput(input: "test")
+        let output = boundParser.parse(input)
+
+        XCTAssertNil(output)
+    }
+
+    func testBindAsFlatMap() {
+        let originalParser: Parser<StringInput, StringInput, String> = Combinators.returnValue(value: "foo")
+        let boundParser: Parser<StringInput, StringInput, String> = originalParser.flatMap { result1 in
+            XCTAssertEqual(result1, "foo")
+
+            return Combinators.returnValue(value: "bar")
+        }
+        let input = StringInput(input: "test")
+
+        guard let (result, remainder) = boundParser.parse(input) else {
+            XCTFail("Could not unwrap value")
+            return
+        }
+        XCTAssertEqual(result, "bar")
+        XCTAssertEqual(remainder, input)
+    }
+
+    func testBindAsOperator() {
+        let originalParser: Parser<StringInput, StringInput, String> = Combinators.returnValue(value: "foo")
+        let func1: (String) -> Parser<StringInput, StringInput, String> = { result1 in
+            XCTAssertEqual(result1, "foo")
+
+            return Combinators.returnValue(value: "bar")
+        }
+        let boundParser: Parser<StringInput, StringInput, String> = originalParser >>= func1
+        let input = StringInput(input: "test")
+
+        guard let (result, remainder) = boundParser.parse(input) else {
+            XCTFail("Could not unwrap value")
+            return
+        }
+        XCTAssertEqual(result, "bar")
+        XCTAssertEqual(remainder, input)
+    }
+
     static var allTests = [
-        ("testReturnValue", testReturnValue)
+        ("testReturnValue", testReturnValue),
+        ("testBind", testBind),
+        ("testBindWhereOriginalParserFails", testBindWhereOriginalParserFails),
+        ("testBindAsOperator", testBindAsOperator)
     ]
 }

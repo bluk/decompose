@@ -49,7 +49,7 @@ public extension Input {
     }
 }
 
-open class StringInput: Input {
+public struct StringInput: Input, Equatable, Hashable {
 
     public init(input: String, position: Int = 0) {
         self.value = input

@@ -16,3 +16,18 @@
 public struct Parser<A, B, Result> where A: Input, B: Input {
     let parse: (A) -> (Result, B)?
 }
+
+/// Convenience methods for Parser
+public extension Parser {
+    /// Convenience method for binding a first parser's return value to a second parser.
+    func flatMap<C, Result2>(_ func1 : @escaping (Result) -> Parser<B, C, Result2>) -> Parser<A, C, Result2> {
+        return Combinators.bind(self, to: func1)
+    }
+}
+
+/// Convenience operator for bind
+public func >>=<A, B, Result1, C, Result2>(
+    lhs: Parser<A, B, Result1>,
+    rhs: @escaping (Result1) -> Parser<B, C, Result2>) -> Parser<A, C, Result2> {
+    return Combinators.bind(lhs, to: rhs)
+}
