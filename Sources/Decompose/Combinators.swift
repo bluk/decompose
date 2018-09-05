@@ -34,4 +34,15 @@ public enum Combinators {
                 return parser2.parse(remainder1)
             }
     }
+
+    /// Returns a Parser for matching a single value
+    public static func satisfy<Value, Input1, Input2>(_ condition: @escaping (Value) -> Bool)
+        -> Parser<Input1, Input2, Value> where Input1.Value == Value, Input1.ConsumeReturn == Input2 {
+        return Parser { input in
+            guard let value = input.peek(), condition(value) else {
+                return nil
+            }
+            return (value, input.consume())
+        }
+    }
 }

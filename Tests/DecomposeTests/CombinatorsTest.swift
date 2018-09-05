@@ -93,10 +93,33 @@ internal final class CombinatorsTest: XCTestCase {
         XCTAssertEqual(remainder, input)
     }
 
+    func testSatisfy() {
+        let matchesF: Parser<StringInput, StringInput, Character> = Combinators.satisfy { $0 == "f" }
+        let input = StringInput(input: "foo")
+
+        guard let (result, remainder) = matchesF.parse(input) else {
+            XCTFail("Could not unwrap value")
+            return
+        }
+        XCTAssertEqual(result, "f")
+
+        XCTAssertEqual(remainder.position, 1)
+    }
+
+    func testSatisfyWhenItDoesNotParse() {
+        let matchesF: Parser<StringInput, StringInput, Character> = Combinators.satisfy { $0 == "f" }
+        let input = StringInput(input: "bar")
+
+        let output = matchesF.parse(input)
+        XCTAssertNil(output)
+    }
+
     static var allTests = [
         ("testReturnValue", testReturnValue),
         ("testBind", testBind),
         ("testBindWhereOriginalParserFails", testBindWhereOriginalParserFails),
-        ("testBindAsOperator", testBindAsOperator)
+        ("testBindAsOperator", testBindAsOperator),
+        ("testSatisfy", testSatisfy),
+        ("testSatisfyWhenItDoesNotParse", testSatisfyWhenItDoesNotParse)
     ]
 }
