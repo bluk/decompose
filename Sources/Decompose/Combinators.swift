@@ -16,7 +16,7 @@
 public enum Combinators {
 
     /// Returns a parser which returns the passed in value as a result and does not consume the Input
-    public static func returnValue<Input1, Result>(value: Result) -> Parser<Input1, Input1, Result> {
+    public static func returnValue<Input1, Result>(_ value: Result) -> Parser<Input1, Input1, Result> {
         return Parser { (value, $0) }
     }
 

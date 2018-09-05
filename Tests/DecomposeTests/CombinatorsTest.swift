@@ -18,7 +18,7 @@ import XCTest
 internal final class CombinatorsTest: XCTestCase {
 
     func testReturnValue() {
-        guard let (result, remainder) = Combinators.returnValue(value: "Hello, World!")
+        guard let (result, remainder) = Combinators.returnValue("Hello, World!")
             .parse(StringInput(input: "A")) else {
             XCTFail("Could not unwrap value")
             return
@@ -30,11 +30,11 @@ internal final class CombinatorsTest: XCTestCase {
     }
 
     func testBind() {
-        let originalParser: Parser<StringInput, StringInput, String> = Combinators.returnValue(value: "foo")
+        let originalParser: Parser<StringInput, StringInput, String> = Combinators.returnValue("foo")
         let boundParser: Parser<StringInput, StringInput, String> = Combinators.bind(originalParser) { result1 in
             XCTAssertEqual(result1, "foo")
 
-            return Combinators.returnValue(value: "bar")
+            return Combinators.returnValue("bar")
         }
         let input = StringInput(input: "test")
         guard let (result, remainder) = boundParser.parse(input) else {
@@ -50,7 +50,7 @@ internal final class CombinatorsTest: XCTestCase {
         let originalParser: Parser<StringInput, StringInput, String> = Parser { _ in nil }
         let boundParser: Parser<StringInput, StringInput, String> = Combinators.bind(originalParser) { _ in
             XCTFail("Function should not be called")
-            return Combinators.returnValue(value: "unused")
+            return Combinators.returnValue("unused")
         }
         let input = StringInput(input: "test")
         let output = boundParser.parse(input)
@@ -59,11 +59,11 @@ internal final class CombinatorsTest: XCTestCase {
     }
 
     func testBindAsFlatMap() {
-        let originalParser: Parser<StringInput, StringInput, String> = Combinators.returnValue(value: "foo")
+        let originalParser: Parser<StringInput, StringInput, String> = Combinators.returnValue("foo")
         let boundParser: Parser<StringInput, StringInput, String> = originalParser.flatMap { result1 in
             XCTAssertEqual(result1, "foo")
 
-            return Combinators.returnValue(value: "bar")
+            return Combinators.returnValue("bar")
         }
         let input = StringInput(input: "test")
 
@@ -76,11 +76,11 @@ internal final class CombinatorsTest: XCTestCase {
     }
 
     func testBindAsOperator() {
-        let originalParser: Parser<StringInput, StringInput, String> = Combinators.returnValue(value: "foo")
+        let originalParser: Parser<StringInput, StringInput, String> = Combinators.returnValue("foo")
         let func1: (String) -> Parser<StringInput, StringInput, String> = { result1 in
             XCTAssertEqual(result1, "foo")
 
-            return Combinators.returnValue(value: "bar")
+            return Combinators.returnValue("bar")
         }
         let boundParser: Parser<StringInput, StringInput, String> = originalParser >>= func1
         let input = StringInput(input: "test")
