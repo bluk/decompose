@@ -45,4 +45,18 @@ public enum Combinators {
             return (value, input.consume())
         }
     }
+
+    /// Returns a Parser for matching a choice between the two parsers
+    public static func choice<Input1, Input2, Result1>(
+        _ parser1: Parser<Input1, Input2, Result1>,
+        _ parser2: Parser<Input1, Input2, Result1>)
+        -> Parser<Input1, Input2, Result1> {
+        return Parser { input in
+            if let (result1, remainder1) = parser1.parse(input) {
+                return (result1, remainder1)
+            }
+
+            return parser2.parse(input)
+        }
+    }
 }

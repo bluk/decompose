@@ -31,3 +31,17 @@ public func >>=<A, B, Result1, C, Result2>(
     rhs: @escaping (Result1) -> Parser<B, C, Result2>) -> Parser<A, C, Result2> {
     return Combinators.bind(lhs, to: rhs)
 }
+
+precedencegroup ChoicePrecedence {
+    associativity: left
+    higherThan: AdditionPrecedence
+}
+
+infix operator <|>: ChoicePrecedence
+
+/// Convenience operator for choice
+public func <|><A, B, Result1>(
+    lhs: Parser<A, B, Result1>,
+    rhs: Parser<A, B, Result1>) -> Parser<A, B, Result1> {
+    return Combinators.choice(lhs, rhs)
+}

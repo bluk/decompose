@@ -114,12 +114,55 @@ internal final class CombinatorsTest: XCTestCase {
         XCTAssertNil(output)
     }
 
+    func testChoice() {
+        let matchesF: Parser<StringInput, StringInput, Character> = Combinators.satisfy { $0 == "f" }
+        let matchesB: Parser<StringInput, StringInput, Character> = Combinators.satisfy { $0 == "b" }
+        let orParser = Combinators.choice(matchesF, matchesB)
+
+        guard let (result1, remainder1) = orParser.parse(StringInput("foo")) else {
+            XCTFail("Could not unwrap value")
+            return
+        }
+        XCTAssertEqual(result1, "f")
+        XCTAssertEqual(remainder1.position, 1)
+        XCTAssertEqual(remainder1.peek(), "o")
+
+        guard let (result2, remainder2) = orParser.parse(StringInput("bar")) else {
+            XCTFail("Could not unwrap value")
+            return
+        }
+        XCTAssertEqual(result2, "b")
+        XCTAssertEqual(remainder2.position, 1)
+        XCTAssertEqual(remainder2.peek(), "a")
+    }
+
+    func testChoiceWithNoMatch() {
+        let matchesF: Parser<StringInput, StringInput, Character> = Combinators.satisfy { $0 == "f" }
+        let matchesB: Parser<StringInput, StringInput, Character> = Combinators.satisfy { $0 == "b" }
+        let orParser = Combinators.choice(matchesF, matchesB)
+
+        let output = orParser.parse(StringInput("xyz"))
+        XCTAssertNil(output)
+    }
+
+    func testChoiceAsOperator() {
+        let matchesF: Parser<StringInput, StringInput, Character> = Combinators.satisfy { $0 == "f" }
+        let matchesB: Parser<StringInput, StringInput, Character> = Combinators.satisfy { $0 == "b" }
+        let orParser = matchesF <|> matchesB
+
+        let output = orParser.parse(StringInput("xyz"))
+        XCTAssertNil(output)
+    }
+
     static var allTests = [
         ("testReturnValue", testReturnValue),
         ("testBind", testBind),
         ("testBindWhereOriginalParserFails", testBindWhereOriginalParserFails),
         ("testBindAsOperator", testBindAsOperator),
         ("testSatisfy", testSatisfy),
-        ("testSatisfyWhenItDoesNotParse", testSatisfyWhenItDoesNotParse)
+        ("testSatisfyWhenItDoesNotParse", testSatisfyWhenItDoesNotParse),
+        ("testChoice", testChoice),
+        ("testChoiceWithNoMatch", testChoiceWithNoMatch),
+        ("testChoiceAsOperator", testChoiceAsOperator)
     ]
 }
