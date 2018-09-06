@@ -21,7 +21,7 @@ public struct Parser<A, B, Result> where A: Input, B: Input {
 public extension Parser {
     /// Convenience method for binding a first parser's return value to a second parser.
     func flatMap<C, Result2>(
-        _ func1 : @escaping (Result) -> Parser<B, C, Result2>) -> Parser<A, C, Result2> where B.ConsumeReturn == C {
+        _ func1 : @escaping (Result) -> Parser<B, C, Result2>) -> Parser<A, C, Result2> where B.RemainingInput == C {
         return Combinators.bind(self, to: func1)
     }
 }

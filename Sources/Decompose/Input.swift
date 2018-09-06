@@ -12,76 +12,56 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 
-/// A consumable input value.
+/// A view for a collection of values.
 public protocol Input {
 
-    /// The individual type that will be evaluated
-    associatedtype Value
+    /// The individual element type.
+    associatedtype Element
 
-    /// The Input value to return
-    associatedtype ConsumeReturn where ConsumeReturn: Input
+    /// After data is consumed, the remaining unconsumed elements is returned via an `Input`
+    associatedtype RemainingInput where RemainingInput: Input
 
-    /// The current position of the Input
+    /// The current position in the `Input`. Useful for debugging and error messages.
     var position: Int { get }
 
-    /// If there is no more input
+    /// If there are no more elements available in the view.
     var isEmpty: Bool { get }
 
-    /// Returns the current value
-    func peek() -> Value?
+    /// Returns the current element.
+    ///
+    /// - Returns: The current element.
+    func peek() -> Element?
 
-    /// Returns up to `count` number of values
-    func peek(count: Int) -> [Value]
+    /// Returns the current and next `count - 1` number of elements.
+    ///
+    /// - Parameters:
+    ///     - count: The number of elements to peek.
+    /// - Returns: The current and next `count - 1` number of elements.
+    /// - Precondition: `count` must be >= 0.
+    func peek(count: Int) -> [Element]
 
-    /// Consumes the current value
-    func consume() -> ConsumeReturn
+    /// Consumes the current element and return an `Input` representing the remaining data.
+    ///
+    /// - Returns: The remaining `Input`.
+    func consume() -> RemainingInput
 
-    /// Consumes up to the current `count` number of values
-    func consume(count: Int) -> ConsumeReturn
+    /// Consumes the current and next `count - 1` number of elements and return an `Input`
+    /// representing the remaining data.
+    ///
+    /// - Parameters:
+    ///     - count: Up to the number of elements to consume. `0` is a valid value.
+    /// - Returns: The remaining `Input`.
+    /// - Precondition: `count` must be >= 0.
+    func consume(count: Int) -> RemainingInput
 }
 
-/// Default implementation of Input
+/// Default implementation of methods for Input.
 public extension Input {
 
-    /// Consumes the current value
-    func consume() -> ConsumeReturn {
+    /// Consumes the current element and return an `Input` representing the remaining data.
+    ///
+    /// - Returns: The remaining `Input`.
+    func consume() -> RemainingInput {
         return consume(count: 1)
-    }
-}
-
-public struct StringInput: Input, Equatable, Hashable {
-
-    public init(_ input: String, position: Int = 0) {
-        self.value = input
-        self.position = position
-    }
-
-    let value: String
-
-    public var position: Int
-
-    public var isEmpty: Bool {
-        return self.position >= self.value.count
-    }
-
-    public func peek() -> Character? {
-        guard position < value.count else {
-            return nil
-        }
-        let index = value.index(value.startIndex, offsetBy: position)
-        return value[index]
-    }
-
-    public func peek(count: Int) -> [Character] {
-        guard position < value.count else {
-            return []
-        }
-        let startIndex = value.index(value.startIndex, offsetBy: position)
-        let endIndex = value.index(value.startIndex, offsetBy: position + count)
-        return [Character](value[startIndex..<endIndex])
-    }
-
-    public func consume(count: Int) -> StringInput {
-        return StringInput(value, position: position + count)
     }
 }
