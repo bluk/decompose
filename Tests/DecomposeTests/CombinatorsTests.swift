@@ -15,7 +15,7 @@
 @testable import Decompose
 import XCTest
 
-internal final class CombinatorsTest: XCTestCase {
+internal final class CombinatorsTests: XCTestCase {
 
     func testReturnValue() {
         let output = Combinators.returnValue("Hello, World!").parse(StringInput("A"))

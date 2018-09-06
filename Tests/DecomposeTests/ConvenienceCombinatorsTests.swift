@@ -15,7 +15,7 @@
 @testable import Decompose
 import XCTest
 
-internal final class ConvenienceCombinatorsTest: XCTestCase {
+internal final class ConvenienceCombinatorsTests: XCTestCase {
 
     func testIsLetter() {
         let isLetter: Parser<StringInput, StringInput, Character> = Combinators.isLetter()
