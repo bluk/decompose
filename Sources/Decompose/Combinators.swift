@@ -26,13 +26,13 @@ public enum Combinators {
         _ parser1: Parser<Input1, Input2, Result1>,
         to func1: @escaping (Result1) -> Parser<Input2, Input3, Result2>)
         -> Parser<Input1, Input3, Result2> {
-            return Parser<Input1, Input3, Result2> { input in
-                guard let (result1, remainder1) = parser1.parse(input) else {
-                    return nil
-                }
-                let parser2 = func1(result1)
-                return parser2.parse(remainder1)
+        return Parser<Input1, Input3, Result2> { input in
+            guard let (result1, remainder1) = parser1.parse(input) else {
+                return nil
             }
+            let parser2 = func1(result1)
+            return parser2.parse(remainder1)
+        }
     }
 
     /// Returns a Parser for matching a single value
@@ -57,6 +57,30 @@ public enum Combinators {
             }
 
             return parser2.parse(input)
+        }
+    }
+
+    /// Maps a Parser's return value over a transforming function
+    public static func map<Input1, Input2, Result1, Result2>(
+        _ parser1: Parser<Input1, Input2, Result1>,
+        _ func1: @escaping (Result1) -> Result2) -> Parser<Input1, Input2, Result2> {
+        return Parser { input in
+            guard let (result1, remainder1) = parser1.parse(input) else {
+                return nil
+            }
+            return (func1(result1), remainder1)
+        }
+    }
+
+    /// Sequentially invokes two Parsers while applying the second parser's result into the first parser's function
+    public static func apply<Input1, Input2, Input3, Result1, Result2>(
+        _ parser1: Parser<Input1, Input2, ((Result1) -> Result2)>,
+        _ parser2: Parser<Input2, Input3, Result1>) -> Parser<Input1, Input3, Result2> {
+        return Parser { input in
+            guard let (result1, remainder1) = parser1.parse(input) else {
+                return nil
+            }
+            return Combinators.map(parser2, result1).parse(remainder1)
         }
     }
 }

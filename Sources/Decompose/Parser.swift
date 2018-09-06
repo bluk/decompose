@@ -25,13 +25,13 @@ public extension Parser {
     }
 }
 
-precedencegroup FlatMapLeftPrecedence {
+precedencegroup MonodLeftPrecedence {
     associativity: left
     lowerThan: LogicalDisjunctionPrecedence
     higherThan: AssignmentPrecedence
 }
 
-infix operator >>-: FlatMapLeftPrecedence
+infix operator >>-: MonodLeftPrecedence
 
 /// Convenience operator for bind
 public func >>-<A, B, Result1, C, Result2>(
@@ -40,17 +40,41 @@ public func >>-<A, B, Result1, C, Result2>(
     return Combinators.bind(lhs, to: rhs)
 }
 
-precedencegroup ChoicePrecedence {
+precedencegroup AltPrecedence {
     associativity: left
     higherThan: LogicalConjunctionPrecedence
     lowerThan: ComparisonPrecedence
 }
 
-infix operator <|>: ChoicePrecedence
+infix operator <|>: AltPrecedence
 
 /// Convenience operator for choice
 public func <|><A, B, Result1>(
     lhs: Parser<A, B, Result1>,
     rhs: Parser<A, B, Result1>) -> Parser<A, B, Result1> {
     return Combinators.choice(lhs, rhs)
+}
+
+precedencegroup AppPrecedence {
+    associativity: left
+    higherThan: AltPrecedence
+    lowerThan: NilCoalescingPrecedence
+}
+
+infix operator <*>: AppPrecedence
+
+/// Convenience operator for apply
+public func <*><Input1, Input2, Input3, Result1, Result2>(
+    lhs: Parser<Input1, Input2, ((Result1) -> Result2)>,
+    rhs: Parser<Input2, Input3, Result1>) -> Parser<Input1, Input3, Result2> {
+    return Combinators.apply(lhs, rhs)
+}
+
+infix operator <^>: AppPrecedence
+
+/// Convenience operator for map
+public func <^><Input1, Input2, Result1, Result2>(
+    lhs: Parser<Input1, Input2, Result1>,
+    rhs: @escaping (Result1) -> Result2) -> Parser<Input1, Input2, Result2> {
+    return Combinators.map(lhs, rhs)
 }

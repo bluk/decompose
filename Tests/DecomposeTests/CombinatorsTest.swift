@@ -154,6 +154,84 @@ internal final class CombinatorsTest: XCTestCase {
         XCTAssertNil(output)
     }
 
+    func testMap() {
+        let satisfy2: Parser<StringInput, StringInput, Character> = Combinators.satisfy { $0 == "2" }
+        let mappedParser = Combinators.map(satisfy2) { Int(String($0)) }
+
+        guard let (result1, _) = mappedParser.parse(StringInput("2")) else {
+            XCTFail("Expected to parse string")
+            return
+        }
+        XCTAssertEqual(result1, 2)
+    }
+
+    func testMapWithNoMatch() {
+        let satisfy2: Parser<StringInput, StringInput, Character> = Combinators.satisfy { $0 == "2" }
+        let mappedParser = Combinators.map(satisfy2) { Int(String($0)) }
+
+        let output = mappedParser.parse(StringInput("3"))
+        XCTAssertNil(output)
+    }
+
+    func testMapAsOperator() {
+        let satisfy2: Parser<StringInput, StringInput, Character> = Combinators.satisfy { $0 == "2" }
+        let func1: (Character) -> Int? = { Int(String($0)) }
+        let mappedParser = satisfy2 <^> func1
+        guard let (result1, _) = mappedParser.parse(StringInput("2")) else {
+            XCTFail("Expected to parse string")
+            return
+        }
+        XCTAssertEqual(result1, 2)
+    }
+
+    func testApply() {
+        let satisfy2: Parser<StringInput, StringInput, Character> = Combinators.satisfy { $0 == "2" }
+        let satisfy3: Parser<StringInput, StringInput, Character> = Combinators.satisfy { $0 == "3" }
+        let satisfyTimes: Parser<StringInput, StringInput, Character> = Combinators.satisfy { $0 == "*" }
+        let func1: (Character) -> (Character) -> (Character) -> Int? = { first in { _ in { second in
+                    Int(String(first))! * Int(String(second))!
+                }
+            }
+        }
+        let applyParser = Combinators.apply(Combinators.apply(Combinators.map(satisfy2, func1), satisfyTimes), satisfy3)
+        guard let (result, _) = applyParser.parse(StringInput("2*3")) else {
+            XCTFail("Expected to parse string")
+            return
+        }
+        XCTAssertEqual(result, 6)
+    }
+
+    func testApplyWithNoMatch() {
+        let satisfy2: Parser<StringInput, StringInput, Character> = Combinators.satisfy { $0 == "2" }
+        let satisfy3: Parser<StringInput, StringInput, Character> = Combinators.satisfy { $0 == "3" }
+        let satisfyTimes: Parser<StringInput, StringInput, Character> = Combinators.satisfy { $0 == "*" }
+        let func1: (Character) -> (Character) -> (Character) -> Int? = { first in { _ in { second in
+                    Int(String(first))! * Int(String(second))!
+                }
+            }
+        }
+        let applyParser = Combinators.apply(Combinators.apply(Combinators.map(satisfy2, func1), satisfyTimes), satisfy3)
+        let output = applyParser.parse(StringInput("2+3"))
+        XCTAssertNil(output)
+    }
+
+    func testApplyAsOperator() {
+        let satisfy2: Parser<StringInput, StringInput, Character> = Combinators.satisfy { $0 == "2" }
+        let satisfy3: Parser<StringInput, StringInput, Character> = Combinators.satisfy { $0 == "3" }
+        let satisfyTimes: Parser<StringInput, StringInput, Character> = Combinators.satisfy { $0 == "*" }
+        let func1: (Character) -> (Character) -> (Character) -> Int? = { first in { _ in { second in
+                    Int(String(first))! * Int(String(second))!
+                }
+            }
+        }
+        let applyParser = satisfy2 <^> func1 <*> satisfyTimes <*> satisfy3
+        guard let (result, _) = applyParser.parse(StringInput("2*3")) else {
+            XCTFail("Expected to parse string")
+            return
+        }
+        XCTAssertEqual(result, 6)
+    }
+
     static var allTests = [
         ("testReturnValue", testReturnValue),
         ("testBind", testBind),
@@ -163,6 +241,12 @@ internal final class CombinatorsTest: XCTestCase {
         ("testSatisfyWhenItDoesNotParse", testSatisfyWhenItDoesNotParse),
         ("testChoice", testChoice),
         ("testChoiceWithNoMatch", testChoiceWithNoMatch),
-        ("testChoiceAsOperator", testChoiceAsOperator)
+        ("testChoiceAsOperator", testChoiceAsOperator),
+        ("testMap", testMap),
+        ("testMapWithNoMatch", testMapWithNoMatch),
+        ("testMapAsOperator", testMapAsOperator),
+        ("testApply", testApply),
+        ("testApplyWithNoMatch", testApplyWithNoMatch),
+        ("testApplyAsOperator", testApplyAsOperator)
     ]
 }
