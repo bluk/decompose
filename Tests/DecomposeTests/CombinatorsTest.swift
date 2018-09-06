@@ -231,6 +231,7 @@ internal final class CombinatorsTest: XCTestCase {
             }
         }
         let applyParser = Combinators.apply(Combinators.apply(Combinators.map(satisfy2, func1), satisfyTimes), satisfy3)
+
         let output = applyParser.parse(StringInput("2*3"))
         guard case let .success(value, _) = output.reply, .consumed == output.state else {
             XCTFail("Expected parse to be successful and consumption of `2*3`")
@@ -249,6 +250,7 @@ internal final class CombinatorsTest: XCTestCase {
             }
         }
         let applyParser = Combinators.apply(Combinators.apply(Combinators.map(satisfy2, func1), satisfyTimes), satisfy3)
+
         let output = applyParser.parse(StringInput("2+3"))
         guard case let .error(error, _) = output.reply, .consumed == output.state  else {
             XCTFail("Expected parse to fail and consumption of `2`")
@@ -267,6 +269,7 @@ internal final class CombinatorsTest: XCTestCase {
             }
         }
         let applyParser = satisfy2 <^> func1 <*> satisfyTimes <*> satisfy3
+
         let output = applyParser.parse(StringInput("2*3"))
         guard case let .success(value, _) = output.reply, .consumed == output.state else {
             XCTFail("Expected parse to be successful and consumption of `2*3`")

@@ -12,6 +12,8 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 
+import Foundation
+
 /// Combinators create and compose parsers.
 public enum Combinators {
 
@@ -138,5 +140,29 @@ public enum Combinators {
     public static func char<Input1, Input2>(_ value: Character) -> Parser<Input1, Input2, Character>
         where Input1.Value == Character, Input2 == Input1.ConsumeReturn {
         return satisfy { $0 == value }
+    }
+
+    /// Return a Parser which tests if the next value is a letter
+    public static func isLetter<Input1, Input2>() -> Parser<Input1, Input2, Character>
+        where Input1.Value == Character, Input2 == Input1.ConsumeReturn {
+            let characterSet = CharacterSet.letters
+            #if swift(>=4.2)
+            return satisfy { $0.unicodeScalars.allSatisfy(characterSet.contains) }
+            #else
+            // https://github.com/apple/swift-evolution/blob/master/proposals/0207-containsOnly.md
+            return satisfy { !$0.unicodeScalars.contains { !characterSet.contains($0) } }
+            #endif
+    }
+
+    /// Return a Parser which tests if the next value is a digit
+    public static func isDigit<Input1, Input2>() -> Parser<Input1, Input2, Character>
+        where Input1.Value == Character, Input2 == Input1.ConsumeReturn {
+            let characterSet = CharacterSet.decimalDigits
+            #if swift(>=4.2)
+            return satisfy { $0.unicodeScalars.allSatisfy(characterSet.contains) }
+            #else
+            // https://github.com/apple/swift-evolution/blob/master/proposals/0207-containsOnly.md
+            return satisfy { !$0.unicodeScalars.contains { !characterSet.contains($0) } }
+            #endif
     }
 }

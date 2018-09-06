@@ -19,7 +19,8 @@ import XCTest
 public func allTests() -> [XCTestCaseEntry] {
     return [
         testCase(StringInputTests.allTests),
-        testCase(CombinatorsTest.allTests)
+        testCase(CombinatorsTest.allTests),
+        testCase(ConvenienceCombinatorsTest.allTests)
     ]
 }
 #endif
