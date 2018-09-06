@@ -68,10 +68,64 @@ internal final class ConvenienceCombinatorsTests: XCTestCase {
         XCTAssertEqual(remainder, input)
     }
 
+    func testString() {
+        let stringParser: Parser<StringInput, [Character]> = Combinators.string("foo")
+        let input = StringInput("foobar")
+
+        let output = stringParser.parse(input)
+        guard case let .success(value, remainder) = output.reply, .consumed == output.state else {
+            XCTFail("Expected parse to succeed and consumption of `foo`")
+            return
+        }
+        XCTAssertEqual(String(value), "foo")
+        XCTAssertEqual(remainder.position, 3)
+    }
+
+    func testStringWithNoMatch() {
+        let stringParser: Parser<StringInput, [Character]> = Combinators.string("foo")
+        let input = StringInput("barfoo")
+
+        let output = stringParser.parse(input)
+        guard case let .error(error, remainder) = output.reply, .empty == output.state else {
+            XCTFail("Expected parse to fail and no consumption")
+            return
+        }
+        XCTAssertNil(error) // Currently nil, but should be a real value
+        XCTAssertEqual(remainder, input)
+    }
+
+    func testStringEmptyReturn() {
+        let stringParser: Parser<StringInput, [Character]> = Combinators.stringEmptyReturn("foo")
+        let input = StringInput("foobar")
+
+        let output = stringParser.parse(input)
+        guard case let .success(value, remainder) = output.reply, .consumed == output.state else {
+            XCTFail("Expected parse to succeed and consumption of `foo`")
+            return
+        }
+        XCTAssertEqual(value, [])
+        XCTAssertEqual(remainder.position, 3)
+    }
+
+    func testStringEmptyReturnWithNoMatch() {
+        let stringParser: Parser<StringInput, [Character]> = Combinators.stringEmptyReturn("foo")
+        let input = StringInput("barfoo")
+
+        let output = stringParser.parse(input)
+        guard case let .error(error, remainder) = output.reply, .empty == output.state else {
+            XCTFail("Expected parse to fail and no consumption")
+            return
+        }
+        XCTAssertNil(error) // Currently nil, but should be a real value
+        XCTAssertEqual(remainder, input)
+    }
+
     static var allTests = [
         ("testIsLetter", testIsLetter),
         ("testIsLetterNotMatch", testIsLetterNotMatch),
         ("testIsDigit", testIsDigit),
-        ("testIsDigitNotMatch", testIsDigitNotMatch)
+        ("testIsDigitNotMatch", testIsDigitNotMatch),
+        ("testString", testString),
+        ("testStringWithNoMatch", testStringWithNoMatch)
     ]
 }

@@ -47,4 +47,47 @@ public extension Combinators {
         #endif
     }
 
+    /// Return a Parser which matches a given string
+    static func string<Input1>(_ value: String) -> Parser<Input1, [Character]> where Input1.Element == Character {
+        guard !value.isEmpty else {
+            let empty: [Character] = []
+            return Combinators.returnValue(empty)
+        }
+
+        return Parser { input in
+            let firstCharParser: Parser<Input1, ([Character]) -> [Character]> = Parser { input in
+                let firstChar = value.first!
+                let consumed = Combinators.char(firstChar).parse(input)
+                switch consumed.reply {
+                case let .error(error, remainingInput):
+                    return Consumed(consumed.state, .error(error, remainingInput))
+                case let .success(value, remainingInput):
+                    let mergeFunc: ([Character]) -> [Character] = { [value] + $0 }
+                    return Consumed(consumed.state, .success(mergeFunc, remainingInput))
+                }
+            }
+
+            return Combinators.apply(firstCharParser, Combinators.string(String(value.dropFirst()))).parse(input)
+        }
+    }
+
+    /// Return a Parser which matches a given string. The value returned is an empty array if it succeeds.
+    static func stringEmptyReturn<Input1>(_ value: String)
+        -> Parser<Input1, [Character]> where Input1.Element == Character {
+        guard !value.isEmpty else {
+            let empty: [Character] = []
+            return Combinators.returnValue(empty)
+        }
+
+        return Parser { input in
+            let firstChar = value.first!
+            let firstCharParser: Parser<Input1, Character> = Combinators.char(firstChar)
+
+            let func1: (Character) -> Parser<Input1, [Character]> = { _ in
+                Combinators.stringEmptyReturn(String(value.dropFirst()))
+            }
+
+            return Combinators.bind(firstCharParser, to: func1).parse(input)
+        }
+    }
 }
