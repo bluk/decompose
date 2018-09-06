@@ -18,7 +18,7 @@ import XCTest
 internal final class ConvenienceCombinatorsTests: XCTestCase {
 
     func testIsLetter() {
-        let isLetter: Parser<StringInput, StringInput, Character> = Combinators.isLetter()
+        let isLetter: Parser<StringInput, Character> = Combinators.isLetter()
 
         let output = isLetter.parse(StringInput("AB"))
         guard case let .success(value, remainder) = output.reply, .consumed == output.state else {
@@ -30,7 +30,7 @@ internal final class ConvenienceCombinatorsTests: XCTestCase {
     }
 
     func testIsLetterNotMatch() {
-        let isLetter: Parser<StringInput, StringInput, Character> = Combinators.isLetter()
+        let isLetter: Parser<StringInput, Character> = Combinators.isLetter()
         let input = StringInput("1A")
 
         let output = isLetter.parse(input)
@@ -43,7 +43,7 @@ internal final class ConvenienceCombinatorsTests: XCTestCase {
     }
 
     func testIsDigit() {
-        let isDigit: Parser<StringInput, StringInput, Character> = Combinators.isDigit()
+        let isDigit: Parser<StringInput, Character> = Combinators.isDigit()
         let input = StringInput("12")
 
         let output = isDigit.parse(input)
@@ -56,7 +56,7 @@ internal final class ConvenienceCombinatorsTests: XCTestCase {
     }
 
     func testIsDigitNotMatch() {
-        let isDigit: Parser<StringInput, StringInput, Character> = Combinators.isDigit()
+        let isDigit: Parser<StringInput, Character> = Combinators.isDigit()
         let input = StringInput("A1")
 
         let output = isDigit.parse(input)

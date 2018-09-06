@@ -18,13 +18,13 @@ import XCTest
 internal final class OperatorsTests: XCTestCase {
 
     func testBindAsOperator() {
-        let originalParser: Parser<StringInput, StringInput, String> = Combinators.returnValue("foo")
-        let func1: (String) -> Parser<StringInput, StringInput, String> = { result1 in
+        let originalParser: Parser<StringInput, String> = Combinators.returnValue("foo")
+        let func1: (String) -> Parser<StringInput, String> = { result1 in
             XCTAssertEqual(result1, "foo")
 
             return Combinators.returnValue("bar")
         }
-        let boundParser: Parser<StringInput, StringInput, String> = originalParser >>- func1
+        let boundParser: Parser<StringInput, String> = originalParser >>- func1
         let input = StringInput("test")
 
         let output = boundParser.parse(input)
@@ -37,8 +37,8 @@ internal final class OperatorsTests: XCTestCase {
     }
 
     func testChoiceAsOperator() {
-        let matchesF: Parser<StringInput, StringInput, Character> = Combinators.char("f")
-        let matchesB: Parser<StringInput, StringInput, Character> = Combinators.char("b")
+        let matchesF: Parser<StringInput, Character> = Combinators.char("f")
+        let matchesB: Parser<StringInput, Character> = Combinators.char("b")
         let orParser = matchesF <|> matchesB
         let input = StringInput("bar")
 
@@ -53,7 +53,7 @@ internal final class OperatorsTests: XCTestCase {
     }
 
     func testMapAsOperator() {
-        let satisfy2: Parser<StringInput, StringInput, Character> = Combinators.char("2")
+        let satisfy2: Parser<StringInput, Character> = Combinators.char("2")
         let func1: (Character) -> Int? = { Int(String($0)) }
         let mappedParser = satisfy2 <^> func1
 
@@ -66,9 +66,9 @@ internal final class OperatorsTests: XCTestCase {
     }
 
     func testApplyAsOperator() {
-        let satisfy2: Parser<StringInput, StringInput, Character> = Combinators.char("2")
-        let satisfy3: Parser<StringInput, StringInput, Character> = Combinators.char("3")
-        let satisfyTimes: Parser<StringInput, StringInput, Character> = Combinators.char("*")
+        let satisfy2: Parser<StringInput, Character> = Combinators.char("2")
+        let satisfy3: Parser<StringInput, Character> = Combinators.char("3")
+        let satisfyTimes: Parser<StringInput, Character> = Combinators.char("*")
         let func1: (Character) -> (Character) -> (Character) -> Int? = { first in { _ in { second in
             Int(String(first))! * Int(String(second))!
             }

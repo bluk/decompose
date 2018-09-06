@@ -18,17 +18,17 @@ import Foundation
 public enum Combinators {
 
     /// Returns a parser which returns the passed in value as a result and does not consume the Input
-    public static func returnValue<Input1, Result>(_ value: Result) -> Parser<Input1, Input1, Result> {
+    public static func returnValue<Input1, Result>(_ value: Result) -> Parser<Input1, Result> {
         return Parser { input in Consumed(.empty, .success(value, input)) }
     }
 
     /// The parser (in the function parameter)'s parsed result is passed to a function which generates
     /// a second parser, and then the second parser is invoked with the remaining input.
-    public static func bind<Input1, Input2, Input3, Result1, Result2>(
-        _ parser1: Parser<Input1, Input2, Result1>,
-        to func1: @escaping (Result1) -> Parser<Input2, Input3, Result2>)
-        -> Parser<Input1, Input3, Result2> {
-        return Parser<Input1, Input3, Result2> { input in
+    public static func bind<Input1, Result1, Result2>(
+        _ parser1: Parser<Input1, Result1>,
+        to func1: @escaping (Result1) -> Parser<Input1, Result2>)
+        -> Parser<Input1, Result2> {
+        return Parser<Input1, Result2> { input in
             let consumed1 = parser1.parse(input)
             switch consumed1.state {
             case .empty:
@@ -52,8 +52,8 @@ public enum Combinators {
     }
 
     /// Returns a Parser for matching a single value
-    public static func satisfy<Value, Input1, Input2>(_ condition: @escaping (Value) -> Bool)
-        -> Parser<Input1, Input2, Value> where Input1.Element == Value {
+    public static func satisfy<Value, Input1>(_ condition: @escaping (Value) -> Bool)
+        -> Parser<Input1, Value> where Input1.Element == Value {
         return Parser { input in
             guard let value = input.peek(), condition(value) else {
                 return Consumed(.empty, .error(nil, input.consume(count: 0)))
@@ -63,10 +63,10 @@ public enum Combinators {
     }
 
     /// Returns a Parser for matching a choice between the two parsers
-    public static func choice<Input1, Input2, Result1>(
-        _ parser1: Parser<Input1, Input2, Result1>,
-        _ parser2: Parser<Input1, Input2, Result1>)
-        -> Parser<Input1, Input2, Result1> {
+    public static func choice<Input1, Result1>(
+        _ parser1: Parser<Input1, Result1>,
+        _ parser2: Parser<Input1, Result1>)
+        -> Parser<Input1, Result1> {
         return Parser { input in
             let result1 = parser1.parse(input)
             switch result1.state {
@@ -82,7 +82,7 @@ public enum Combinators {
                     case .empty:
                         switch result2.reply {
                         case .error:
-                            return Consumed<Result1, Input2>(.empty, result1.reply)
+                            return Consumed<Result1, Input1>(.empty, result1.reply)
                         case .success:
                             return result2
                         }
@@ -95,9 +95,9 @@ public enum Combinators {
     }
 
     /// Maps a Parser's return value over a transforming function
-    public static func map<Input1, Input2, Result1, Result2>(
-        _ parser1: Parser<Input1, Input2, Result1>,
-        _ func1: @escaping (Result1) -> Result2) -> Parser<Input1, Input2, Result2> {
+    public static func map<Input1, Result1, Result2>(
+        _ parser1: Parser<Input1, Result1>,
+        _ func1: @escaping (Result1) -> Result2) -> Parser<Input1, Result2> {
         return Parser { input in
             let result1 = parser1.parse(input)
             switch result1.reply {
@@ -115,9 +115,9 @@ public enum Combinators {
     }
 
     /// Sequentially invokes two Parsers while applying the second parser's result into the first parser's function
-    public static func apply<Input1, Input2, Input3, Result1, Result2>(
-        _ parser1: Parser<Input1, Input2, ((Result1) -> Result2)>,
-        _ parser2: Parser<Input2, Input3, Result1>) -> Parser<Input1, Input3, Result2> {
+    public static func apply<Input1, Result1, Result2>(
+        _ parser1: Parser<Input1, ((Result1) -> Result2)>,
+        _ parser2: Parser<Input1, Result1>) -> Parser<Input1, Result2> {
         return Parser { input in
             let output1 = parser1.parse(input)
             switch output1.reply {
