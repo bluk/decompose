@@ -82,7 +82,7 @@ internal final class CombinatorsTest: XCTestCase {
 
             return Combinators.returnValue("bar")
         }
-        let boundParser: Parser<StringInput, StringInput, String> = originalParser >>= func1
+        let boundParser: Parser<StringInput, StringInput, String> = originalParser >>- func1
         let input = StringInput("test")
 
         guard let (result, remainder) = boundParser.parse(input) else {

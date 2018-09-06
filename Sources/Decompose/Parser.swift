@@ -25,8 +25,16 @@ public extension Parser {
     }
 }
 
+precedencegroup FlatMapLeftPrecedence {
+    associativity: left
+    lowerThan: LogicalDisjunctionPrecedence
+    higherThan: AssignmentPrecedence
+}
+
+infix operator >>-: FlatMapLeftPrecedence
+
 /// Convenience operator for bind
-public func >>=<A, B, Result1, C, Result2>(
+public func >>-<A, B, Result1, C, Result2>(
     lhs: Parser<A, B, Result1>,
     rhs: @escaping (Result1) -> Parser<B, C, Result2>) -> Parser<A, C, Result2> {
     return Combinators.bind(lhs, to: rhs)
@@ -34,7 +42,8 @@ public func >>=<A, B, Result1, C, Result2>(
 
 precedencegroup ChoicePrecedence {
     associativity: left
-    higherThan: AdditionPrecedence
+    higherThan: LogicalConjunctionPrecedence
+    lowerThan: ComparisonPrecedence
 }
 
 infix operator <|>: ChoicePrecedence
