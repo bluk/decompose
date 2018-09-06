@@ -22,5 +22,5 @@ matrix:
         - sudo apt-get -y install docker-ce
       script:
         - docker run -it --name swift --volume=$(pwd):/usr/src/ --rm bluk/docker-swift-build-tools:4.1 swift build
-        - docker run -it --name swift --volume=$(pwd):/usr/src/ --rm bluk/docker-swift-build-tools:4.1 swiftlint
+        - docker run -it --name swift --volume=$(pwd):/usr/src/ --rm bluk/docker-swift-build-tools:4.1 swiftlint --strict
         - docker run -it --name swift --volume=$(pwd):/usr/src/ --rm bluk/docker-swift-build-tools:4.1 swift test
