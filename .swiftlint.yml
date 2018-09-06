@@ -72,5 +72,7 @@ file_header:
     //  See the License for the specific language governing permissions and
     //  limitations under the License.
 
+file_name:
+  excluded: ['ConvenienceCombinators.swift']
 excluded:
   - .build
