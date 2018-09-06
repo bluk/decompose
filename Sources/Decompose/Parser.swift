@@ -14,13 +14,14 @@
 
 /// A parsable function
 public struct Parser<A, B, Result> where A: Input, B: Input {
-    let parse: (A) -> (Result, B)?
+    let parse: (A) -> Consumed<Result, B>
 }
 
 /// Convenience methods for Parser
 public extension Parser {
     /// Convenience method for binding a first parser's return value to a second parser.
-    func flatMap<C, Result2>(_ func1 : @escaping (Result) -> Parser<B, C, Result2>) -> Parser<A, C, Result2> {
+    func flatMap<C, Result2>(
+        _ func1 : @escaping (Result) -> Parser<B, C, Result2>) -> Parser<A, C, Result2> where B.ConsumeReturn == C {
         return Combinators.bind(self, to: func1)
     }
 }
@@ -36,7 +37,7 @@ infix operator >>-: MonodLeftPrecedence
 /// Convenience operator for bind
 public func >>-<A, B, Result1, C, Result2>(
     lhs: Parser<A, B, Result1>,
-    rhs: @escaping (Result1) -> Parser<B, C, Result2>) -> Parser<A, C, Result2> {
+    rhs: @escaping (Result1) -> Parser<B, C, Result2>) -> Parser<A, C, Result2> where B.ConsumeReturn == C {
     return Combinators.bind(lhs, to: rhs)
 }
 
@@ -66,7 +67,7 @@ infix operator <*>: AppPrecedence
 /// Convenience operator for apply
 public func <*><Input1, Input2, Input3, Result1, Result2>(
     lhs: Parser<Input1, Input2, ((Result1) -> Result2)>,
-    rhs: Parser<Input2, Input3, Result1>) -> Parser<Input1, Input3, Result2> {
+    rhs: Parser<Input2, Input3, Result1>) -> Parser<Input1, Input3, Result2> where Input2.ConsumeReturn == Input3 {
     return Combinators.apply(lhs, rhs)
 }
 
