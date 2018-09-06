@@ -23,7 +23,7 @@ infix operator >>-: MonodLeftPrecedence
 /// Convenience operator for bind
 public func >>-<A, B, Result1, C, Result2>(
     lhs: Parser<A, B, Result1>,
-    rhs: @escaping (Result1) -> Parser<B, C, Result2>) -> Parser<A, C, Result2> where B.RemainingInput == C {
+    rhs: @escaping (Result1) -> Parser<B, C, Result2>) -> Parser<A, C, Result2> {
     return Combinators.bind(lhs, to: rhs)
 }
 
@@ -53,7 +53,7 @@ infix operator <*>: AppPrecedence
 /// Convenience operator for apply
 public func <*><Input1, Input2, Input3, Result1, Result2>(
     lhs: Parser<Input1, Input2, ((Result1) -> Result2)>,
-    rhs: Parser<Input2, Input3, Result1>) -> Parser<Input1, Input3, Result2> where Input2.RemainingInput == Input3 {
+    rhs: Parser<Input2, Input3, Result1>) -> Parser<Input1, Input3, Result2> {
     return Combinators.apply(lhs, rhs)
 }
 

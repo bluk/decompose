@@ -27,7 +27,7 @@ public enum Combinators {
     public static func bind<Input1, Input2, Input3, Result1, Result2>(
         _ parser1: Parser<Input1, Input2, Result1>,
         to func1: @escaping (Result1) -> Parser<Input2, Input3, Result2>)
-        -> Parser<Input1, Input3, Result2> where Input2.RemainingInput == Input3 {
+        -> Parser<Input1, Input3, Result2> {
         return Parser<Input1, Input3, Result2> { input in
             let consumed1 = parser1.parse(input)
             switch consumed1.state {
@@ -53,7 +53,7 @@ public enum Combinators {
 
     /// Returns a Parser for matching a single value
     public static func satisfy<Value, Input1, Input2>(_ condition: @escaping (Value) -> Bool)
-        -> Parser<Input1, Input2, Value> where Input1.Element == Value, Input1.RemainingInput == Input2 {
+        -> Parser<Input1, Input2, Value> where Input1.Element == Value {
         return Parser { input in
             guard let value = input.peek(), condition(value) else {
                 return Consumed(.empty, .error(nil, input.consume(count: 0)))
@@ -117,8 +117,7 @@ public enum Combinators {
     /// Sequentially invokes two Parsers while applying the second parser's result into the first parser's function
     public static func apply<Input1, Input2, Input3, Result1, Result2>(
         _ parser1: Parser<Input1, Input2, ((Result1) -> Result2)>,
-        _ parser2: Parser<Input2, Input3, Result1>) -> Parser<Input1, Input3, Result2>
-        where Input2.RemainingInput == Input3 {
+        _ parser2: Parser<Input2, Input3, Result1>) -> Parser<Input1, Input3, Result2> {
         return Parser { input in
             let output1 = parser1.parse(input)
             switch output1.reply {

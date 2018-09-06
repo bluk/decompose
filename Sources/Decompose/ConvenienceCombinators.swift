@@ -19,13 +19,13 @@ public extension Combinators {
 
     /// Return a Parser which tests if the next value is a specific Character
     static func char<Input1, Input2>(_ value: Character) -> Parser<Input1, Input2, Character>
-        where Input1.Element == Character, Input2 == Input1.RemainingInput {
+        where Input1.Element == Character {
             return satisfy { $0 == value }
     }
 
     /// Return a Parser which tests if the next value is a letter
     static func isLetter<Input1, Input2>() -> Parser<Input1, Input2, Character>
-        where Input1.Element == Character, Input2 == Input1.RemainingInput {
+        where Input1.Element == Character {
             let characterSet = CharacterSet.letters
             #if swift(>=4.2)
             return satisfy { $0.unicodeScalars.allSatisfy(characterSet.contains) }
@@ -37,7 +37,7 @@ public extension Combinators {
 
     /// Return a Parser which tests if the next value is a digit
     static func isDigit<Input1, Input2>() -> Parser<Input1, Input2, Character>
-        where Input1.Element == Character, Input2 == Input1.RemainingInput {
+        where Input1.Element == Character {
             let characterSet = CharacterSet.decimalDigits
             #if swift(>=4.2)
             return satisfy { $0.unicodeScalars.allSatisfy(characterSet.contains) }
