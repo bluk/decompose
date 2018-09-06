@@ -133,4 +133,10 @@ public enum Combinators {
             }
         }
     }
+
+    /// Return a Parser which tests if the next value is a specific Character
+    public static func char<Input1, Input2>(_ value: Character) -> Parser<Input1, Input2, Character>
+        where Input1.Value == Character, Input2 == Input1.ConsumeReturn {
+        return satisfy { $0 == value }
+    }
 }
