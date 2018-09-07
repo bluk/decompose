@@ -45,7 +45,9 @@ public struct StringInput: Input, Equatable, Hashable {
         return [Character](value[startIndex..<endIndex])
     }
 
-    public func consume(count: Int) -> StringInput {
-        return StringInput(value, position: position + count)
+    // swiftlint:disable identifier_name
+    public func advanced(by n: Int) -> StringInput {
+        return StringInput(value, position: position + n)
     }
+    // swiftlint:enable identifier_name
 }

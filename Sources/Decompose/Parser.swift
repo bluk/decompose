@@ -13,7 +13,7 @@
 //  limitations under the License.
 
 /// A parsable function
-public struct Parser<I, V> where I: Input, I.RemainingInput == I {
+public struct Parser<I, V> where I: Input {
     let parse: (I) -> Consumed<I, V>
 }
 

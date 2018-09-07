@@ -56,7 +56,7 @@ internal final class StringInputTests: XCTestCase {
 
     func testConsume() {
         let originalInput = StringInput("Hello, World!")
-        let newInput = originalInput.consume()
+        let newInput = originalInput.advanced()
 
         XCTAssertEqual(newInput.peek(), "e")
         XCTAssertEqual(originalInput.peek(), "H")
@@ -67,7 +67,7 @@ internal final class StringInputTests: XCTestCase {
 
     func testOriginalPositionNotAt0AndConsume() {
         let originalInput = StringInput("Hello, World!", position: 7)
-        let newInput = originalInput.consume()
+        let newInput = originalInput.advanced()
 
         XCTAssertEqual(newInput.peek(), "o")
         XCTAssertEqual(originalInput.peek(), "W")
@@ -78,7 +78,7 @@ internal final class StringInputTests: XCTestCase {
 
     func testConsumeWithCount() {
         let originalInput = StringInput("Hello, World!")
-        let newInput = originalInput.consume(count: 5)
+        let newInput = originalInput.advanced(by: 5)
 
         XCTAssertEqual(newInput.peek(), ",")
         XCTAssertEqual(originalInput.peek(), "H")
@@ -89,7 +89,7 @@ internal final class StringInputTests: XCTestCase {
 
     func testOriginalPositionNotAt0AndConsumeWithCount() {
         let originalInput = StringInput("Hello, World!", position: 5)
-        let newInput = originalInput.consume(count: 2)
+        let newInput = originalInput.advanced(by: 2)
 
         XCTAssertEqual(newInput.peek(), "W")
         XCTAssertEqual(originalInput.peek(), ",")
@@ -115,7 +115,7 @@ internal final class StringInputTests: XCTestCase {
             XCTAssertFalse(input.isEmpty)
             XCTAssertEqual(input.position, counter)
             XCTAssertEqual(input.peek(), char)
-            input = input.consume()
+            input = input.advanced()
         }
 
         XCTAssertTrue(input.isEmpty)
@@ -126,12 +126,12 @@ internal final class StringInputTests: XCTestCase {
 
     func testConsumePastEndOfString() {
         let originalInput = StringInput("Hello, World!")
-        let newInput = originalInput.consume(count: 13)
+        let newInput = originalInput.advanced(by: 13)
 
         XCTAssertTrue(newInput.isEmpty)
         XCTAssertEqual(newInput.position, 13)
 
-        let beyondEndOfStringInput = newInput.consume()
+        let beyondEndOfStringInput = newInput.advanced()
         XCTAssertTrue(beyondEndOfStringInput.isEmpty)
         XCTAssertEqual(beyondEndOfStringInput.position, 14)
     }

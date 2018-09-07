@@ -83,7 +83,7 @@ public enum Combinators {
             let messageFunc = {
                 ParseError(position: input.position, unexpectedInput: "", expectedProductions: [])
             }
-            return Consumed(.consumed, .success(element, input.consume(), messageFunc))
+            return Consumed(.consumed, .success(element, input.advanced(), messageFunc))
         }
     }
 

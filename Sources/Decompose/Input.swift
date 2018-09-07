@@ -18,13 +18,10 @@ public protocol Input {
     /// The individual element type.
     associatedtype Element
 
-    /// After data is consumed, the remaining unconsumed elements is returned via an `Input`
-    associatedtype RemainingInput where RemainingInput: Input
-
     /// The current position in the `Input`. Useful for debugging and error messages.
     var position: Int { get }
 
-    /// If there are no more elements available in the view.
+    /// Indicates if there are remaining elements available in the view.
     var isEmpty: Bool { get }
 
     /// Returns the current element.
@@ -40,28 +37,29 @@ public protocol Input {
     /// - Precondition: `count` must be >= 0.
     func peek(count: Int) -> [Element]
 
-    /// Consumes the current element and return an `Input` representing the remaining data.
+    /// Returns an `Input` which is offset by 1 element.
     ///
     /// - Returns: The remaining `Input`.
-    func consume() -> RemainingInput
+    func advanced() -> Self
 
-    /// Consumes the current and next `count - 1` number of elements and return an `Input`
-    /// representing the remaining data.
+    // swiftlint:disable identifier_name
+    /// Returns an `Input` which is offset by the specified number of elements.
     ///
     /// - Parameters:
-    ///     - count: Up to the number of elements to consume. `0` is a valid value.
-    /// - Returns: The remaining `Input`.
-    /// - Precondition: `count` must be >= 0.
-    func consume(count: Int) -> RemainingInput
+    ///     - n: The number of elements to advanced by.
+    /// - Returns: An `Input` which is offset from this value by `n`.
+    /// - Precondition: `n` must be > 0.
+    func advanced(by n: Int) -> Self
+    // swiftlint:enable identifier_name
 }
 
 /// Default implementation of methods for Input.
 public extension Input {
 
-    /// Consumes the current element and return an `Input` representing the remaining data.
+    /// Returns an `Input` which is offset by 1 element.
     ///
     /// - Returns: The remaining `Input`.
-    func consume() -> RemainingInput {
-        return consume(count: 1)
+    func advanced() -> Self {
+        return advanced(by: 1)
     }
 }
