@@ -420,6 +420,21 @@ internal final class CombinatorsTests: XCTestCase {
         XCTAssertEqual(msg.expectedProductions, ["digit", "letter"])
     }
 
+    func testFail() {
+        let fail: Parser<StringInput, Character> = Combinators.fail()
+        let input = StringInput("foo")
+
+        let output = fail.parse(input)
+        guard case let .error(msgGenerator) = output.reply, .empty == output.state else {
+            XCTFail("Expected parse to fail and no consumption of input")
+            return
+        }
+        let msg = msgGenerator()
+        XCTAssertEqual(msg.unexpectedInput, "")
+        XCTAssertEqual(msg.position, 0)
+        XCTAssertEqual(msg.expectedProductions, [])
+    }
+
     static var allTests = [
         ("testReturnValue", testReturnValue),
         ("testBind", testBind),

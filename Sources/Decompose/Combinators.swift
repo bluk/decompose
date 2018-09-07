@@ -306,4 +306,13 @@ public enum Combinators {
             }
         }
     }
+
+    /// Instantiates a `Parser` which only fails.
+    ///
+    /// - Returns: A `Parser` which only fails.
+    public static func fail<I, V>() -> Parser<I, V> {
+        return Parser { input in
+            Consumed(.empty, .error({ ParseMessage(position: input.position) }))
+        }
+    }
 }
