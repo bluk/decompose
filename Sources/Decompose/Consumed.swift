@@ -14,13 +14,57 @@
 
 /// An error type for ParseErrors
 public struct ParseError: Error {
-    let message: String
+    let position: Int
+    let unexpectedInput: String
+    let expectedProductions: [String]
+}
+
+internal func mergeSuccess<E, I: Input>(
+    element: E,
+    input: I,
+    error1: @escaping () -> (ParseError),
+    error2: @escaping () -> (ParseError)
+    ) -> Consumed<E, I> {
+    return Consumed(.empty, Reply.success(element, input, merge(error1, error2)))
+}
+
+internal func mergeError<E, I: Input>(
+    error1:  @escaping () -> (ParseError),
+    error2: @escaping () -> (ParseError)
+    ) -> Consumed<E, I> {
+    return Consumed(.empty, Reply.error(merge(error1, error2)))
+}
+
+internal func merge(
+    _ error1: @escaping () -> (ParseError),
+    _ error2:  @escaping  () -> (ParseError)
+    ) -> (() -> (ParseError)) {
+    return {
+        let err1 = error1()
+        let err2 = error2()
+
+        return ParseError(
+            position: err1.position,
+            unexpectedInput: err1.unexpectedInput,
+            expectedProductions: err1.expectedProductions + err2.expectedProductions
+        )
+    }
 }
 
 /// Determines if the parse operation was a success
-public enum Reply<T, I: Input> {
-    case success(T, I)
-    case error(Error?, I)
+public enum Reply<Element, I: Input> {
+    case success(Element, I, () -> ParseError)
+    case error(() -> ParseError)
+
+    /// The message to use when a parsing error occurs. For success messages, it can be used as a possibility.
+    public var message: ParseError {
+        switch self {
+        case .success(_, _, let messageFunc):
+            return messageFunc()
+        case let .error(messageFunc):
+            return messageFunc()
+        }
+    }
 }
 
 /// Whether any of the Input was consumed

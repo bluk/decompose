@@ -18,33 +18,44 @@ import Foundation
 public enum Combinators {
 
     /// Returns a parser which returns the passed in value as a result and does not consume the Input
-    public static func returnValue<Input1, Result>(_ value: Result) -> Parser<Input1, Result> {
-        return Parser { input in Consumed(.empty, .success(value, input)) }
+    public static func returnValue<I, Result1>(_ value: Result1) -> Parser<I, Result1> {
+        return Parser { input in
+            let messageFunc = {
+                ParseError(position: input.position, unexpectedInput: "", expectedProductions: [])
+            }
+            return Consumed(.empty, .success(value, input, messageFunc))
+        }
     }
 
     /// The parser (in the function parameter)'s parsed result is passed to a function which generates
     /// a second parser, and then the second parser is invoked with the remaining input.
-    public static func bind<Input1, Result1, Result2>(
-        _ parser1: Parser<Input1, Result1>,
-        to func1: @escaping (Result1) -> Parser<Input1, Result2>)
-        -> Parser<Input1, Result2> {
-        return Parser<Input1, Result2> { input in
-            let consumed1 = parser1.parse(input)
-            switch consumed1.state {
+    public static func bind<I, Result1, Result2>(
+        _ parser1: Parser<I, Result1>,
+        to func1: @escaping (Result1) -> Parser<I, Result2>)
+        -> Parser<I, Result2> {
+        return Parser { input in
+            let result1 = parser1.parse(input)
+            switch result1.state {
             case .empty:
-                switch consumed1.reply {
-                case let .success(result1, remainder2):
-                    return func1(result1).parse(remainder2)
-                case let .error(error, remainder2):
-                    return Consumed(.empty, .error(error, remainder2.consume(count: 0)))
+                switch result1.reply {
+                case let .success(value1, remainder1, error1):
+                    let result2 = func1(value1).parse(remainder1)
+                    switch result2.reply {
+                    case let .success(value2, remainder2, error2):
+                        return mergeSuccess(element: value2, input: remainder2, error1: error1, error2: error2)
+                    case let .error(error2):
+                        return mergeError(error1: error1, error2: error2)
+                    }
+                case let .error(error):
+                    return Consumed(.empty, .error(error))
                 }
             case .consumed:
                 return Consumed(.consumed, {
-                    switch consumed1.reply {
-                    case let .success(result1, remainder2):
-                        return func1(result1).parse(remainder2).reply
-                    case let .error(error, remainder2):
-                        return .error(error, remainder2.consume(count: 0))
+                    switch result1.reply {
+                    case let .success(value1, remainder1, _):
+                        return func1(value1).parse(remainder1).reply
+                    case let .error(error):
+                        return .error(error)
                     }
                 })
             }
@@ -52,84 +63,135 @@ public enum Combinators {
     }
 
     /// Returns a Parser for matching a single value
-    public static func satisfy<Value, Input1>(_ condition: @escaping (Value) -> Bool)
-        -> Parser<Input1, Value> where Input1.Element == Value {
+    public static func satisfy<Result1, I>(_ condition: @escaping (Result1) -> Bool)
+        -> Parser<I, Result1> where I.Element == Result1 {
         return Parser { input in
-            guard let value = input.peek(), condition(value) else {
-                return Consumed(.empty, .error(nil, input.consume(count: 0)))
+            guard let element = input.peek(), !input.isEmpty else {
+                let messageFunc = {
+                    ParseError(position: input.position, unexpectedInput: "end of input", expectedProductions: [])
+                }
+                return Consumed(.empty, .error(messageFunc))
             }
-            return Consumed(.consumed, .success(value, input.consume()))
+
+            guard condition(element) else {
+                let messageFunc = {
+                    ParseError(position: input.position, unexpectedInput: "\(element)", expectedProductions: [])
+                }
+                return Consumed(.empty, .error(messageFunc))
+            }
+
+            let messageFunc = {
+                ParseError(position: input.position, unexpectedInput: "", expectedProductions: [])
+            }
+            return Consumed(.consumed, .success(element, input.consume(), messageFunc))
         }
     }
 
+    // swiftlint:disable function_body_length cyclomatic_complexity
     /// Returns a Parser for matching a choice between the two parsers
-    public static func choice<Input1, Result1>(
-        _ parser1: Parser<Input1, Result1>,
-        _ parser2: Parser<Input1, Result1>)
-        -> Parser<Input1, Result1> {
+    public static func choice<I, Result1>(
+        _ parser1: Parser<I, Result1>,
+        _ parser2: Parser<I, Result1>) -> Parser<I, Result1> {
         return Parser { input in
             let result1 = parser1.parse(input)
             switch result1.state {
-            case .consumed:
-                return result1
             case .empty:
                 switch result1.reply {
-                case .success:
+                case .error(let error1):
                     let result2 = parser2.parse(input)
                     switch result2.state {
-                    case .consumed:
-                        return result2
                     case .empty:
                         switch result2.reply {
-                        case .error:
-                            return Consumed<Result1, Input1>(.empty, result1.reply)
-                        case .success:
-                            return result2
+                        case let .error(error2):
+                            return mergeError(error1: error1, error2: error2)
+                        case let .success(value2, remainingInput2, error2):
+                            return mergeSuccess(
+                                element: value2,
+                                input: remainingInput2,
+                                error1: error1,
+                                error2: error2
+                            )
                         }
+                    case .consumed:
+                        return result2
                     }
-                case .error:
-                    return parser2.parse(input)
+                case let .success(value1, remainingInput1, error1):
+                    let result2 = parser2.parse(input)
+                    switch result2.state {
+                    case .empty:
+                        switch result2.reply {
+                        case let .error(error2):
+                            return mergeSuccess(
+                                element: value1,
+                                input: remainingInput1,
+                                error1: error1,
+                                error2: error2
+                            )
+                        case let .success(_, _, error2):
+                            return mergeSuccess(
+                                element: value1,
+                                input: remainingInput1,
+                                error1: error1,
+                                error2: error2
+                            )
+                        }
+                    case .consumed:
+                        return result2
+                    }
                 }
+            case .consumed:
+                return result1
             }
         }
     }
+    // swiftlint:enable function_body_length cyclomatic_complexity
 
     /// Maps a Parser's return value over a transforming function
-    public static func map<Input1, Result1, Result2>(
-        _ parser1: Parser<Input1, Result1>,
-        _ func1: @escaping (Result1) -> Result2) -> Parser<Input1, Result2> {
+    public static func map<I, Result1, Result2>(
+        _ parser1: Parser<I, Result1>,
+        _ func1: @escaping (Result1) -> Result2) -> Parser<I, Result2> {
         return Parser { input in
             let result1 = parser1.parse(input)
             switch result1.reply {
-            case let .error(error, remainder2):
+            case let .error(error1):
                 switch result1.state {
                 case .consumed:
-                    return Consumed(.consumed, .error(error, remainder2))
+                    return Consumed(.consumed, .error(error1))
                 case .empty:
-                    return Consumed(.empty, .error(error, remainder2))
+                    return Consumed(.empty, .error(error1))
                 }
-            case let .success(value1, remainder2):
-                return Consumed(result1.state, .success(func1(value1), remainder2))
+            case let .success(value1, remainder1, error1):
+                return Consumed(result1.state, .success(func1(value1), remainder1, error1))
             }
         }
     }
 
     /// Sequentially invokes two Parsers while applying the second parser's result into the first parser's function
-    public static func apply<Input1, Result1, Result2>(
-        _ parser1: Parser<Input1, ((Result1) -> Result2)>,
-        _ parser2: Parser<Input1, Result1>) -> Parser<Input1, Result2> {
+    public static func apply<I, Result1, Result2>(
+        _ parser1: Parser<I, ((Result1) -> Result2)>,
+        _ parser2: Parser<I, Result1>) -> Parser<I, Result2> {
         return Parser { input in
-            let output1 = parser1.parse(input)
-            switch output1.reply {
-            case let .error(error, remainder2):
-                return Consumed(output1.state, .error(error, remainder2.consume(count: 0)))
-            case let .success(value1, remainder2):
-                let output2 = Combinators.map(parser2, value1).parse(remainder2)
-                switch output1.state {
+            let result1 = parser1.parse(input)
+            switch result1.reply {
+            case let .error(error1):
+                return Consumed(result1.state, .error(error1))
+            case let .success(value1, remainder1, error1):
+                let result2 = Combinators.map(parser2, value1).parse(remainder1)
+                switch result1.state {
                 case .consumed:
-                    return Consumed(.consumed, output2.reply)
+                    return Consumed(.consumed, result2.reply)
                 case .empty:
-                    return output2
+                    switch result2.state {
+                    case .empty:
+                        switch result2.reply {
+                        case let .error(error2):
+                            return mergeError(error1: error1, error2: error2)
+                        case let .success(value2, remainder2, error2):
+                            return mergeSuccess(element: value2, input: remainder2, error1: error1, error2: error2)
+                        }
+                    case .consumed:
+                        return result2
+                    }
                 }
             }
         }

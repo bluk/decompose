@@ -15,18 +15,23 @@
 @testable import Decompose
 import XCTest
 
+// swiftlint:disable type_body_length
 internal final class CombinatorsTests: XCTestCase {
 
     func testReturnValue() {
         let output = Combinators.returnValue("Hello, World!").parse(StringInput("A"))
 
-        guard case let .success(value, remainder) = output.reply, .empty == output.state else {
+        guard case let .success(value, remainder, errorGenerator) = output.reply, .empty == output.state else {
             XCTFail("Expected parse to be successful but no consumption of characters")
             return
         }
         XCTAssertEqual(value, "Hello, World!")
         XCTAssertEqual(remainder.peek(), "A")
         XCTAssertEqual(remainder.position, 0)
+        let error = errorGenerator()
+        XCTAssertEqual(error.unexpectedInput, "")
+        XCTAssertEqual(error.position, 0)
+        XCTAssertEqual(error.expectedProductions, [])
     }
 
     func testBind() {
@@ -39,17 +44,23 @@ internal final class CombinatorsTests: XCTestCase {
         let input = StringInput("test")
 
         let output = boundParser.parse(input)
-        guard case let .success(value, remainder) = output.reply, .empty == output.state else {
+        guard case let .success(value, remainder, errorGenerator) = output.reply, .empty == output.state else {
             XCTFail("Expected parse to be successful but no consumption of characters")
             return
         }
         XCTAssertEqual(value, "bar")
         XCTAssertEqual(remainder, input)
+        let error = errorGenerator()
+        XCTAssertEqual(error.unexpectedInput, "")
+        XCTAssertEqual(error.position, 0)
+        XCTAssertEqual(error.expectedProductions, [])
     }
 
     func testBindWhereOriginalParserFails() {
-        let originalParser: Parser<StringInput, String> = Parser {
-            Consumed(.empty, .error(nil, $0.consume(count: 0)))
+        let originalParser: Parser<StringInput, String> = Parser { input in
+            Consumed(.empty, .error({
+                ParseError(position: input.position, unexpectedInput: "customInput", expectedProductions: [])
+            }))
         }
         let boundParser: Parser<StringInput, String> = Combinators.bind(originalParser) { _ in
             XCTFail("Function should not be called")
@@ -58,12 +69,14 @@ internal final class CombinatorsTests: XCTestCase {
         let input = StringInput("test")
 
         let output = boundParser.parse(input)
-        guard case let .error(error, remainder) = output.reply, .empty == output.state else {
+        guard case let .error(errorGenerator) = output.reply, .empty == output.state else {
             XCTFail("Expected parse to fail and no consumption of characters")
             return
         }
-        XCTAssertNil(error) // Currently nil, but should be a real value
-        XCTAssertEqual(remainder, input)
+        let error = errorGenerator()
+        XCTAssertEqual(error.unexpectedInput, "customInput")
+        XCTAssertEqual(error.position, 0)
+        XCTAssertEqual(error.expectedProductions, [])
     }
 
     func testBindAsFlatMap() {
@@ -76,12 +89,16 @@ internal final class CombinatorsTests: XCTestCase {
         let input = StringInput("test")
 
         let output = boundParser.parse(input)
-        guard case let .success(value, remainder) = output.reply, .empty == output.state else {
+        guard case let .success(value, remainder, errorGenerator) = output.reply, .empty == output.state else {
             XCTFail("Expected parse to be successful but no consumption of characters")
             return
         }
         XCTAssertEqual(value, "bar")
         XCTAssertEqual(remainder, input)
+        let error = errorGenerator()
+        XCTAssertEqual(error.unexpectedInput, "")
+        XCTAssertEqual(error.position, 0)
+        XCTAssertEqual(error.expectedProductions, [])
     }
 
     func testBindAsOperator() {
@@ -95,12 +112,16 @@ internal final class CombinatorsTests: XCTestCase {
         let input = StringInput("test")
 
         let output = boundParser.parse(input)
-        guard case let .success(value, remainder) = output.reply, .empty == output.state else {
+        guard case let .success(value, remainder, errorGenerator) = output.reply, .empty == output.state else {
             XCTFail("Expected parse to be successful but no consumption of characters")
             return
         }
         XCTAssertEqual(value, "bar")
         XCTAssertEqual(remainder, input)
+        let error = errorGenerator()
+        XCTAssertEqual(error.unexpectedInput, "")
+        XCTAssertEqual(error.position, 0)
+        XCTAssertEqual(error.expectedProductions, [])
     }
 
     func testSatisfy() {
@@ -108,12 +129,16 @@ internal final class CombinatorsTests: XCTestCase {
         let input = StringInput("foo")
 
         let output = matchesF.parse(input)
-        guard case let .success(value, remainder) = output.reply, .consumed == output.state else {
+        guard case let .success(value, remainder, errorGenerator) = output.reply, .consumed == output.state else {
             XCTFail("Expected parse to be successful and consumption of `f`")
             return
         }
         XCTAssertEqual(value, "f")
         XCTAssertEqual(remainder.position, 1)
+        let error = errorGenerator()
+        XCTAssertEqual(error.unexpectedInput, "")
+        XCTAssertEqual(error.position, 0)
+        XCTAssertEqual(error.expectedProductions, [])
     }
 
     func testSatisfyWhenItDoesNotParse() {
@@ -121,12 +146,14 @@ internal final class CombinatorsTests: XCTestCase {
         let input = StringInput("bar")
 
         let output = matchesF.parse(input)
-        guard case let .error(error, remainder) = output.reply, .empty == output.state else {
+        guard case let .error(errorGenerator) = output.reply, .empty == output.state else {
             XCTFail("Expected parse to fail but no consumption of characters")
             return
         }
-        XCTAssertNil(error) // Currently nil, but should be a real value
-        XCTAssertEqual(remainder, input)
+        let error = errorGenerator()
+        XCTAssertEqual(error.unexpectedInput, "b")
+        XCTAssertEqual(error.position, 0)
+        XCTAssertEqual(error.expectedProductions, [])
     }
 
     func testChoice() {
@@ -135,22 +162,30 @@ internal final class CombinatorsTests: XCTestCase {
         let orParser = Combinators.choice(matchesF, matchesB)
 
         let output1 = orParser.parse(StringInput("foo"))
-        guard case let .success(value1, remainder1) = output1.reply, .consumed == output1.state else {
+        guard case let .success(value1, remainder1, errorGenerator1) = output1.reply, .consumed == output1.state else {
             XCTFail("Expected parse to be successful and consumption of `f`")
             return
         }
         XCTAssertEqual(value1, "f")
         XCTAssertEqual(remainder1.position, 1)
         XCTAssertEqual(remainder1.peek(), "o")
+        let error1 = errorGenerator1()
+        XCTAssertEqual(error1.unexpectedInput, "")
+        XCTAssertEqual(error1.position, 0)
+        XCTAssertEqual(error1.expectedProductions, [])
 
         let output2 = orParser.parse(StringInput("bar"))
-        guard case let .success(value2, remainder2) = output2.reply, .consumed == output2.state else {
+        guard case let .success(value2, remainder2, errorGenerator2) = output2.reply, .consumed == output2.state else {
             XCTFail("Expected parse to be successful and consumption of `b`")
             return
         }
         XCTAssertEqual(value2, "b")
         XCTAssertEqual(remainder2.position, 1)
         XCTAssertEqual(remainder2.peek(), "a")
+        let error2 = errorGenerator2()
+        XCTAssertEqual(error2.unexpectedInput, "")
+        XCTAssertEqual(error2.position, 0)
+        XCTAssertEqual(error2.expectedProductions, [])
     }
 
     func testChoiceWithNoMatch() {
@@ -160,12 +195,14 @@ internal final class CombinatorsTests: XCTestCase {
         let input = StringInput("xyz")
 
         let output = orParser.parse(input)
-        guard case let .error(error, remainder) = output.reply, .empty == output.state else {
+        guard case let .error(errorGenerator) = output.reply, .empty == output.state else {
             XCTFail("Expected parse to fail but no consumption of characters")
             return
         }
-        XCTAssertNil(error) // Currently nil, but should be a real value
-        XCTAssertEqual(remainder, input)
+        let error = errorGenerator()
+        XCTAssertEqual(error.unexpectedInput, "x")
+        XCTAssertEqual(error.position, 0)
+        XCTAssertEqual(error.expectedProductions, [])
     }
 
     func testChoiceAsOperator() {
@@ -175,13 +212,17 @@ internal final class CombinatorsTests: XCTestCase {
         let input = StringInput("bar")
 
         let output = orParser.parse(input)
-        guard case let .success(value, remainder) = output.reply, .consumed == output.state else {
+        guard case let .success(value, remainder, errorGenerator) = output.reply, .consumed == output.state else {
             XCTFail("Expected parse to be successful and consumption of `b`")
             return
         }
         XCTAssertEqual(value, "b")
         XCTAssertEqual(remainder.position, 1)
         XCTAssertEqual(remainder.peek(), "a")
+        let error = errorGenerator()
+        XCTAssertEqual(error.unexpectedInput, "")
+        XCTAssertEqual(error.position, 0)
+        XCTAssertEqual(error.expectedProductions, [])
     }
 
     func testMap() {
@@ -189,11 +230,15 @@ internal final class CombinatorsTests: XCTestCase {
         let mappedParser = Combinators.map(satisfy2) { Int(String($0)) }
 
         let output = mappedParser.parse(StringInput("2"))
-        guard case let .success(value, _) = output.reply, .consumed == output.state else {
+        guard case let .success(value, _, errorGenerator) = output.reply, .consumed == output.state else {
             XCTFail("Expected parse to be successful and consumption of `2`")
             return
         }
         XCTAssertEqual(value, 2)
+        let error = errorGenerator()
+        XCTAssertEqual(error.unexpectedInput, "")
+        XCTAssertEqual(error.position, 0)
+        XCTAssertEqual(error.expectedProductions, [])
     }
 
     func testMapWithNoMatch() {
@@ -201,11 +246,14 @@ internal final class CombinatorsTests: XCTestCase {
         let mappedParser = Combinators.map(satisfy2) { Int(String($0)) }
 
         let output = mappedParser.parse(StringInput("3"))
-        guard case let .error(error, _) = output.reply, .empty == output.state else {
+        guard case let .error(errorGenerator) = output.reply, .empty == output.state else {
             XCTFail("Expected parse to fail but no consumption of characters")
             return
         }
-        XCTAssertNil(error) // Currently nil, but should be a real value
+        let error = errorGenerator()
+        XCTAssertEqual(error.unexpectedInput, "3")
+        XCTAssertEqual(error.position, 0)
+        XCTAssertEqual(error.expectedProductions, [])
     }
 
     func testMapAsOperator() {
@@ -214,11 +262,15 @@ internal final class CombinatorsTests: XCTestCase {
         let mappedParser = satisfy2 <^> func1
 
         let output = mappedParser.parse(StringInput("2"))
-        guard case let .success(value, _) = output.reply, .consumed == output.state else {
+        guard case let .success(value, _, errorGenerator) = output.reply, .consumed == output.state else {
             XCTFail("Expected parse to be successful and consumption of `2`")
             return
         }
         XCTAssertEqual(value, 2)
+        let error = errorGenerator()
+        XCTAssertEqual(error.unexpectedInput, "")
+        XCTAssertEqual(error.position, 0)
+        XCTAssertEqual(error.expectedProductions, [])
     }
 
     func testApply() {
@@ -233,11 +285,15 @@ internal final class CombinatorsTests: XCTestCase {
         let applyParser = Combinators.apply(Combinators.apply(Combinators.map(satisfy2, func1), satisfyTimes), satisfy3)
 
         let output = applyParser.parse(StringInput("2*3"))
-        guard case let .success(value, _) = output.reply, .consumed == output.state else {
+        guard case let .success(value, _, errorGenerator) = output.reply, .consumed == output.state else {
             XCTFail("Expected parse to be successful and consumption of `2*3`")
             return
         }
         XCTAssertEqual(value, 6)
+        let error = errorGenerator()
+        XCTAssertEqual(error.unexpectedInput, "")
+        XCTAssertEqual(error.position, 2)
+        XCTAssertEqual(error.expectedProductions, [])
     }
 
     func testApplyWithNoMatch() {
@@ -252,11 +308,14 @@ internal final class CombinatorsTests: XCTestCase {
         let applyParser = Combinators.apply(Combinators.apply(Combinators.map(satisfy2, func1), satisfyTimes), satisfy3)
 
         let output = applyParser.parse(StringInput("2+3"))
-        guard case let .error(error, _) = output.reply, .consumed == output.state  else {
+        guard case let .error(errorGenerator) = output.reply, .consumed == output.state  else {
             XCTFail("Expected parse to fail and consumption of `2`")
             return
         }
-        XCTAssertNil(error) // Currently nil, but should be a real value
+        let error = errorGenerator()
+        XCTAssertEqual(error.unexpectedInput, "+")
+        XCTAssertEqual(error.position, 1)
+        XCTAssertEqual(error.expectedProductions, [])
     }
 
     func testApplyAsOperator() {
@@ -271,11 +330,15 @@ internal final class CombinatorsTests: XCTestCase {
         let applyParser = satisfy2 <^> func1 <*> satisfyTimes <*> satisfy3
 
         let output = applyParser.parse(StringInput("2*3"))
-        guard case let .success(value, _) = output.reply, .consumed == output.state else {
+        guard case let .success(value, _, errorGenerator) = output.reply, .consumed == output.state else {
             XCTFail("Expected parse to be successful and consumption of `2*3`")
             return
         }
         XCTAssertEqual(value, 6)
+        let error = errorGenerator()
+        XCTAssertEqual(error.unexpectedInput, "")
+        XCTAssertEqual(error.position, 2)
+        XCTAssertEqual(error.expectedProductions, [])
     }
 
     static var allTests = [
@@ -296,3 +359,4 @@ internal final class CombinatorsTests: XCTestCase {
         ("testApplyAsOperator", testApplyAsOperator)
     ]
 }
+// swiftlint:enable type_body_length

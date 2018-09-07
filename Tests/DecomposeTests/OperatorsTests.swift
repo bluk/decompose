@@ -28,12 +28,16 @@ internal final class OperatorsTests: XCTestCase {
         let input = StringInput("test")
 
         let output = boundParser.parse(input)
-        guard case let .success(value, remainder) = output.reply, .empty == output.state else {
+        guard case let .success(value, remainder, errorGenerator) = output.reply, .empty == output.state else {
             XCTFail("Expected parse to be successful but no consumption of characters")
             return
         }
         XCTAssertEqual(value, "bar")
         XCTAssertEqual(remainder, input)
+        let error = errorGenerator()
+        XCTAssertEqual(error.unexpectedInput, "")
+        XCTAssertEqual(error.position, 0)
+        XCTAssertEqual(error.expectedProductions, [])
     }
 
     func testChoiceAsOperator() {
@@ -43,13 +47,17 @@ internal final class OperatorsTests: XCTestCase {
         let input = StringInput("bar")
 
         let output = orParser.parse(input)
-        guard case let .success(value, remainder) = output.reply, .consumed == output.state else {
+        guard case let .success(value, remainder, errorGenerator) = output.reply, .consumed == output.state else {
             XCTFail("Expected parse to be successful and consumption of `b`")
             return
         }
         XCTAssertEqual(value, "b")
         XCTAssertEqual(remainder.position, 1)
         XCTAssertEqual(remainder.peek(), "a")
+        let error = errorGenerator()
+        XCTAssertEqual(error.unexpectedInput, "")
+        XCTAssertEqual(error.position, 0)
+        XCTAssertEqual(error.expectedProductions, [])
     }
 
     func testMapAsOperator() {
@@ -58,11 +66,15 @@ internal final class OperatorsTests: XCTestCase {
         let mappedParser = satisfy2 <^> func1
 
         let output = mappedParser.parse(StringInput("2"))
-        guard case let .success(value, _) = output.reply, .consumed == output.state else {
+        guard case let .success(value, _, errorGenerator) = output.reply, .consumed == output.state else {
             XCTFail("Expected parse to be successful and consumption of `2`")
             return
         }
         XCTAssertEqual(value, 2)
+        let error = errorGenerator()
+        XCTAssertEqual(error.unexpectedInput, "")
+        XCTAssertEqual(error.position, 0)
+        XCTAssertEqual(error.expectedProductions, [])
     }
 
     func testApplyAsOperator() {
@@ -77,11 +89,15 @@ internal final class OperatorsTests: XCTestCase {
         let applyParser = satisfy2 <^> func1 <*> satisfyTimes <*> satisfy3
 
         let output = applyParser.parse(StringInput("2*3"))
-        guard case let .success(value, _) = output.reply, .consumed == output.state else {
+        guard case let .success(value, _, errorGenerator) = output.reply, .consumed == output.state else {
             XCTFail("Expected parse to be successful and consumption of `2*3`")
             return
         }
         XCTAssertEqual(value, 6)
+        let error = errorGenerator()
+        XCTAssertEqual(error.unexpectedInput, "")
+        XCTAssertEqual(error.position, 2)
+        XCTAssertEqual(error.expectedProductions, [])
     }
 
     static var allTests = [

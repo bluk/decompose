@@ -18,14 +18,14 @@ import Foundation
 public extension Combinators {
 
     /// Return a Parser which tests if the next value is a specific Character
-    static func char<Input1>(_ value: Character) -> Parser<Input1, Character>
-        where Input1.Element == Character {
+    static func char<I>(_ value: Character) -> Parser<I, Character>
+        where I.Element == Character {
         return satisfy { $0 == value }
     }
 
     /// Return a Parser which tests if the next value is a letter
-    static func isLetter<Input1>() -> Parser<Input1, Character>
-        where Input1.Element == Character {
+    static func isLetter<I>() -> Parser<I, Character>
+        where I.Element == Character {
         let characterSet = CharacterSet.letters
         #if swift(>=4.2)
         return satisfy { $0.unicodeScalars.allSatisfy(characterSet.contains) }
@@ -36,8 +36,8 @@ public extension Combinators {
     }
 
     /// Return a Parser which tests if the next value is a digit
-    static func isDigit<Input1>() -> Parser<Input1, Character>
-        where Input1.Element == Character {
+    static func isDigit<I>() -> Parser<I, Character>
+        where I.Element == Character {
         let characterSet = CharacterSet.decimalDigits
         #if swift(>=4.2)
         return satisfy { $0.unicodeScalars.allSatisfy(characterSet.contains) }
@@ -48,22 +48,22 @@ public extension Combinators {
     }
 
     /// Return a Parser which matches a given string
-    static func string<Input1>(_ value: String) -> Parser<Input1, [Character]> where Input1.Element == Character {
+    static func string<I>(_ value: String) -> Parser<I, [Character]> where I.Element == Character {
         guard !value.isEmpty else {
             let empty: [Character] = []
             return Combinators.returnValue(empty)
         }
 
         return Parser { input in
-            let firstCharParser: Parser<Input1, ([Character]) -> [Character]> = Parser { input in
+            let firstCharParser: Parser<I, ([Character]) -> [Character]> = Parser { input in
                 let firstChar = value.first!
-                let consumed = Combinators.char(firstChar).parse(input)
-                switch consumed.reply {
-                case let .error(error, remainingInput):
-                    return Consumed(consumed.state, .error(error, remainingInput))
-                case let .success(value, remainingInput):
-                    let mergeFunc: ([Character]) -> [Character] = { [value] + $0 }
-                    return Consumed(consumed.state, .success(mergeFunc, remainingInput))
+                let result1 = Combinators.char(firstChar).parse(input)
+                switch result1.reply {
+                case let .error(error1):
+                    return Consumed(result1.state, .error(error1))
+                case let .success(value1, remainingInput1, error1):
+                    let mergeFunc: ([Character]) -> [Character] = { [value1] + $0 }
+                    return Consumed(result1.state, .success(mergeFunc, remainingInput1, error1))
                 }
             }
 
@@ -72,8 +72,8 @@ public extension Combinators {
     }
 
     /// Return a Parser which matches a given string. The value returned is an empty array if it succeeds.
-    static func stringEmptyReturn<Input1>(_ value: String)
-        -> Parser<Input1, [Character]> where Input1.Element == Character {
+    static func stringEmptyReturn<I>(_ value: String)
+        -> Parser<I, [Character]> where I.Element == Character {
         guard !value.isEmpty else {
             let empty: [Character] = []
             return Combinators.returnValue(empty)
@@ -81,9 +81,9 @@ public extension Combinators {
 
         return Parser { input in
             let firstChar = value.first!
-            let firstCharParser: Parser<Input1, Character> = Combinators.char(firstChar)
+            let firstCharParser: Parser<I, Character> = Combinators.char(firstChar)
 
-            let func1: (Character) -> Parser<Input1, [Character]> = { _ in
+            let func1: (Character) -> Parser<I, [Character]> = { _ in
                 Combinators.stringEmptyReturn(String(value.dropFirst()))
             }
 
@@ -91,23 +91,54 @@ public extension Combinators {
         }
     }
 
+    // swiftlint:disable cyclomatic_complexity
     /// Return a Parser which matches a given string. The value returned is an empty array if it succeeds.
-    static func many1<Input1, Result>(_ parser: Parser<Input1, Result>) -> Parser<Input1, [Result]> {
+    static func many1<I, Result>(_ parser: Parser<I, Result>) -> Parser<I, [Result]> {
         return Parser { input in
-            let firstResult = parser.parse(input)
-            switch firstResult.reply {
-            case let .error(error, remainingInput):
-                return Consumed(firstResult.state, .error(error, remainingInput))
-            case let .success(value, remainingInput):
-                let many1Result = (many1(parser) <|> returnValue([])).parse(remainingInput)
-                var allValues = [value]
-                var finalRemainingInput = remainingInput
-                if case let .success(values, remainingInput) = many1Result.reply {
-                    allValues.append(contentsOf: values)
-                    finalRemainingInput = remainingInput
+            let result1 = parser.parse(input)
+            switch result1.reply {
+            case let .error(error1):
+                return Consumed(result1.state, .error(error1))
+            case let .success(value1, remainingInput1, error1):
+                let result2 = (many1(parser) <|> returnValue([])).parse(remainingInput1)
+                switch result1.state {
+                case .consumed:
+                    switch result2.reply {
+                    case .error:
+                        return Consumed(.consumed, .success([value1], remainingInput1, error1))
+                    case let .success(value2, remainingInput2, error2):
+                        return Consumed(.consumed, .success([value1] + value2, remainingInput2, error2))
+                    }
+                case .empty:
+                    switch result2.state {
+                    case .consumed:
+                        switch result2.reply {
+                        case let .success(value2, remainingInput2, error2):
+                            return Consumed(.consumed, .success([value1] + value2, remainingInput2, error2))
+                        case .error:
+                            return Consumed(.consumed, .success([value1], remainingInput1, error1))
+                        }
+                    case .empty:
+                        switch result2.reply {
+                        case let .error(error2):
+                            return mergeSuccess(
+                                element: [value1],
+                                input: remainingInput1,
+                                error1: error1,
+                                error2: error2
+                            )
+                        case let .success(value2, remainingInput2, error2):
+                            return mergeSuccess(
+                                element: [value1] + value2,
+                                input: remainingInput2,
+                                error1: error1,
+                                error2: error2
+                            )
+                        }
+                    }
                 }
-                return Consumed(firstResult.state, .success(allValues, finalRemainingInput))
             }
         }
     }
+    // swiftlint:enable cyclomatic_complexity
 }
