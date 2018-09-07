@@ -17,13 +17,19 @@ import Foundation
 /// Convience methods to generate parsers
 public extension Combinators {
 
-    /// Return a Parser which tests if the next value is a specific Character
+    /// Returns a `Parser` which tests if the current element is a specific `Character`.
+    ///
+    /// - Parameters:
+    ///     - value: The `Character` to test with.
+    /// - Returns: A `Parser` which tests if the current element is a specific `Character`.
     static func char<I>(_ value: Character) -> Parser<I, Character>
         where I.Element == Character {
         return satisfy { $0 == value }
     }
 
-    /// Return a Parser which tests if the next value is a letter
+    /// Returns a `Parser` which tests if the current element is a letter.
+    ///
+    /// - Returns: A `Parser` which tests if the current element is a letter.
     static func isLetter<I>() -> Parser<I, Character>
         where I.Element == Character {
         let characterSet = CharacterSet.letters
@@ -35,7 +41,9 @@ public extension Combinators {
         #endif
     }
 
-    /// Return a Parser which tests if the next value is a digit
+    /// Returns a `Parser` which tests if the current element is a digit.
+    ///
+    /// - Returns: A `Parser` which tests if the current element is a digit.
     static func isDigit<I>() -> Parser<I, Character>
         where I.Element == Character {
         let characterSet = CharacterSet.decimalDigits
@@ -70,8 +78,12 @@ public extension Combinators {
         }
     }
 
-    /// Return a Parser which matches a given string. The value returned is an empty array if it succeeds.
-    static func stringEmptyReturn<I>(_ value: String)
+    /// Returns a `Parser` which matches a given string. If successful, the returned value is an empty array.
+    ///
+    /// - Parameters:
+    ///     - value: The `String` to test with.
+    /// - Returns: A `Parser` which matches a given string. If successful, the returned value is an empty array.
+    static func stringEmptyReturnValue<I>(_ value: String)
         -> Parser<I, [Character]> where I.Element == Character {
         guard !value.isEmpty else {
             return Combinators.pure([])
@@ -80,7 +92,9 @@ public extension Combinators {
         return Parser { input in
             let firstChar = value.first!
             return Combinators
-                .then(Combinators.char(firstChar), to: { Combinators.stringEmptyReturn(String(value.dropFirst())) })
+                .then(Combinators.char(firstChar)) {
+                    Combinators.stringEmptyReturnValue(String(value.dropFirst()))
+                }
                 .parse(input)
         }
     }

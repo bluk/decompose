@@ -79,7 +79,7 @@ public enum Combinators {
     /// Composes a `Parser` which invokes the `Parser` parameter and then invokes the function's returned `Parser`.
     ///
     /// - Parameters:
-    ///     - parser1: The first Parser to invoke the input with.
+    ///     - parser1: The first `Parser` to invoke the input with.
     ///     - func1: A function which will return a `Parser`, which is then invoked with the remaining input
     /// - Returns: A composited `Parser` which invoke's the first parser and then uses the function to return a
     ///            `Parser` to invoke with the remaining `Input`.
@@ -119,7 +119,12 @@ public enum Combinators {
             }
     }
 
-    /// Returns a Parser for matching a single value
+    /// Returns a `Parser` which passes an element to the `condition` function and succeeds if the `condition` returns
+    /// true or fails if `condition` returns false.
+    ///
+    /// - Parameters:
+    ///     - condition: A function which is passed in an element, and determines if the element meets some criteria.
+    /// - Returns: A `Parser` which returns an element if it succeeds the condition.
     public static func satisfy<I, V>(_ condition: @escaping (V) -> Bool) -> Parser<I, V> where I.Element == V {
         return Parser { input in
             guard let element = input.current(), !input.isEmpty else {
@@ -148,7 +153,12 @@ public enum Combinators {
     }
 
     // swiftlint:disable function_body_length cyclomatic_complexity
-    /// Returns a Parser for matching a choice between the two parsers
+    /// Returns a `Parser` which invokes the first `Parser`, and if it fails, invokes the second `Parser`.
+    ///
+    /// - Parameters:
+    ///     - parser1: The first `Parser` to invoke the input with.
+    ///     - parser2: The second `Parser` to invoke the input with if the first `Parser` fails.
+    /// - Returns: A `Parser` which invokes the first `Parser`, and if it fails, invokes the second `Parser`.
     public static func choice<I, V>(
         _ parser1: Parser<I, V>,
         _ parser2: Parser<I, V>) -> Parser<I, V> {

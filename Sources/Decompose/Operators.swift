@@ -58,7 +58,12 @@ precedencegroup AltPrecedence {
 
 infix operator <|>: AltPrecedence
 
-/// Convenience operator for choice
+/// Returns a `Parser` which invokes the first `Parser`, and if it fails, invokes the second `Parser`.
+///
+/// - Parameters:
+///     - lhs: The first `Parser` to invoke the input with.
+///     - rhs: The second `Parser` to invoke the input with if the first `Parser` fails.
+/// - Returns: A `Parser` which invokes the first `Parser`, and if it fails, invokes the second `Parser`.
 public func <|><I, V1>(
     lhs: Parser<I, V1>,
     rhs: Parser<I, V1>) -> Parser<I, V1> {

@@ -112,8 +112,8 @@ internal final class ConvenienceCombinatorsTests: XCTestCase {
         XCTAssertEqual(msg.expectedProductions, [])
     }
 
-    func testStringEmptyReturn() {
-        let stringParser: Parser<StringInput, [Character]> = Combinators.stringEmptyReturn("foo")
+    func testStringEmptyReturnValue() {
+        let stringParser: Parser<StringInput, [Character]> = Combinators.stringEmptyReturnValue("foo")
         let input = StringInput("foobar")
 
         let output = stringParser.parse(input)
@@ -129,8 +129,8 @@ internal final class ConvenienceCombinatorsTests: XCTestCase {
         XCTAssertEqual(msg.expectedProductions, [])
     }
 
-    func testStringEmptyReturnWithNoMatch() {
-        let stringParser: Parser<StringInput, [Character]> = Combinators.stringEmptyReturn("foo")
+    func testStringEmptyReturnValueWithNoMatch() {
+        let stringParser: Parser<StringInput, [Character]> = Combinators.stringEmptyReturnValue("foo")
         let input = StringInput("barfoo")
 
         let output = stringParser.parse(input)
@@ -181,7 +181,7 @@ internal final class ConvenienceCombinatorsTests: XCTestCase {
     }
 
     func testMany1NoMatch() {
-        let many1Parser: Parser<StringInput, [Character]> = Combinators.stringEmptyReturn("o")
+        let many1Parser: Parser<StringInput, [Character]> = Combinators.stringEmptyReturnValue("o")
         let input = StringInput("boo")
 
         let output = many1Parser.parse(input)

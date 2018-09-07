@@ -44,13 +44,14 @@ To generate the documentation, you need Ruby installed, and then run:
 ```
 bundle install
 swift package generate-xcodeproj
-jazzy -o docs --module "decompose" --module-version <version> -g https://github.com/bluk/decompose
+jazzy -o docs --module "Decompose" --module-version <version> -g https://github.com/bluk/decompose
 ```
 
 ## Related Links
 
 * [Parsec](https://hackage.haskell.org/package/parsec)
 * [Parsec: Direct Style Monadic Parser Combinators for the Real World](https://www.microsoft.com/en-us/research/people/daan/#!publications)
+* [Haskell/do notation](https://en.wikibooks.org/wiki/Haskell/do_notation)
 
 ## License
 

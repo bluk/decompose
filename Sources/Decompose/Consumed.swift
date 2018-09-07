@@ -85,7 +85,7 @@ public final class Consumed<I: Input, V> {
 
     /// Initializes with the state and a function which will generate the `Reply` value.
     ///
-    /// Useful for when the Reply value should not be created yet but the consumption state is already known.
+    /// Useful for when the `Reply` value should not be created yet but the consumption state is already known.
     ///
     /// - Parameters:
     ///     - state: Indicates whether the `Input` was advanced or not when producing this result.
