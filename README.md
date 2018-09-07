@@ -52,6 +52,10 @@ jazzy -o docs --module "Decompose" --module-version <version> -g https://github.
 * [Parsec](https://hackage.haskell.org/package/parsec)
 * [Parsec: Direct Style Monadic Parser Combinators for the Real World](https://www.microsoft.com/en-us/research/people/daan/#!publications)
 * [Haskell/do notation](https://en.wikibooks.org/wiki/Haskell/do_notation)
+* [Nom, Rust parser combinator framework](https://github.com/Geal/nom/)
+* [ParsecJ: Java monadic parser combinator framework for constructing LL(1) parsers](https://github.com/jon-hanson/parsecj/)
+* [funcj.parser, Java parser combinator framework](https://github.com/typemeta/funcj/tree/master/parser)
+* [Functional Swift](https://www.objc.io/books/functional-swift/)
 
 ## License
 
