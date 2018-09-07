@@ -50,20 +50,19 @@ public extension Combinators {
     /// Return a Parser which matches a given string
     static func string<I>(_ value: String) -> Parser<I, [Character]> where I.Element == Character {
         guard !value.isEmpty else {
-            let empty: [Character] = []
-            return Combinators.pure(empty)
+            return Combinators.pure([])
         }
 
         return Parser { input in
             let firstCharParser: Parser<I, ([Character]) -> [Character]> = Parser { input in
                 let firstChar = value.first!
-                let result1 = Combinators.char(firstChar).parse(input)
-                switch result1.reply {
-                case let .error(error1):
-                    return Consumed(result1.state, .error(error1))
-                case let .success(value1, remainingInput1, error1):
-                    let mergeFunc: ([Character]) -> [Character] = { [value1] + $0 }
-                    return Consumed(result1.state, .success(mergeFunc, remainingInput1, error1))
+                let result = Combinators.char(firstChar).parse(input)
+                switch result.reply {
+                case let .error(msgGenerator):
+                    return Consumed(result.state, .error(msgGenerator))
+                case let .success(value, advancedInput, msgGenerator):
+                    let mergeFunc: ([Character]) -> [Character] = { [value] + $0 }
+                    return Consumed(result.state, .success(mergeFunc, advancedInput, msgGenerator))
                 }
             }
 
@@ -75,8 +74,7 @@ public extension Combinators {
     static func stringEmptyReturn<I>(_ value: String)
         -> Parser<I, [Character]> where I.Element == Character {
         guard !value.isEmpty else {
-            let empty: [Character] = []
-            return Combinators.pure(empty)
+            return Combinators.pure([])
         }
 
         return Parser { input in
@@ -97,42 +95,42 @@ public extension Combinators {
         return Parser { input in
             let result1 = parser.parse(input)
             switch result1.reply {
-            case let .error(error1):
-                return Consumed(result1.state, .error(error1))
-            case let .success(value1, remainingInput1, error1):
-                let result2 = (many1(parser) <|> pure([])).parse(remainingInput1)
+            case let .error(msgGenerator1):
+                return Consumed(result1.state, .error(msgGenerator1))
+            case let .success(value1, advancedInput1, msgGenerator1):
+                let result2 = (many1(parser) <|> pure([])).parse(advancedInput1)
                 switch result1.state {
                 case .consumed:
                     switch result2.reply {
                     case .error:
-                        return Consumed(.consumed, .success([value1], remainingInput1, error1))
-                    case let .success(value2, remainingInput2, error2):
-                        return Consumed(.consumed, .success([value1] + value2, remainingInput2, error2))
+                        return Consumed(.consumed, .success([value1], advancedInput1, msgGenerator1))
+                    case let .success(value2, advancedInput2, msgGenerator2):
+                        return Consumed(.consumed, .success([value1] + value2, advancedInput2, msgGenerator2))
                     }
                 case .empty:
                     switch result2.state {
                     case .consumed:
                         switch result2.reply {
-                        case let .success(value2, remainingInput2, error2):
-                            return Consumed(.consumed, .success([value1] + value2, remainingInput2, error2))
+                        case let .success(value2, advancedInput2, msgGenerator2):
+                            return Consumed(.consumed, .success([value1] + value2, advancedInput2, msgGenerator2))
                         case .error:
-                            return Consumed(.consumed, .success([value1], remainingInput1, error1))
+                            return Consumed(.consumed, .success([value1], advancedInput1, msgGenerator1))
                         }
                     case .empty:
                         switch result2.reply {
-                        case let .error(error2):
+                        case let .error(msgGenerator2):
                             return mergeSuccess(
                                 value: [value1],
-                                input: remainingInput1,
-                                error1: error1,
-                                error2: error2
+                                input: advancedInput1,
+                                msgGenerator1: msgGenerator1,
+                                msgGenerator2: msgGenerator2
                             )
-                        case let .success(value2, remainingInput2, error2):
+                        case let .success(value2, advancedInput2, msgGenerator2):
                             return mergeSuccess(
                                 value: [value1] + value2,
-                                input: remainingInput2,
-                                error1: error1,
-                                error2: error2
+                                input: advancedInput2,
+                                msgGenerator1: msgGenerator1,
+                                msgGenerator2: msgGenerator2
                             )
                         }
                     }

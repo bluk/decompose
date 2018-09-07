@@ -21,16 +21,16 @@ internal final class ConvenienceCombinatorsTests: XCTestCase {
         let isLetter: Parser<StringInput, Character> = Combinators.isLetter()
 
         let output = isLetter.parse(StringInput("AB"))
-        guard case let .success(value, remainder, errorGenerator) = output.reply, .consumed == output.state else {
+        guard case let .success(value, advancedInput, msgGenerator) = output.reply, .consumed == output.state else {
             XCTFail("Expected parse to be successful and consumption of `A`")
             return
         }
         XCTAssertEqual(value, "A")
-        XCTAssertEqual(remainder.position, 1)
-        let error = errorGenerator()
-        XCTAssertEqual(error.unexpectedInput, "")
-        XCTAssertEqual(error.position, 0)
-        XCTAssertEqual(error.expectedProductions, [])
+        XCTAssertEqual(advancedInput.position, 1)
+        let msg = msgGenerator()
+        XCTAssertEqual(msg.unexpectedInput, "")
+        XCTAssertEqual(msg.position, 0)
+        XCTAssertEqual(msg.expectedProductions, [])
     }
 
     func testIsLetterNotMatch() {
@@ -38,14 +38,14 @@ internal final class ConvenienceCombinatorsTests: XCTestCase {
         let input = StringInput("1A")
 
         let output = isLetter.parse(input)
-        guard case let .error(errorGenerator) = output.reply, .empty == output.state else {
+        guard case let .error(msgGenerator) = output.reply, .empty == output.state else {
             XCTFail("Expected parse to fail and no consumption")
             return
         }
-        let error = errorGenerator()
-        XCTAssertEqual(error.unexpectedInput, "1")
-        XCTAssertEqual(error.position, 0)
-        XCTAssertEqual(error.expectedProductions, [])
+        let msg = msgGenerator()
+        XCTAssertEqual(msg.unexpectedInput, "1")
+        XCTAssertEqual(msg.position, 0)
+        XCTAssertEqual(msg.expectedProductions, [])
     }
 
     func testIsDigit() {
@@ -53,16 +53,16 @@ internal final class ConvenienceCombinatorsTests: XCTestCase {
         let input = StringInput("12")
 
         let output = isDigit.parse(input)
-        guard case let .success(value, remainder, errorGenerator) = output.reply, .consumed == output.state else {
+        guard case let .success(value, advancedInput, msgGenerator) = output.reply, .consumed == output.state else {
             XCTFail("Expected parse to be successful and consumption of `1`")
             return
         }
         XCTAssertEqual(value, "1")
-        XCTAssertEqual(remainder.position, 1)
-        let error = errorGenerator()
-        XCTAssertEqual(error.unexpectedInput, "")
-        XCTAssertEqual(error.position, 0)
-        XCTAssertEqual(error.expectedProductions, [])
+        XCTAssertEqual(advancedInput.position, 1)
+        let msg = msgGenerator()
+        XCTAssertEqual(msg.unexpectedInput, "")
+        XCTAssertEqual(msg.position, 0)
+        XCTAssertEqual(msg.expectedProductions, [])
     }
 
     func testIsDigitNotMatch() {
@@ -70,14 +70,14 @@ internal final class ConvenienceCombinatorsTests: XCTestCase {
         let input = StringInput("A1")
 
         let output = isDigit.parse(input)
-        guard case let .error(errorGenerator) = output.reply, .empty == output.state else {
+        guard case let .error(msgGenerator) = output.reply, .empty == output.state else {
             XCTFail("Expected parse to fail and no consumption")
             return
         }
-        let error = errorGenerator()
-        XCTAssertEqual(error.unexpectedInput, "A")
-        XCTAssertEqual(error.position, 0)
-        XCTAssertEqual(error.expectedProductions, [])
+        let msg = msgGenerator()
+        XCTAssertEqual(msg.unexpectedInput, "A")
+        XCTAssertEqual(msg.position, 0)
+        XCTAssertEqual(msg.expectedProductions, [])
     }
 
     func testString() {
@@ -85,16 +85,16 @@ internal final class ConvenienceCombinatorsTests: XCTestCase {
         let input = StringInput("foobar")
 
         let output = stringParser.parse(input)
-        guard case let .success(value, remainder, errorGenerator) = output.reply, .consumed == output.state else {
+        guard case let .success(value, advancedInput, msgGenerator) = output.reply, .consumed == output.state else {
             XCTFail("Expected parse to succeed and consumption of `foo`")
             return
         }
         XCTAssertEqual(String(value), "foo")
-        XCTAssertEqual(remainder.position, 3)
-        let error = errorGenerator()
-        XCTAssertEqual(error.unexpectedInput, "")
-        XCTAssertEqual(error.position, 3)
-        XCTAssertEqual(error.expectedProductions, [])
+        XCTAssertEqual(advancedInput.position, 3)
+        let msg = msgGenerator()
+        XCTAssertEqual(msg.unexpectedInput, "")
+        XCTAssertEqual(msg.position, 3)
+        XCTAssertEqual(msg.expectedProductions, [])
     }
 
     func testStringWithNoMatch() {
@@ -102,14 +102,14 @@ internal final class ConvenienceCombinatorsTests: XCTestCase {
         let input = StringInput("barfoo")
 
         let output = stringParser.parse(input)
-        guard case let .error(errorGenerator) = output.reply, .empty == output.state else {
+        guard case let .error(msgGenerator) = output.reply, .empty == output.state else {
             XCTFail("Expected parse to fail and no consumption")
             return
         }
-        let error = errorGenerator()
-        XCTAssertEqual(error.unexpectedInput, "b")
-        XCTAssertEqual(error.position, 0)
-        XCTAssertEqual(error.expectedProductions, [])
+        let msg = msgGenerator()
+        XCTAssertEqual(msg.unexpectedInput, "b")
+        XCTAssertEqual(msg.position, 0)
+        XCTAssertEqual(msg.expectedProductions, [])
     }
 
     func testStringEmptyReturn() {
@@ -117,16 +117,16 @@ internal final class ConvenienceCombinatorsTests: XCTestCase {
         let input = StringInput("foobar")
 
         let output = stringParser.parse(input)
-        guard case let .success(value, remainder, errorGenerator) = output.reply, .consumed == output.state else {
+        guard case let .success(value, advancedInput, msgGenerator) = output.reply, .consumed == output.state else {
             XCTFail("Expected parse to succeed and consumption of `foo`")
             return
         }
         XCTAssertEqual(value, [])
-        XCTAssertEqual(remainder.position, 3)
-        let error = errorGenerator()
-        XCTAssertEqual(error.unexpectedInput, "")
-        XCTAssertEqual(error.position, 3)
-        XCTAssertEqual(error.expectedProductions, [])
+        XCTAssertEqual(advancedInput.position, 3)
+        let msg = msgGenerator()
+        XCTAssertEqual(msg.unexpectedInput, "")
+        XCTAssertEqual(msg.position, 3)
+        XCTAssertEqual(msg.expectedProductions, [])
     }
 
     func testStringEmptyReturnWithNoMatch() {
@@ -134,14 +134,14 @@ internal final class ConvenienceCombinatorsTests: XCTestCase {
         let input = StringInput("barfoo")
 
         let output = stringParser.parse(input)
-        guard case let .error(errorGenerator) = output.reply, .empty == output.state else {
+        guard case let .error(msgGenerator) = output.reply, .empty == output.state else {
             XCTFail("Expected parse to fail and no consumption")
             return
         }
-        let error = errorGenerator()
-        XCTAssertEqual(error.unexpectedInput, "b")
-        XCTAssertEqual(error.position, 0)
-        XCTAssertEqual(error.expectedProductions, [])
+        let msg = msgGenerator()
+        XCTAssertEqual(msg.unexpectedInput, "b")
+        XCTAssertEqual(msg.position, 0)
+        XCTAssertEqual(msg.expectedProductions, [])
     }
 
     func testMany1() {
@@ -149,16 +149,16 @@ internal final class ConvenienceCombinatorsTests: XCTestCase {
         let input = StringInput("oooh")
 
         let output = many1Parser.parse(input)
-        guard case let .success(value, remainder, errorGenerator) = output.reply, .consumed == output.state else {
+        guard case let .success(value, advancedInput, msgGenerator) = output.reply, .consumed == output.state else {
             XCTFail("Expected parse to succeed and consumption of `ooo`")
             return
         }
         XCTAssertEqual(String(value), "ooo")
-        XCTAssertEqual(remainder.position, 3)
-        let error = errorGenerator()
-        XCTAssertEqual(error.unexpectedInput, "h")
-        XCTAssertEqual(error.position, 3)
-        XCTAssertEqual(error.expectedProductions, [])
+        XCTAssertEqual(advancedInput.position, 3)
+        let msg = msgGenerator()
+        XCTAssertEqual(msg.unexpectedInput, "h")
+        XCTAssertEqual(msg.position, 3)
+        XCTAssertEqual(msg.expectedProductions, [])
     }
 
     func testMany1Complex() {
@@ -166,18 +166,18 @@ internal final class ConvenienceCombinatorsTests: XCTestCase {
         let input = StringInput("hellohellohe")
 
         let output = many1Parser.parse(input)
-        guard case let .success(value, remainder, errorGenerator) = output.reply, .consumed == output.state else {
+        guard case let .success(value, advancedInput, msgGenerator) = output.reply, .consumed == output.state else {
             XCTFail("Expected parse to succeed and consumption of `ooo`")
             return
         }
         XCTAssertEqual(value.count, 2)
         XCTAssertEqual(String(value[0]), "hello")
         XCTAssertEqual(String(value[1]), "hello")
-        XCTAssertEqual(remainder.position, 10)
-        let error = errorGenerator()
-        XCTAssertEqual(error.unexpectedInput, "")
-        XCTAssertEqual(error.position, 10)
-        XCTAssertEqual(error.expectedProductions, [])
+        XCTAssertEqual(advancedInput.position, 10)
+        let msg = msgGenerator()
+        XCTAssertEqual(msg.unexpectedInput, "")
+        XCTAssertEqual(msg.position, 10)
+        XCTAssertEqual(msg.expectedProductions, [])
     }
 
     func testMany1NoMatch() {
@@ -185,14 +185,14 @@ internal final class ConvenienceCombinatorsTests: XCTestCase {
         let input = StringInput("boo")
 
         let output = many1Parser.parse(input)
-        guard case let .error(errorGenerator) = output.reply, .empty == output.state else {
+        guard case let .error(msgGenerator) = output.reply, .empty == output.state else {
             XCTFail("Expected parse to fail and no consumption")
             return
         }
-        let error = errorGenerator()
-        XCTAssertEqual(error.unexpectedInput, "b")
-        XCTAssertEqual(error.position, 0)
-        XCTAssertEqual(error.expectedProductions, [])
+        let msg = msgGenerator()
+        XCTAssertEqual(msg.unexpectedInput, "b")
+        XCTAssertEqual(msg.position, 0)
+        XCTAssertEqual(msg.expectedProductions, [])
     }
 
     static var allTests = [

@@ -24,31 +24,34 @@ public enum Combinators {
     /// - Returns: A `Parser` which returns the value parameter and does not advanced the `Input`.
     public static func pure<I, V>(_ value: V) -> Parser<I, V> {
         return Parser { input in
-            let messageFunc = {
-                ParseError(position: input.position, unexpectedInput: "", expectedProductions: [])
+            let msgGenerator = {
+                ParseMessage(position: input.position, unexpectedInput: "", expectedProductions: [])
             }
-            return Consumed(.empty, .success(value, input, messageFunc))
+            return Consumed(.empty, .success(value, input, msgGenerator))
         }
     }
 
     /// The parser (in the function parameter)'s parsed result is passed to a function which generates
     /// a second parser, and then the second parser is invoked with the remaining input.
-    public static func bind<I, V1, V2>(
-        _ parser1: Parser<I, V1>,
-        to func1: @escaping (V1) -> Parser<I, V2>)
+    public static func bind<I, V1, V2>(_ parser1: Parser<I, V1>, to func1: @escaping (V1) -> Parser<I, V2>)
         -> Parser<I, V2> {
         return Parser { input in
             let result1 = parser1.parse(input)
             switch result1.state {
             case .empty:
                 switch result1.reply {
-                case let .success(value1, remainder1, error1):
-                    let result2 = func1(value1).parse(remainder1)
+                case let .success(value1, advancedInput1, msgGenerator1):
+                    let parser2 = func1(value1)
+                    let result2 = parser2.parse(advancedInput1)
                     switch result2.reply {
-                    case let .success(value2, remainder2, error2):
-                        return mergeSuccess(value: value2, input: remainder2, error1: error1, error2: error2)
-                    case let .error(error2):
-                        return mergeError(error1: error1, error2: error2)
+                    case let .success(value2, advancedInput2, msgGenerator2):
+                        return mergeSuccess(
+                            value: value2,
+                            input: advancedInput2,
+                            msgGenerator1: msgGenerator1,
+                            msgGenerator2: msgGenerator2)
+                    case let .error(msgGenerator2):
+                        return mergeError(msgGenerator1: msgGenerator1, msgGenerator2: msgGenerator2)
                     }
                 case let .error(error):
                     return Consumed(.empty, .error(error))
@@ -56,8 +59,8 @@ public enum Combinators {
             case .consumed:
                 return Consumed(.consumed, {
                     switch result1.reply {
-                    case let .success(value1, remainder1, _):
-                        return func1(value1).parse(remainder1).reply
+                    case let .success(value1, advancedInput1, _):
+                        return func1(value1).parse(advancedInput1).reply
                     case let .error(error):
                         return .error(error)
                     }
@@ -67,27 +70,30 @@ public enum Combinators {
     }
 
     /// Returns a Parser for matching a single value
-    public static func satisfy<I, V>(_ condition: @escaping (V) -> Bool)
-        -> Parser<I, V> where I.Element == V {
+    public static func satisfy<I, V>(_ condition: @escaping (V) -> Bool) -> Parser<I, V> where I.Element == V {
         return Parser { input in
             guard let element = input.current(), !input.isEmpty else {
-                let messageFunc = {
-                    ParseError(position: input.position, unexpectedInput: "end of input", expectedProductions: [])
+                let msgGenerator = {
+                    ParseMessage(
+                        position: input.position,
+                        unexpectedInput: "end of input",
+                        expectedProductions: []
+                    )
                 }
-                return Consumed(.empty, .error(messageFunc))
+                return Consumed(.empty, .error(msgGenerator))
             }
 
             guard condition(element) else {
-                let messageFunc = {
-                    ParseError(position: input.position, unexpectedInput: "\(element)", expectedProductions: [])
+                let msgGenerator = {
+                    ParseMessage(position: input.position, unexpectedInput: "\(element)", expectedProductions: [])
                 }
-                return Consumed(.empty, .error(messageFunc))
+                return Consumed(.empty, .error(msgGenerator))
             }
 
-            let messageFunc = {
-                ParseError(position: input.position, unexpectedInput: "", expectedProductions: [])
+            let msgGenerator = {
+                ParseMessage(position: input.position, unexpectedInput: "", expectedProductions: [])
             }
-            return Consumed(.consumed, .success(element, input.advanced(), messageFunc))
+            return Consumed(.consumed, .success(element, input.advanced(), msgGenerator))
         }
     }
 
@@ -101,42 +107,42 @@ public enum Combinators {
             switch result1.state {
             case .empty:
                 switch result1.reply {
-                case .error(let error1):
+                case .error(let msgGenerator1):
                     let result2 = parser2.parse(input)
                     switch result2.state {
                     case .empty:
                         switch result2.reply {
-                        case let .error(error2):
-                            return mergeError(error1: error1, error2: error2)
-                        case let .success(value2, remainingInput2, error2):
+                        case let .error(msgGenerator2):
+                            return mergeError(msgGenerator1: msgGenerator1, msgGenerator2: msgGenerator2)
+                        case let .success(value2, advancedInput2, msgGenerator2):
                             return mergeSuccess(
                                 value: value2,
-                                input: remainingInput2,
-                                error1: error1,
-                                error2: error2
+                                input: advancedInput2,
+                                msgGenerator1: msgGenerator1,
+                                msgGenerator2: msgGenerator2
                             )
                         }
                     case .consumed:
                         return result2
                     }
-                case let .success(value1, remainingInput1, error1):
+                case let .success(value1, advancedInput1, msgGenerator1):
                     let result2 = parser2.parse(input)
                     switch result2.state {
                     case .empty:
                         switch result2.reply {
-                        case let .error(error2):
+                        case let .error(msgGenerator2):
                             return mergeSuccess(
                                 value: value1,
-                                input: remainingInput1,
-                                error1: error1,
-                                error2: error2
+                                input: advancedInput1,
+                                msgGenerator1: msgGenerator1,
+                                msgGenerator2: msgGenerator2
                             )
-                        case let .success(_, _, error2):
+                        case let .success(_, _, msgGenerator2):
                             return mergeSuccess(
                                 value: value1,
-                                input: remainingInput1,
-                                error1: error1,
-                                error2: error2
+                                input: advancedInput1,
+                                msgGenerator1: msgGenerator1,
+                                msgGenerator2: msgGenerator2
                             )
                         }
                     case .consumed:
@@ -157,15 +163,15 @@ public enum Combinators {
         return Parser { input in
             let result1 = parser1.parse(input)
             switch result1.reply {
-            case let .error(error1):
+            case let .error(msgGenerator1):
                 switch result1.state {
                 case .consumed:
-                    return Consumed(.consumed, .error(error1))
+                    return Consumed(.consumed, .error(msgGenerator1))
                 case .empty:
-                    return Consumed(.empty, .error(error1))
+                    return Consumed(.empty, .error(msgGenerator1))
                 }
-            case let .success(value1, remainder1, error1):
-                return Consumed(result1.state, .success(func1(value1), remainder1, error1))
+            case let .success(value1, advancedInput1, msgGenerator1):
+                return Consumed(result1.state, .success(func1(value1), advancedInput1, msgGenerator1))
             }
         }
     }
@@ -177,10 +183,10 @@ public enum Combinators {
         return Parser { input in
             let result1 = parser1.parse(input)
             switch result1.reply {
-            case let .error(error1):
-                return Consumed(result1.state, .error(error1))
-            case let .success(value1, remainder1, error1):
-                let result2 = Combinators.map(parser2, value1).parse(remainder1)
+            case let .error(msgGenerator1):
+                return Consumed(result1.state, .error(msgGenerator1))
+            case let .success(value1, advancedInput1, msgGenerator1):
+                let result2 = Combinators.map(parser2, value1).parse(advancedInput1)
                 switch result1.state {
                 case .consumed:
                     return Consumed(.consumed, result2.reply)
@@ -188,10 +194,15 @@ public enum Combinators {
                     switch result2.state {
                     case .empty:
                         switch result2.reply {
-                        case let .error(error2):
-                            return mergeError(error1: error1, error2: error2)
-                        case let .success(value2, remainder2, error2):
-                            return mergeSuccess(value: value2, input: remainder2, error1: error1, error2: error2)
+                        case let .error(msgGenerator2):
+                            return mergeError(msgGenerator1: msgGenerator1, msgGenerator2: msgGenerator2)
+                        case let .success(value2, advancedInput2, msgGenerator2):
+                            return mergeSuccess(
+                                value: value2,
+                                input: advancedInput2,
+                                msgGenerator1: msgGenerator1,
+                                msgGenerator2: msgGenerator2
+                            )
                         }
                     case .consumed:
                         return result2
