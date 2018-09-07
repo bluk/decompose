@@ -19,19 +19,19 @@ public struct ParseError: Error {
     let expectedProductions: [String]
 }
 
-internal func mergeSuccess<E, I: Input>(
-    element: E,
+internal func mergeSuccess<I: Input, V>(
+    value: V,
     input: I,
     error1: @escaping () -> (ParseError),
     error2: @escaping () -> (ParseError)
-    ) -> Consumed<E, I> {
-    return Consumed(.empty, Reply.success(element, input, merge(error1, error2)))
+    ) -> Consumed<I, V> {
+    return Consumed(.empty, Reply.success(value, input, merge(error1, error2)))
 }
 
-internal func mergeError<E, I: Input>(
+internal func mergeError<I: Input, V>(
     error1:  @escaping () -> (ParseError),
     error2: @escaping () -> (ParseError)
-    ) -> Consumed<E, I> {
+    ) -> Consumed<I, V> {
     return Consumed(.empty, Reply.error(merge(error1, error2)))
 }
 
@@ -52,8 +52,8 @@ internal func merge(
 }
 
 /// Determines if the parse operation was a success
-public enum Reply<Element, I: Input> {
-    case success(Element, I, () -> ParseError)
+public enum Reply<I: Input, Value> {
+    case success(Value, I, () -> ParseError)
     case error(() -> ParseError)
 
     /// The message to use when a parsing error occurs. For success messages, it can be used as a possibility.
@@ -76,22 +76,22 @@ public enum ConsumedState {
 /// Consumed is a wrapper type to allow lazy computation of the actual state.
 ///
 /// Access the `value` property to get the real value.
-public class Consumed<T, I: Input> {
+public class Consumed<I: Input, V> {
 
     var state: ConsumedState
 
-    lazy var reply: Reply<T, I> = {
+    lazy var reply: Reply<I, V> = {
         self.compute()
     }()
 
-    let compute: () -> Reply<T, I>
+    let compute: () -> Reply<I, V>
 
-    init(_ state: ConsumedState, _ value: Reply<T, I>) {
+    init(_ state: ConsumedState, _ value: Reply<I, V>) {
         self.state = state
         compute = { value }
     }
 
-    init(_ state: ConsumedState, _ compute: @escaping () -> Reply<T, I>) {
+    init(_ state: ConsumedState, _ compute: @escaping () -> Reply<I, V>) {
         self.state = state
         self.compute = compute
     }

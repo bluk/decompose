@@ -21,9 +21,9 @@ precedencegroup MonodLeftPrecedence {
 infix operator >>-: MonodLeftPrecedence
 
 /// Convenience operator for bind
-public func >>-<I, Result1, Result2>(
-    lhs: Parser<I, Result1>,
-    rhs: @escaping (Result1) -> Parser<I, Result2>) -> Parser<I, Result2> {
+public func >>-<I, V1, V2>(
+    lhs: Parser<I, V1>,
+    rhs: @escaping (V1) -> Parser<I, V2>) -> Parser<I, V2> {
     return Combinators.bind(lhs, to: rhs)
 }
 
@@ -36,9 +36,9 @@ precedencegroup AltPrecedence {
 infix operator <|>: AltPrecedence
 
 /// Convenience operator for choice
-public func <|><I, Result1>(
-    lhs: Parser<I, Result1>,
-    rhs: Parser<I, Result1>) -> Parser<I, Result1> {
+public func <|><I, V1>(
+    lhs: Parser<I, V1>,
+    rhs: Parser<I, V1>) -> Parser<I, V1> {
     return Combinators.choice(lhs, rhs)
 }
 
@@ -51,17 +51,17 @@ precedencegroup AppPrecedence {
 infix operator <*>: AppPrecedence
 
 /// Convenience operator for apply
-public func <*><I, Result1, Result2>(
-    lhs: Parser<I, ((Result1) -> Result2)>,
-    rhs: Parser<I, Result1>) -> Parser<I, Result2> {
+public func <*><I, V1, V2>(
+    lhs: Parser<I, ((V1) -> V2)>,
+    rhs: Parser<I, V1>) -> Parser<I, V2> {
     return Combinators.apply(lhs, rhs)
 }
 
 infix operator <^>: AppPrecedence
 
 /// Convenience operator for map
-public func <^><I, Result1, Result2>(
-    lhs: Parser<I, Result1>,
-    rhs: @escaping (Result1) -> Result2) -> Parser<I, Result2> {
+public func <^><I, V1, V2>(
+    lhs: Parser<I, V1>,
+    rhs: @escaping (V1) -> V2) -> Parser<I, V2> {
     return Combinators.map(lhs, rhs)
 }

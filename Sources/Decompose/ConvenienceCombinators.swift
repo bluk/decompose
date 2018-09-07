@@ -93,7 +93,7 @@ public extension Combinators {
 
     // swiftlint:disable cyclomatic_complexity
     /// Return a Parser which matches a given string. The value returned is an empty array if it succeeds.
-    static func many1<I, Result>(_ parser: Parser<I, Result>) -> Parser<I, [Result]> {
+    static func many1<I, V>(_ parser: Parser<I, V>) -> Parser<I, [V]> {
         return Parser { input in
             let result1 = parser.parse(input)
             switch result1.reply {
@@ -122,14 +122,14 @@ public extension Combinators {
                         switch result2.reply {
                         case let .error(error2):
                             return mergeSuccess(
-                                element: [value1],
+                                value: [value1],
                                 input: remainingInput1,
                                 error1: error1,
                                 error2: error2
                             )
                         case let .success(value2, remainingInput2, error2):
                             return mergeSuccess(
-                                element: [value1] + value2,
+                                value: [value1] + value2,
                                 input: remainingInput2,
                                 error1: error1,
                                 error2: error2

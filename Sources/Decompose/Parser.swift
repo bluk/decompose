@@ -13,15 +13,15 @@
 //  limitations under the License.
 
 /// A parsable function
-public struct Parser<I, Result1> where I: Input, I.RemainingInput == I {
-    let parse: (I) -> Consumed<Result1, I>
+public struct Parser<I, V> where I: Input, I.RemainingInput == I {
+    let parse: (I) -> Consumed<I, V>
 }
 
 /// Convenience methods for Parser
 public extension Parser {
     /// Convenience method for binding a first parser's return value to a second parser.
-    func flatMap<Result2>(
-        _ func1 : @escaping (Result1) -> Parser<I, Result2>) -> Parser<I, Result2> {
+    func flatMap<V2>(
+        _ func1 : @escaping (V) -> Parser<I, V2>) -> Parser<I, V2> {
         return Combinators.bind(self, to: func1)
     }
 }

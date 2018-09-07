@@ -18,7 +18,7 @@ import Foundation
 public enum Combinators {
 
     /// Returns a parser which returns the passed in value as a result and does not consume the Input
-    public static func returnValue<I, Result1>(_ value: Result1) -> Parser<I, Result1> {
+    public static func returnValue<I, V>(_ value: V) -> Parser<I, V> {
         return Parser { input in
             let messageFunc = {
                 ParseError(position: input.position, unexpectedInput: "", expectedProductions: [])
@@ -29,10 +29,10 @@ public enum Combinators {
 
     /// The parser (in the function parameter)'s parsed result is passed to a function which generates
     /// a second parser, and then the second parser is invoked with the remaining input.
-    public static func bind<I, Result1, Result2>(
-        _ parser1: Parser<I, Result1>,
-        to func1: @escaping (Result1) -> Parser<I, Result2>)
-        -> Parser<I, Result2> {
+    public static func bind<I, V1, V2>(
+        _ parser1: Parser<I, V1>,
+        to func1: @escaping (V1) -> Parser<I, V2>)
+        -> Parser<I, V2> {
         return Parser { input in
             let result1 = parser1.parse(input)
             switch result1.state {
@@ -42,7 +42,7 @@ public enum Combinators {
                     let result2 = func1(value1).parse(remainder1)
                     switch result2.reply {
                     case let .success(value2, remainder2, error2):
-                        return mergeSuccess(element: value2, input: remainder2, error1: error1, error2: error2)
+                        return mergeSuccess(value: value2, input: remainder2, error1: error1, error2: error2)
                     case let .error(error2):
                         return mergeError(error1: error1, error2: error2)
                     }
@@ -63,8 +63,8 @@ public enum Combinators {
     }
 
     /// Returns a Parser for matching a single value
-    public static func satisfy<Result1, I>(_ condition: @escaping (Result1) -> Bool)
-        -> Parser<I, Result1> where I.Element == Result1 {
+    public static func satisfy<I, V>(_ condition: @escaping (V) -> Bool)
+        -> Parser<I, V> where I.Element == V {
         return Parser { input in
             guard let element = input.peek(), !input.isEmpty else {
                 let messageFunc = {
@@ -89,9 +89,9 @@ public enum Combinators {
 
     // swiftlint:disable function_body_length cyclomatic_complexity
     /// Returns a Parser for matching a choice between the two parsers
-    public static func choice<I, Result1>(
-        _ parser1: Parser<I, Result1>,
-        _ parser2: Parser<I, Result1>) -> Parser<I, Result1> {
+    public static func choice<I, V>(
+        _ parser1: Parser<I, V>,
+        _ parser2: Parser<I, V>) -> Parser<I, V> {
         return Parser { input in
             let result1 = parser1.parse(input)
             switch result1.state {
@@ -106,7 +106,7 @@ public enum Combinators {
                             return mergeError(error1: error1, error2: error2)
                         case let .success(value2, remainingInput2, error2):
                             return mergeSuccess(
-                                element: value2,
+                                value: value2,
                                 input: remainingInput2,
                                 error1: error1,
                                 error2: error2
@@ -122,14 +122,14 @@ public enum Combinators {
                         switch result2.reply {
                         case let .error(error2):
                             return mergeSuccess(
-                                element: value1,
+                                value: value1,
                                 input: remainingInput1,
                                 error1: error1,
                                 error2: error2
                             )
                         case let .success(_, _, error2):
                             return mergeSuccess(
-                                element: value1,
+                                value: value1,
                                 input: remainingInput1,
                                 error1: error1,
                                 error2: error2
@@ -147,9 +147,9 @@ public enum Combinators {
     // swiftlint:enable function_body_length cyclomatic_complexity
 
     /// Maps a Parser's return value over a transforming function
-    public static func map<I, Result1, Result2>(
-        _ parser1: Parser<I, Result1>,
-        _ func1: @escaping (Result1) -> Result2) -> Parser<I, Result2> {
+    public static func map<I, V1, V2>(
+        _ parser1: Parser<I, V1>,
+        _ func1: @escaping (V1) -> V2) -> Parser<I, V2> {
         return Parser { input in
             let result1 = parser1.parse(input)
             switch result1.reply {
@@ -167,9 +167,9 @@ public enum Combinators {
     }
 
     /// Sequentially invokes two Parsers while applying the second parser's result into the first parser's function
-    public static func apply<I, Result1, Result2>(
-        _ parser1: Parser<I, ((Result1) -> Result2)>,
-        _ parser2: Parser<I, Result1>) -> Parser<I, Result2> {
+    public static func apply<I, V1, V2>(
+        _ parser1: Parser<I, ((V1) -> V2)>,
+        _ parser2: Parser<I, V1>) -> Parser<I, V2> {
         return Parser { input in
             let result1 = parser1.parse(input)
             switch result1.reply {
@@ -187,7 +187,7 @@ public enum Combinators {
                         case let .error(error2):
                             return mergeError(error1: error1, error2: error2)
                         case let .success(value2, remainder2, error2):
-                            return mergeSuccess(element: value2, input: remainder2, error1: error1, error2: error2)
+                            return mergeSuccess(value: value2, input: remainder2, error1: error1, error2: error2)
                         }
                     case .consumed:
                         return result2

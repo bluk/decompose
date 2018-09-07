@@ -82,8 +82,8 @@ internal final class OperatorsTests: XCTestCase {
         let satisfy3: Parser<StringInput, Character> = Combinators.char("3")
         let satisfyTimes: Parser<StringInput, Character> = Combinators.char("*")
         let func1: (Character) -> (Character) -> (Character) -> Int? = { first in { _ in { second in
-            Int(String(first))! * Int(String(second))!
-            }
+                    Int(String(first))! * Int(String(second))!
+                }
             }
         }
         let applyParser = satisfy2 <^> func1 <*> satisfyTimes <*> satisfy3
