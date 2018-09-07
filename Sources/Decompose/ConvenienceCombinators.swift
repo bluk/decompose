@@ -55,26 +55,25 @@ public extension Combinators {
         #endif
     }
 
-    /// Return a Parser which matches a given string
-    static func string<I>(_ value: String) -> Parser<I, [Character]> where I.Element == Character {
+    /// Returns a `Parser` which matches a given string.
+    ///
+    /// - Parameters:
+    ///     - value: The `String` to test with.
+    /// - Returns: A `Parser` which matches a given string.
+    static func string<I>(_ value: String) -> Parser<I, String> where I.Element == Character {
         guard !value.isEmpty else {
-            return Combinators.pure([])
+            return Combinators.pure("")
         }
 
         return Parser { input in
-            let firstCharParser: Parser<I, ([Character]) -> [Character]> = Parser { input in
-                let firstChar = value.first!
-                let result = Combinators.char(firstChar).parse(input)
-                switch result.reply {
-                case let .error(msgGenerator):
-                    return Consumed(result.state, .error(msgGenerator))
-                case let .success(value, advancedInput, msgGenerator):
-                    let mergeFunc: ([Character]) -> [Character] = { [value] + $0 }
-                    return Consumed(result.state, .success(mergeFunc, advancedInput, msgGenerator))
+            let firstChar = value.first!
+            return Combinators
+                .bind(Combinators.char(firstChar)) { firstCharValue in
+                    Combinators.bind(Combinators.string(String(value.dropFirst()))) { restOfStringValues in
+                        Combinators.pure(String([firstCharValue] + restOfStringValues))
+                    }
                 }
-            }
-
-            return Combinators.apply(firstCharParser, Combinators.string(String(value.dropFirst()))).parse(input)
+                .parse(input)
         }
     }
 

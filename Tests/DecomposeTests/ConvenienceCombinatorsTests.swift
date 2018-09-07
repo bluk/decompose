@@ -81,7 +81,7 @@ internal final class ConvenienceCombinatorsTests: XCTestCase {
     }
 
     func testString() {
-        let stringParser: Parser<StringInput, [Character]> = Combinators.string("foo")
+        let stringParser: Parser<StringInput, String> = Combinators.string("foo")
         let input = StringInput("foobar")
 
         let output = stringParser.parse(input)
@@ -89,7 +89,7 @@ internal final class ConvenienceCombinatorsTests: XCTestCase {
             XCTFail("Expected parse to succeed and consumption of `foo`")
             return
         }
-        XCTAssertEqual(String(value), "foo")
+        XCTAssertEqual(value, "foo")
         XCTAssertEqual(advancedInput.position, 3)
         let msg = msgGenerator()
         XCTAssertEqual(msg.unexpectedInput, "")
@@ -98,7 +98,7 @@ internal final class ConvenienceCombinatorsTests: XCTestCase {
     }
 
     func testStringWithNoMatch() {
-        let stringParser: Parser<StringInput, [Character]> = Combinators.string("foo")
+        let stringParser: Parser<StringInput, String> = Combinators.string("foo")
         let input = StringInput("barfoo")
 
         let output = stringParser.parse(input)
@@ -162,7 +162,7 @@ internal final class ConvenienceCombinatorsTests: XCTestCase {
     }
 
     func testMany1Complex() {
-        let many1Parser: Parser<StringInput, [[Character]]> = Combinators.many1(Combinators.string("hello"))
+        let many1Parser: Parser<StringInput, [String]> = Combinators.many1(Combinators.string("hello"))
         let input = StringInput("hellohellobe")
 
         let output = many1Parser.parse(input)
@@ -171,8 +171,8 @@ internal final class ConvenienceCombinatorsTests: XCTestCase {
             return
         }
         XCTAssertEqual(value.count, 2)
-        XCTAssertEqual(String(value[0]), "hello")
-        XCTAssertEqual(String(value[1]), "hello")
+        XCTAssertEqual(value[0], "hello")
+        XCTAssertEqual(value[1], "hello")
         XCTAssertEqual(advancedInput.position, 10)
         let msg = msgGenerator()
         XCTAssertEqual(msg.unexpectedInput, "")
