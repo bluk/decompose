@@ -211,4 +211,44 @@ public enum Combinators {
             }
         }
     }
+
+    /// Instantiates a new `Parser` which will overwrite the parameter `Parser`'s `ParseMessage`'s `expectedProductions`
+    /// with the label parameter.
+    ///
+    /// - Parameters:
+    ///     - parser: The `Parser` to override `ParseMessage`'s `expectedProductions` with.
+    ///     - label: The value of any produced `ParseMessage`'s `expectedProductions`.
+    /// - Returns: A `Parser` which has a label attached for any produced `ParseMessage`s.
+    public static func label<I, V>(_ parser: Parser<I, V>, with label: String) -> Parser<I, V> {
+        return Parser { input in
+            let result = parser.parse(input)
+            switch result.state {
+            case .empty:
+                switch result.reply {
+                case let .error(msgGenerator):
+                    let labelMsgGenerator: () -> ParseMessage = {
+                        let originalMsg = msgGenerator()
+                        return ParseMessage(
+                            position: originalMsg.position,
+                            unexpectedInput: originalMsg.unexpectedInput,
+                            expectedProductions: [label]
+                        )
+                    }
+                    return Consumed(.empty, .error(labelMsgGenerator))
+                case let .success(value, advancedInput, msgGenerator):
+                    let labelMsgGenerator: () -> ParseMessage = {
+                        let originalMsg = msgGenerator()
+                        return ParseMessage(
+                            position: originalMsg.position,
+                            unexpectedInput: originalMsg.unexpectedInput,
+                            expectedProductions: [label]
+                        )
+                    }
+                    return Consumed(.empty, .success(value, advancedInput, labelMsgGenerator))
+                }
+            case .consumed:
+                return result
+            }
+        }
+    }
 }

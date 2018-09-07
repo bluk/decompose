@@ -15,7 +15,7 @@
 @testable import Decompose
 import XCTest
 
-// swiftlint:disable type_body_length
+// swiftlint:disable type_body_length file_length
 internal final class CombinatorsTests: XCTestCase {
 
     func testReturnValue() {
@@ -343,6 +343,65 @@ internal final class CombinatorsTests: XCTestCase {
         XCTAssertEqual(msg.expectedProductions, [])
     }
 
+    func testLabel() {
+        let digit: Parser<StringInput, Character> = Combinators.label(Combinators.isDigit(), with: "digit")
+        let letter: Parser<StringInput, Character> = Combinators.label(Combinators.isLetter(), with: "letter")
+        let charUnderscore: Parser<StringInput, Character> = Combinators.label(Combinators.char("_"), with: "_")
+
+        let identifier: Parser<StringInput, [Character]> = Combinators.many1(letter <|> digit <|> charUnderscore)
+        let input = StringInput("foo123_bar456@")
+
+        let output = identifier.parse(input)
+        guard case let .success(value, advancedInput, msgGenerator) = output.reply, .consumed == output.state else {
+            XCTFail("Expected parse to be successful and consumption of `foo123_bar456`")
+            return
+        }
+        XCTAssertEqual(String(value), "foo123_bar456")
+        XCTAssertEqual(advancedInput.position, 13)
+        let msg = msgGenerator()
+        XCTAssertEqual(msg.unexpectedInput, "@")
+        XCTAssertEqual(msg.position, 13)
+        XCTAssertEqual(msg.expectedProductions, ["letter", "digit", "_"])
+    }
+
+    func testLabelEmptyInput() {
+        let digit: Parser<StringInput, Character> = Combinators.label(Combinators.isDigit(), with: "digit")
+        let letter: Parser<StringInput, Character> = Combinators.label(Combinators.isLetter(), with: "letter")
+        let charUnderscore: Parser<StringInput, Character> = Combinators.label(Combinators.char("_"), with: "_")
+
+        let identifier: Parser<StringInput, [Character]> = Combinators.many1(letter <|> digit <|> charUnderscore)
+        let input = StringInput("")
+
+        let output = identifier.parse(input)
+        guard case let .error(msgGenerator) = output.reply, .empty == output.state else {
+            XCTFail("Expected parse to fail and no consumption of input")
+            return
+        }
+        let msg = msgGenerator()
+        XCTAssertEqual(msg.unexpectedInput, "end of input")
+        XCTAssertEqual(msg.position, 0)
+        XCTAssertEqual(msg.expectedProductions, ["letter", "digit", "_"])
+    }
+
+    func testLabelUnexpectedInput() {
+        let digit: Parser<StringInput, Character> = Combinators.label(Combinators.isDigit(), with: "digit")
+        let letter: Parser<StringInput, Character> = Combinators.label(Combinators.isLetter(), with: "letter")
+        let charUnderscore: Parser<StringInput, Character> = Combinators.label(Combinators.char("_"), with: "_")
+
+        let identifier: Parser<StringInput, [Character]> = Combinators.many1(letter <|> digit <|> charUnderscore)
+        let input = StringInput("@")
+
+        let output = identifier.parse(input)
+        guard case let .error(msgGenerator) = output.reply, .empty == output.state else {
+            XCTFail("Expected parse to fail and no consumption of input")
+            return
+        }
+        let msg = msgGenerator()
+        XCTAssertEqual(msg.unexpectedInput, "@")
+        XCTAssertEqual(msg.position, 0)
+        XCTAssertEqual(msg.expectedProductions, ["letter", "digit", "_"])
+    }
+
     static var allTests = [
         ("testReturnValue", testReturnValue),
         ("testBind", testBind),
@@ -358,7 +417,9 @@ internal final class CombinatorsTests: XCTestCase {
         ("testMapAsOperator", testMapAsOperator),
         ("testApply", testApply),
         ("testApplyWithNoMatch", testApplyWithNoMatch),
-        ("testApplyAsOperator", testApplyAsOperator)
+        ("testApplyAsOperator", testApplyAsOperator),
+        ("testLabel", testLabel),
+        ("testLabelUnexpectedInput", testLabelUnexpectedInput)
     ]
 }
 // swiftlint:enable type_body_length
