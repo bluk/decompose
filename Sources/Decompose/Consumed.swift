@@ -15,6 +15,19 @@
 /// Messages which can be used if the parse function is unsuccessful.
 public struct ParseMessage {
 
+    /// Initializes with the current position, the unexpected `Input` element as a `String`, and the expected
+    /// productions.
+    ///
+    /// - Parameters:
+    ///     - position: The current position.
+    ///     - unexpectedInput: The unexpected `Input` element as a `String`
+    ///     - expectedProductions: An Array of
+    public init(position: Int, unexpectedInput: String = "", expectedProductions: Set<String> = []) {
+        self.position = position
+        self.unexpectedInput = unexpectedInput
+        self.expectedProductions = expectedProductions
+    }
+
     /// The position in the `Input` for this message.
     public let position: Int
 
@@ -22,7 +35,7 @@ public struct ParseMessage {
     public let unexpectedInput: String
 
     /// A set of expected productions
-    public let expectedProductions: [String]
+    public let expectedProductions: Set<String>
 }
 
 /// A function to generate an error message.
@@ -123,7 +136,7 @@ internal func merge(
         return ParseMessage(
             position: err1.position,
             unexpectedInput: err1.unexpectedInput,
-            expectedProductions: err1.expectedProductions + err2.expectedProductions
+            expectedProductions: err1.expectedProductions.union(err2.expectedProductions)
         )
     }
 }

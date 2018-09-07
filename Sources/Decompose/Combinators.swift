@@ -24,10 +24,7 @@ public enum Combinators {
     /// - Returns: A `Parser` which returns the value parameter and does not advanced the `Input`.
     public static func pure<I, V>(_ value: V) -> Parser<I, V> {
         return Parser { input in
-            let msgGenerator = {
-                ParseMessage(position: input.position, unexpectedInput: "", expectedProductions: [])
-            }
-            return Consumed(.empty, .success(value, input, msgGenerator))
+            Consumed(.empty, .success(value, input, { ParseMessage(position: input.position) }))
         }
     }
 
@@ -129,24 +126,20 @@ public enum Combinators {
         return Parser { input in
             guard let element = input.current(), !input.isEmpty else {
                 let msgGenerator = {
-                    ParseMessage(
-                        position: input.position,
-                        unexpectedInput: "end of input",
-                        expectedProductions: []
-                    )
+                    ParseMessage(position: input.position, unexpectedInput: "end of input")
                 }
                 return Consumed(.empty, .error(msgGenerator))
             }
 
             guard condition(element) else {
                 let msgGenerator = {
-                    ParseMessage(position: input.position, unexpectedInput: "\(element)", expectedProductions: [])
+                    ParseMessage(position: input.position, unexpectedInput: "\(element)")
                 }
                 return Consumed(.empty, .error(msgGenerator))
             }
 
             let msgGenerator = {
-                ParseMessage(position: input.position, unexpectedInput: "", expectedProductions: [])
+                ParseMessage(position: input.position)
             }
             return Consumed(.consumed, .success(element, input.advanced(), msgGenerator))
         }
