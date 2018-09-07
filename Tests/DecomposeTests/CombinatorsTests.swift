@@ -239,7 +239,7 @@ internal final class CombinatorsTests: XCTestCase {
         XCTAssertEqual(value, 2)
         let msg = msgGenerator()
         XCTAssertEqual(msg.unexpectedInput, "")
-        XCTAssertEqual(msg.position, 0)
+        XCTAssertEqual(msg.position, 1)
         XCTAssertEqual(msg.expectedProductions, [])
     }
 
@@ -271,7 +271,7 @@ internal final class CombinatorsTests: XCTestCase {
         XCTAssertEqual(value, 2)
         let msg = msgGenerator()
         XCTAssertEqual(msg.unexpectedInput, "")
-        XCTAssertEqual(msg.position, 0)
+        XCTAssertEqual(msg.position, 1)
         XCTAssertEqual(msg.expectedProductions, [])
     }
 
@@ -294,7 +294,7 @@ internal final class CombinatorsTests: XCTestCase {
         XCTAssertEqual(value, 6)
         let msg = msgGenerator()
         XCTAssertEqual(msg.unexpectedInput, "")
-        XCTAssertEqual(msg.position, 2)
+        XCTAssertEqual(msg.position, 3)
         XCTAssertEqual(msg.expectedProductions, [])
     }
 
@@ -339,7 +339,7 @@ internal final class CombinatorsTests: XCTestCase {
         XCTAssertEqual(value, 6)
         let msg = msgGenerator()
         XCTAssertEqual(msg.unexpectedInput, "")
-        XCTAssertEqual(msg.position, 2)
+        XCTAssertEqual(msg.position, 3)
         XCTAssertEqual(msg.expectedProductions, [])
     }
 

@@ -47,15 +47,20 @@ public enum Combinators {
                 case let .success(value1, advancedInput1, msgGenerator1):
                     let parser2 = func1(value1)
                     let result2 = parser2.parse(advancedInput1)
-                    switch result2.reply {
-                    case let .success(value2, advancedInput2, msgGenerator2):
-                        return mergeSuccess(
-                            value: value2,
-                            input: advancedInput2,
-                            msgGenerator1: msgGenerator1,
-                            msgGenerator2: msgGenerator2)
-                    case let .error(msgGenerator2):
-                        return mergeError(msgGenerator1: msgGenerator1, msgGenerator2: msgGenerator2)
+                    switch result2.state {
+                    case .consumed:
+                        return result2
+                    case .empty:
+                        switch result2.reply {
+                        case let .success(value2, advancedInput2, msgGenerator2):
+                            return mergeSuccess(
+                                value: value2,
+                                input: advancedInput2,
+                                msgGenerator1: msgGenerator1,
+                                msgGenerator2: msgGenerator2)
+                        case let .error(msgGenerator2):
+                            return mergeError(msgGenerator1: msgGenerator1, msgGenerator2: msgGenerator2)
+                        }
                     }
                 case let .error(error):
                     return Consumed(.empty, .error(error))
@@ -90,15 +95,20 @@ public enum Combinators {
                     case let .success(_, advancedInput1, msgGenerator1):
                         let parser2 = func1()
                         let result2 = parser2.parse(advancedInput1)
-                        switch result2.reply {
-                        case let .success(value2, advancedInput2, msgGenerator2):
-                            return mergeSuccess(
-                                value: value2,
-                                input: advancedInput2,
-                                msgGenerator1: msgGenerator1,
-                                msgGenerator2: msgGenerator2)
-                        case let .error(msgGenerator2):
-                            return mergeError(msgGenerator1: msgGenerator1, msgGenerator2: msgGenerator2)
+                        switch result2.state {
+                        case .consumed:
+                            return result2
+                        case .empty:
+                            switch result2.reply {
+                            case let .success(value2, advancedInput2, msgGenerator2):
+                                return mergeSuccess(
+                                    value: value2,
+                                    input: advancedInput2,
+                                    msgGenerator1: msgGenerator1,
+                                    msgGenerator2: msgGenerator2)
+                            case let .error(msgGenerator2):
+                                return mergeError(msgGenerator1: msgGenerator1, msgGenerator2: msgGenerator2)
+                            }
                         }
                     case let .error(error):
                         return Consumed(.empty, .error(error))
@@ -209,24 +219,16 @@ public enum Combinators {
     }
     // swiftlint:enable function_body_length cyclomatic_complexity
 
-    /// Maps a Parser's return value over a transforming function
+    /// Maps a `Parser`'s value using the function parameter.
+    ///
+    /// - Parameters:
+    ///     - parser: The `Parser` to invoke the input with.
+    ///     - func1: A function which will transform the `parser`'s return value into a new value.
+    /// - Returns: A Parser which transforms the original value to a value using the function.
     public static func map<I, V1, V2>(
-        _ parser1: Parser<I, V1>,
+        _ parser: Parser<I, V1>,
         _ func1: @escaping (V1) -> V2) -> Parser<I, V2> {
-        return Parser { input in
-            let result1 = parser1.parse(input)
-            switch result1.reply {
-            case let .error(msgGenerator1):
-                switch result1.state {
-                case .consumed:
-                    return Consumed(.consumed, .error(msgGenerator1))
-                case .empty:
-                    return Consumed(.empty, .error(msgGenerator1))
-                }
-            case let .success(value1, advancedInput1, msgGenerator1):
-                return Consumed(result1.state, .success(func1(value1), advancedInput1, msgGenerator1))
-            }
-        }
+        return Combinators.bind(parser, to: { Combinators.pure(func1($0)) })
     }
 
     /// Sequentially invokes two Parsers while applying the second parser's result into the first parser's function
