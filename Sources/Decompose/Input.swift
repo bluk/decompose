@@ -27,15 +27,15 @@ public protocol Input {
     /// Returns the current element.
     ///
     /// - Returns: The current element.
-    func peek() -> Element?
+    func current() -> Element?
 
     /// Returns the current and next `count - 1` number of elements.
     ///
     /// - Parameters:
-    ///     - count: The number of elements to peek.
+    ///     - count: The number of elements to return.
     /// - Returns: The current and next `count - 1` number of elements.
     /// - Precondition: `count` must be >= 0.
-    func peek(count: Int) -> [Element]
+    func current(count: Int) -> [Element]
 
     /// Returns an `Input` which is offset by 1 element.
     ///

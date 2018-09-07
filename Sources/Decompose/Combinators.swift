@@ -66,7 +66,7 @@ public enum Combinators {
     public static func satisfy<I, V>(_ condition: @escaping (V) -> Bool)
         -> Parser<I, V> where I.Element == V {
         return Parser { input in
-            guard let element = input.peek(), !input.isEmpty else {
+            guard let element = input.current(), !input.isEmpty else {
                 let messageFunc = {
                     ParseError(position: input.position, unexpectedInput: "end of input", expectedProductions: [])
                 }

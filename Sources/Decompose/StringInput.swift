@@ -28,7 +28,7 @@ public struct StringInput: Input, Equatable, Hashable {
         return self.position >= self.value.count
     }
 
-    public func peek() -> Character? {
+    public func current() -> Character? {
         guard position < value.count else {
             return nil
         }
@@ -36,7 +36,7 @@ public struct StringInput: Input, Equatable, Hashable {
         return value[index]
     }
 
-    public func peek(count: Int) -> [Character] {
+    public func current(count: Int) -> [Character] {
         guard position < value.count else {
             return []
         }

@@ -26,7 +26,7 @@ internal final class CombinatorsTests: XCTestCase {
             return
         }
         XCTAssertEqual(value, "Hello, World!")
-        XCTAssertEqual(remainder.peek(), "A")
+        XCTAssertEqual(remainder.current(), "A")
         XCTAssertEqual(remainder.position, 0)
         let error = errorGenerator()
         XCTAssertEqual(error.unexpectedInput, "")
@@ -168,7 +168,7 @@ internal final class CombinatorsTests: XCTestCase {
         }
         XCTAssertEqual(value1, "f")
         XCTAssertEqual(remainder1.position, 1)
-        XCTAssertEqual(remainder1.peek(), "o")
+        XCTAssertEqual(remainder1.current(), "o")
         let error1 = errorGenerator1()
         XCTAssertEqual(error1.unexpectedInput, "")
         XCTAssertEqual(error1.position, 0)
@@ -181,7 +181,7 @@ internal final class CombinatorsTests: XCTestCase {
         }
         XCTAssertEqual(value2, "b")
         XCTAssertEqual(remainder2.position, 1)
-        XCTAssertEqual(remainder2.peek(), "a")
+        XCTAssertEqual(remainder2.current(), "a")
         let error2 = errorGenerator2()
         XCTAssertEqual(error2.unexpectedInput, "")
         XCTAssertEqual(error2.position, 0)
@@ -218,7 +218,7 @@ internal final class CombinatorsTests: XCTestCase {
         }
         XCTAssertEqual(value, "b")
         XCTAssertEqual(remainder.position, 1)
-        XCTAssertEqual(remainder.peek(), "a")
+        XCTAssertEqual(remainder.current(), "a")
         let error = errorGenerator()
         XCTAssertEqual(error.unexpectedInput, "")
         XCTAssertEqual(error.position, 0)

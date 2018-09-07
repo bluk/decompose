@@ -53,7 +53,7 @@ internal final class OperatorsTests: XCTestCase {
         }
         XCTAssertEqual(value, "b")
         XCTAssertEqual(remainder.position, 1)
-        XCTAssertEqual(remainder.peek(), "a")
+        XCTAssertEqual(remainder.current(), "a")
         let error = errorGenerator()
         XCTAssertEqual(error.unexpectedInput, "")
         XCTAssertEqual(error.position, 0)
