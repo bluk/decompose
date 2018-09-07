@@ -14,6 +14,8 @@
 
 import Foundation
 
+// swiftlint:disable type_body_length
+
 /// Convenience methods to create and compose `Parser`s.
 public enum Combinators {
 
@@ -315,4 +317,36 @@ public enum Combinators {
             Consumed(.empty, .error({ ParseMessage(position: input.position) }))
         }
     }
+
+    /// Instantiates a `Parser` which succeeds if the end of the input is reached.
+    ///
+    /// - Returns: A `Parser` which succeeds if the end of the input is reached.
+    public static func endOfInput<I>() -> Parser<I, Bool> {
+        return Parser { input in
+            if input.isEmpty {
+                return Consumed(
+                    .empty,
+                    .success(true, input, {
+                        ParseMessage(
+                            position: input.position,
+                            unexpectedInput: "",
+                            expectedProductions: ["end of input"]
+                        )
+                    }))
+            }
+            var unexpectedInput = "not end of input"
+            if let element = input.current() {
+                unexpectedInput = "\(element)"
+            }
+            return Consumed(
+                .empty,
+                .error({
+                    ParseMessage(
+                        position: input.position,
+                        unexpectedInput: "\(unexpectedInput)",
+                        expectedProductions: ["end of input"])
+                }))
+        }
+    }
 }
+// swiftlint:enable type_body_length

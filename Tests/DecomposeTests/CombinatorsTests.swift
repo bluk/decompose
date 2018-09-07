@@ -435,6 +435,36 @@ internal final class CombinatorsTests: XCTestCase {
         XCTAssertEqual(msg.expectedProductions, [])
     }
 
+    func testEndOfInput() {
+        let fail: Parser<StringInput, Bool> = Combinators.endOfInput()
+        let input = StringInput("")
+
+        let output = fail.parse(input)
+        guard case let .success(_, _, msgGenerator) = output.reply, .empty == output.state else {
+            XCTFail("Expected parse to fail and no consumption of input")
+            return
+        }
+        let msg = msgGenerator()
+        XCTAssertEqual(msg.unexpectedInput, "")
+        XCTAssertEqual(msg.position, 0)
+        XCTAssertEqual(msg.expectedProductions, ["end of input"])
+    }
+
+    func testEndOfInputNotTheEnd() {
+        let fail: Parser<StringInput, Bool> = Combinators.endOfInput()
+        let input = StringInput("foo")
+
+        let output = fail.parse(input)
+        guard case let .error(msgGenerator) = output.reply, .empty == output.state else {
+            XCTFail("Expected parse to fail and no consumption of input")
+            return
+        }
+        let msg = msgGenerator()
+        XCTAssertEqual(msg.unexpectedInput, "f")
+        XCTAssertEqual(msg.position, 0)
+        XCTAssertEqual(msg.expectedProductions, ["end of input"])
+    }
+
     static var allTests = [
         ("testReturnValue", testReturnValue),
         ("testBind", testBind),
@@ -452,7 +482,11 @@ internal final class CombinatorsTests: XCTestCase {
         ("testApplyWithNoMatch", testApplyWithNoMatch),
         ("testApplyAsOperator", testApplyAsOperator),
         ("testLabel", testLabel),
-        ("testLabelUnexpectedInput", testLabelUnexpectedInput)
+        ("testLabelUnexpectedInput", testLabelUnexpectedInput),
+        ("testLabelNeedOKMessage", testLabelNeedOKMessage),
+        ("testFail", testFail),
+        ("testEndOfInput", testEndOfInput),
+        ("testEndOfInputNotTheEnd", testEndOfInputNotTheEnd)
     ]
 }
 // swiftlint:enable type_body_length
