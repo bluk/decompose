@@ -156,18 +156,18 @@ internal final class ConvenienceCombinatorsTests: XCTestCase {
         XCTAssertEqual(String(value), "ooo")
         XCTAssertEqual(advancedInput.position, 3)
         let msg = msgGenerator()
-        XCTAssertEqual(msg.unexpectedInput, "h")
+        XCTAssertEqual(msg.unexpectedInput, "")
         XCTAssertEqual(msg.position, 3)
         XCTAssertEqual(msg.expectedProductions, [])
     }
 
     func testMany1Complex() {
         let many1Parser: Parser<StringInput, [[Character]]> = Combinators.many1(Combinators.string("hello"))
-        let input = StringInput("hellohellohe")
+        let input = StringInput("hellohellobe")
 
         let output = many1Parser.parse(input)
         guard case let .success(value, advancedInput, msgGenerator) = output.reply, .consumed == output.state else {
-            XCTFail("Expected parse to succeed and consumption of `ooo`")
+            XCTFail("Expected parse to succeed and consumption of `hellohello`")
             return
         }
         XCTAssertEqual(value.count, 2)

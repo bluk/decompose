@@ -20,11 +20,34 @@ precedencegroup MonodLeftPrecedence {
 
 infix operator >>-: MonodLeftPrecedence
 
-/// Convenience operator for bind
+/// Composes a `Parser` which invokes the `Parser` parameter and uses its returned value to invoke the function
+/// parameter, and then invokes the function's returned `Parser`.
+///
+/// - Parameters:
+///     - lhs: The first Parser to invoke the input with.
+///     - rhs: A function which will take the `lhs`'s returned value and return another `Parser`, which is
+///              then invoked with the remaining input
+/// - Returns: A composited `Parser` which binds the parameter `lhs`'s value and passes it to the function
+///            `rhs`, which generates a new `Parser` to invoke the remaining input with.
 public func >>-<I, V1, V2>(
     lhs: Parser<I, V1>,
     rhs: @escaping (V1) -> Parser<I, V2>) -> Parser<I, V2> {
     return Combinators.bind(lhs, to: rhs)
+}
+
+/// Composes a `Parser` which invokes the `Parser` parameter and uses its returned value to invoke the function
+/// parameter, and then invokes the function's returned `Parser`.
+///
+/// - Parameters:
+///     - lhs: The first Parser to invoke the input with.
+///     - rhs: A function which will take the `lhs`'s returned value and return another `Parser`, which is
+///              then invoked with the remaining input
+/// - Returns: A composited `Parser` which binds the parameter `lhs`'s value and passes it to the function
+///            `rhs`, which generates a new `Parser` to invoke the remaining input with.
+public func >><I, V1, V2>(
+    lhs: Parser<I, V1>,
+    rhs: @escaping () -> Parser<I, V2>) -> Parser<I, V2> {
+    return Combinators.then(lhs, to: rhs)
 }
 
 precedencegroup AltPrecedence {

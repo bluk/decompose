@@ -79,64 +79,28 @@ public extension Combinators {
 
         return Parser { input in
             let firstChar = value.first!
-            let firstCharParser: Parser<I, Character> = Combinators.char(firstChar)
-
-            let func1: (Character) -> Parser<I, [Character]> = { _ in
-                Combinators.stringEmptyReturn(String(value.dropFirst()))
-            }
-
-            return Combinators.bind(firstCharParser, to: func1).parse(input)
+            return Combinators
+                .then(Combinators.char(firstChar), to: { Combinators.stringEmptyReturn(String(value.dropFirst())) })
+                .parse(input)
         }
     }
 
-    // swiftlint:disable cyclomatic_complexity
-    /// Return a Parser which matches a given string. The value returned is an empty array if it succeeds.
+    /// Returns a `Parser` which invokes the `parser` parameter one or more times.
+    ///
+    /// - Parameters:
+    ///     - parser: The Parser to invoke
+    /// - Returns: A `Parser` which invokes the `parser` parameter one or more times.
     static func many1<I, V>(_ parser: Parser<I, V>) -> Parser<I, [V]> {
         return Parser { input in
-            let result1 = parser.parse(input)
-            switch result1.reply {
-            case let .error(msgGenerator1):
-                return Consumed(result1.state, .error(msgGenerator1))
-            case let .success(value1, advancedInput1, msgGenerator1):
-                let result2 = (many1(parser) <|> pure([])).parse(advancedInput1)
-                switch result1.state {
-                case .consumed:
-                    switch result2.reply {
-                    case .error:
-                        return Consumed(.consumed, .success([value1], advancedInput1, msgGenerator1))
-                    case let .success(value2, advancedInput2, msgGenerator2):
-                        return Consumed(.consumed, .success([value1] + value2, advancedInput2, msgGenerator2))
-                    }
-                case .empty:
-                    switch result2.state {
-                    case .consumed:
-                        switch result2.reply {
-                        case let .success(value2, advancedInput2, msgGenerator2):
-                            return Consumed(.consumed, .success([value1] + value2, advancedInput2, msgGenerator2))
-                        case .error:
-                            return Consumed(.consumed, .success([value1], advancedInput1, msgGenerator1))
-                        }
-                    case .empty:
-                        switch result2.reply {
-                        case let .error(msgGenerator2):
-                            return mergeSuccess(
-                                value: [value1],
-                                input: advancedInput1,
-                                msgGenerator1: msgGenerator1,
-                                msgGenerator2: msgGenerator2
-                            )
-                        case let .success(value2, advancedInput2, msgGenerator2):
-                            return mergeSuccess(
-                                value: [value1] + value2,
-                                input: advancedInput2,
-                                msgGenerator1: msgGenerator1,
-                                msgGenerator2: msgGenerator2
-                            )
-                        }
+            Combinators
+                .bind(parser) { matchedValue in
+                    Combinators.bind(many1(parser) <|> Combinators.pure([])) { optionalMatchedValues in
+                        var returnValue: [V] = [matchedValue]
+                        returnValue.append(contentsOf: optionalMatchedValues)
+                        return Combinators.pure(returnValue)
                     }
                 }
-            }
+                .parse(input)
         }
     }
-    // swiftlint:enable cyclomatic_complexity
 }

@@ -31,8 +31,15 @@ public enum Combinators {
         }
     }
 
-    /// The parser (in the function parameter)'s parsed result is passed to a function which generates
-    /// a second parser, and then the second parser is invoked with the remaining input.
+    /// Composes a `Parser` which invokes the `Parser` parameter and uses its returned value to invoke the function
+    /// parameter, and then invokes the function's returned `Parser`.
+    ///
+    /// - Parameters:
+    ///     - parser1: The first Parser to invoke the input with.
+    ///     - func1: A function which will take the `parser1`'s returned value and return another `Parser`, which is
+    ///              then invoked with the remaining input
+    /// - Returns: A composited `Parser` which binds the parameter `parser1`'s value and passes it to the function
+    ///            `func1`, which generates a new `Parser` to invoke the remaining input with.
     public static func bind<I, V1, V2>(_ parser1: Parser<I, V1>, to func1: @escaping (V1) -> Parser<I, V2>)
         -> Parser<I, V2> {
         return Parser { input in
@@ -67,6 +74,49 @@ public enum Combinators {
                 })
             }
         }
+    }
+
+    /// Composes a `Parser` which invokes the `Parser` parameter and then invokes the function's returned `Parser`.
+    ///
+    /// - Parameters:
+    ///     - parser1: The first Parser to invoke the input with.
+    ///     - func1: A function which will return a `Parser`, which is then invoked with the remaining input
+    /// - Returns: A composited `Parser` which invoke's the first parser and then uses the function to return a
+    ///            `Parser` to invoke with the remaining `Input`.
+    public static func then<I, V1, V2>(_ parser1: Parser<I, V1>, to func1: @escaping () -> Parser<I, V2>)
+        -> Parser<I, V2> {
+            return Parser { input in
+                let result1 = parser1.parse(input)
+                switch result1.state {
+                case .empty:
+                    switch result1.reply {
+                    case let .success(_, advancedInput1, msgGenerator1):
+                        let parser2 = func1()
+                        let result2 = parser2.parse(advancedInput1)
+                        switch result2.reply {
+                        case let .success(value2, advancedInput2, msgGenerator2):
+                            return mergeSuccess(
+                                value: value2,
+                                input: advancedInput2,
+                                msgGenerator1: msgGenerator1,
+                                msgGenerator2: msgGenerator2)
+                        case let .error(msgGenerator2):
+                            return mergeError(msgGenerator1: msgGenerator1, msgGenerator2: msgGenerator2)
+                        }
+                    case let .error(error):
+                        return Consumed(.empty, .error(error))
+                    }
+                case .consumed:
+                    return Consumed(.consumed, {
+                        switch result1.reply {
+                        case let .success(_, advancedInput1, _):
+                            return func1().parse(advancedInput1).reply
+                        case let .error(error):
+                            return .error(error)
+                        }
+                    })
+                }
+            }
     }
 
     /// Returns a Parser for matching a single value

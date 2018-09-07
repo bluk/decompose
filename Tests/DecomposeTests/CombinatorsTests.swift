@@ -359,9 +359,9 @@ internal final class CombinatorsTests: XCTestCase {
         XCTAssertEqual(String(value), "foo123_bar456")
         XCTAssertEqual(advancedInput.position, 13)
         let msg = msgGenerator()
-        XCTAssertEqual(msg.unexpectedInput, "@")
+        XCTAssertEqual(msg.unexpectedInput, "")
         XCTAssertEqual(msg.position, 13)
-        XCTAssertEqual(msg.expectedProductions, ["letter", "digit", "_"])
+        XCTAssertEqual(msg.expectedProductions, [])
     }
 
     func testLabelEmptyInput() {
@@ -400,6 +400,24 @@ internal final class CombinatorsTests: XCTestCase {
         XCTAssertEqual(msg.unexpectedInput, "@")
         XCTAssertEqual(msg.position, 0)
         XCTAssertEqual(msg.expectedProductions, ["letter", "digit", "_"])
+    }
+
+    func testLabelNeedOKMessage() {
+        let digit: Parser<StringInput, Character> = Combinators.label(Combinators.isDigit(), with: "digit")
+        let pure0: Parser<StringInput, Character> = Combinators.pure("0")
+        let letter: Parser<StringInput, Character> = Combinators.label(Combinators.isLetter(), with: "letter")
+        let test = Combinators.then(digit <|> pure0, to: { letter })
+        let input = StringInput("*")
+
+        let output = test.parse(input)
+        guard case let .error(msgGenerator) = output.reply, .empty == output.state else {
+            XCTFail("Expected parse to fail and no consumption of input")
+            return
+        }
+        let msg = msgGenerator()
+        XCTAssertEqual(msg.unexpectedInput, "*")
+        XCTAssertEqual(msg.position, 0)
+        XCTAssertEqual(msg.expectedProductions, ["digit", "letter"])
     }
 
     static var allTests = [
