@@ -19,7 +19,7 @@ import XCTest
 internal final class CombinatorsTests: XCTestCase {
 
     func testReturnValue() {
-        let output = Combinators.returnValue("Hello, World!").parse(StringInput("A"))
+        let output = Combinators.pure("Hello, World!").parse(StringInput("A"))
 
         guard case let .success(value, remainder, errorGenerator) = output.reply, .empty == output.state else {
             XCTFail("Expected parse to be successful but no consumption of characters")
@@ -35,11 +35,11 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testBind() {
-        let originalParser: Parser<StringInput, String> = Combinators.returnValue("foo")
+        let originalParser: Parser<StringInput, String> = Combinators.pure("foo")
         let boundParser: Parser<StringInput, String> = Combinators.bind(originalParser) { result1 in
             XCTAssertEqual(result1, "foo")
 
-            return Combinators.returnValue("bar")
+            return Combinators.pure("bar")
         }
         let input = StringInput("test")
 
@@ -64,7 +64,7 @@ internal final class CombinatorsTests: XCTestCase {
         }
         let boundParser: Parser<StringInput, String> = Combinators.bind(originalParser) { _ in
             XCTFail("Function should not be called")
-            return Combinators.returnValue("unused")
+            return Combinators.pure("unused")
         }
         let input = StringInput("test")
 
@@ -80,11 +80,11 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testBindAsFlatMap() {
-        let originalParser: Parser<StringInput, String> = Combinators.returnValue("foo")
+        let originalParser: Parser<StringInput, String> = Combinators.pure("foo")
         let boundParser: Parser<StringInput, String> = originalParser.flatMap { result1 in
             XCTAssertEqual(result1, "foo")
 
-            return Combinators.returnValue("bar")
+            return Combinators.pure("bar")
         }
         let input = StringInput("test")
 
@@ -102,11 +102,11 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testBindAsOperator() {
-        let originalParser: Parser<StringInput, String> = Combinators.returnValue("foo")
+        let originalParser: Parser<StringInput, String> = Combinators.pure("foo")
         let func1: (String) -> Parser<StringInput, String> = { result1 in
             XCTAssertEqual(result1, "foo")
 
-            return Combinators.returnValue("bar")
+            return Combinators.pure("bar")
         }
         let boundParser: Parser<StringInput, String> = originalParser >>- func1
         let input = StringInput("test")

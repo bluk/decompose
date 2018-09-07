@@ -14,11 +14,15 @@
 
 import Foundation
 
-/// Combinators create and compose parsers.
+/// Convenience methods to create and compose `Parser`s.
 public enum Combinators {
 
-    /// Returns a parser which returns the passed in value as a result and does not consume the Input
-    public static func returnValue<I, V>(_ value: V) -> Parser<I, V> {
+    /// Instantiates a `Parser` which returns the value parameter and does not advanced the `Input`.
+    ///
+    /// - Parameters:
+    ///     - value: The value to return from the `Parser`.
+    /// - Returns: A `Parser` which returns the value parameter and does not advanced the `Input`.
+    public static func pure<I, V>(_ value: V) -> Parser<I, V> {
         return Parser { input in
             let messageFunc = {
                 ParseError(position: input.position, unexpectedInput: "", expectedProductions: [])

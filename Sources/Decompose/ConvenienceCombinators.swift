@@ -51,7 +51,7 @@ public extension Combinators {
     static func string<I>(_ value: String) -> Parser<I, [Character]> where I.Element == Character {
         guard !value.isEmpty else {
             let empty: [Character] = []
-            return Combinators.returnValue(empty)
+            return Combinators.pure(empty)
         }
 
         return Parser { input in
@@ -76,7 +76,7 @@ public extension Combinators {
         -> Parser<I, [Character]> where I.Element == Character {
         guard !value.isEmpty else {
             let empty: [Character] = []
-            return Combinators.returnValue(empty)
+            return Combinators.pure(empty)
         }
 
         return Parser { input in
@@ -100,7 +100,7 @@ public extension Combinators {
             case let .error(error1):
                 return Consumed(result1.state, .error(error1))
             case let .success(value1, remainingInput1, error1):
-                let result2 = (many1(parser) <|> returnValue([])).parse(remainingInput1)
+                let result2 = (many1(parser) <|> pure([])).parse(remainingInput1)
                 switch result1.state {
                 case .consumed:
                     switch result2.reply {

@@ -18,11 +18,11 @@ import XCTest
 internal final class OperatorsTests: XCTestCase {
 
     func testBindAsOperator() {
-        let originalParser: Parser<StringInput, String> = Combinators.returnValue("foo")
+        let originalParser: Parser<StringInput, String> = Combinators.pure("foo")
         let func1: (String) -> Parser<StringInput, String> = { result1 in
             XCTAssertEqual(result1, "foo")
 
-            return Combinators.returnValue("bar")
+            return Combinators.pure("bar")
         }
         let boundParser: Parser<StringInput, String> = originalParser >>- func1
         let input = StringInput("test")
