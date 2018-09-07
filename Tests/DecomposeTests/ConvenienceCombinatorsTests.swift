@@ -120,12 +120,56 @@ internal final class ConvenienceCombinatorsTests: XCTestCase {
         XCTAssertEqual(remainder, input)
     }
 
+    func testMany1() {
+        let many1Parser: Parser<StringInput, [Character]> = Combinators.many1(Combinators.char("o"))
+        let input = StringInput("oooh")
+
+        let output = many1Parser.parse(input)
+        guard case let .success(value, remainder) = output.reply, .consumed == output.state else {
+            XCTFail("Expected parse to succeed and consumption of `ooo`")
+            return
+        }
+        XCTAssertEqual(String(value), "ooo")
+        XCTAssertEqual(remainder.position, 3)
+    }
+
+    func testMany1Complex() {
+        let many1Parser: Parser<StringInput, [[Character]]> = Combinators.many1(Combinators.string("hello"))
+        let input = StringInput("hellohellohe")
+
+        let output = many1Parser.parse(input)
+        guard case let .success(value, remainder) = output.reply, .consumed == output.state else {
+            XCTFail("Expected parse to succeed and consumption of `ooo`")
+            return
+        }
+        XCTAssertEqual(value.count, 2)
+        XCTAssertEqual(String(value[0]), "hello")
+        XCTAssertEqual(String(value[1]), "hello")
+        XCTAssertEqual(remainder.position, 10)
+    }
+
+    func testMany1NoMatch() {
+        let many1Parser: Parser<StringInput, [Character]> = Combinators.stringEmptyReturn("o")
+        let input = StringInput("boo")
+
+        let output = many1Parser.parse(input)
+        guard case let .error(error, remainder) = output.reply, .empty == output.state else {
+            XCTFail("Expected parse to fail and no consumption")
+            return
+        }
+        XCTAssertNil(error) // Currently nil, but should be a real value
+        XCTAssertEqual(remainder, input)
+    }
+
     static var allTests = [
         ("testIsLetter", testIsLetter),
         ("testIsLetterNotMatch", testIsLetterNotMatch),
         ("testIsDigit", testIsDigit),
         ("testIsDigitNotMatch", testIsDigitNotMatch),
         ("testString", testString),
-        ("testStringWithNoMatch", testStringWithNoMatch)
+        ("testStringWithNoMatch", testStringWithNoMatch),
+        ("testMany1", testMany1),
+        ("testMany1Complex", testMany1Complex),
+        ("testMany1NoMatch", testMany1NoMatch)
     ]
 }

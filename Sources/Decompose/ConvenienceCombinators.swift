@@ -90,4 +90,24 @@ public extension Combinators {
             return Combinators.bind(firstCharParser, to: func1).parse(input)
         }
     }
+
+    /// Return a Parser which matches a given string. The value returned is an empty array if it succeeds.
+    static func many1<Input1, Result>(_ parser: Parser<Input1, Result>) -> Parser<Input1, [Result]> {
+        return Parser { input in
+            let firstResult = parser.parse(input)
+            switch firstResult.reply {
+            case let .error(error, remainingInput):
+                return Consumed(firstResult.state, .error(error, remainingInput))
+            case let .success(value, remainingInput):
+                let many1Result = (many1(parser) <|> returnValue([])).parse(remainingInput)
+                var allValues = [value]
+                var finalRemainingInput = remainingInput
+                if case let .success(values, remainingInput) = many1Result.reply {
+                    allValues.append(contentsOf: values)
+                    finalRemainingInput = remainingInput
+                }
+                return Consumed(firstResult.state, .success(allValues, finalRemainingInput))
+            }
+        }
+    }
 }
