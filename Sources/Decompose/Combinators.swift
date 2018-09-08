@@ -14,8 +14,6 @@
 
 import Foundation
 
-// swiftlint:disable type_body_length
-
 /// Convenience methods to create and compose `Parser`s.
 public enum Combinators {
 
@@ -234,39 +232,23 @@ public enum Combinators {
     }
 
     /// Sequentially invokes two Parsers while applying the second parser's result into the first parser's function
+    /// with the label parameter.
+    ///
+    /// - Parameters:
+    ///     - parser1: The first `Parser` to invoke
+    ///     - parser2: The second `Parser` to invoke
+    /// - Returns: A `Parser` which invokes the first `Parser` parameter, then the second `Parser` parameter and then
+    ///           invokes the first `Parser`'s returned function value with the second `Parser`'s returned value.
     public static func apply<I, V1, V2>(
         _ parser1: Parser<I, ((V1) -> V2)>,
         _ parser2: Parser<I, V1>) -> Parser<I, V2> {
-        return Parser { input in
-            let result1 = parser1.parse(input)
-            switch result1.reply {
-            case let .error(msgGenerator1):
-                return Consumed(result1.state, .error(msgGenerator1))
-            case let .success(value1, advancedInput1, msgGenerator1):
-                let result2 = Combinators.map(parser2, value1).parse(advancedInput1)
-                switch result1.state {
-                case .consumed:
-                    return Consumed(.consumed, result2.reply)
-                case .empty:
-                    switch result2.state {
-                    case .empty:
-                        switch result2.reply {
-                        case let .error(msgGenerator2):
-                            return mergeError(msgGenerator1: msgGenerator1, msgGenerator2: msgGenerator2)
-                        case let .success(value2, advancedInput2, msgGenerator2):
-                            return mergeSuccess(
-                                value: value2,
-                                input: advancedInput2,
-                                msgGenerator1: msgGenerator1,
-                                msgGenerator2: msgGenerator2
-                            )
-                        }
-                    case .consumed:
-                        return result2
-                    }
-                }
-            }
-        }
+        return Combinators.bind(parser1, to: { func1 in
+            Combinators.map(Combinators.bind(parser2, to: { value2 in
+                Combinators.pure(value2)
+            }), { value2 in
+                func1(value2)
+            })
+        })
     }
 
     /// Instantiates a new `Parser` which will overwrite the parameter `Parser`'s `ParseMessage`'s `expectedProductions`
@@ -349,4 +331,3 @@ public enum Combinators {
         }
     }
 }
-// swiftlint:enable type_body_length

@@ -78,7 +78,14 @@ precedencegroup AppPrecedence {
 
 infix operator <*>: AppPrecedence
 
-/// Convenience operator for apply
+/// Sequentially invokes two Parsers while applying the second parser's result into the first parser's function
+/// with the label parameter.
+///
+/// - Parameters:
+///     - lhs: The first `Parser` to invoke
+///     - rhs: The second `Parser` to invoke
+/// - Returns: A `Parser` which invokes the first `Parser` parameter, then the second `Parser` parameter and then
+///           invokes the first `Parser`'s returned function value with the second `Parser`'s returned value.
 public func <*><I, V1, V2>(
     lhs: Parser<I, ((V1) -> V2)>,
     rhs: Parser<I, V1>) -> Parser<I, V2> {
@@ -87,7 +94,12 @@ public func <*><I, V1, V2>(
 
 infix operator <^>: AppPrecedence
 
-/// Convenience operator for map
+/// Maps a `Parser`'s value using the function parameter.
+///
+/// - Parameters:
+///     - lhs: The `Parser` to invoke the input with.
+///     - rhs: A function which will transform the `parser`'s return value into a new value.
+/// - Returns: A Parser which transforms the original value to a value using the function.
 public func <^><I, V1, V2>(
     lhs: Parser<I, V1>,
     rhs: @escaping (V1) -> V2) -> Parser<I, V2> {
