@@ -12,13 +12,13 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 
-precedencegroup MonodLeftPrecedence {
+precedencegroup MonadLeftPrecedence {
     associativity: left
     lowerThan: LogicalDisjunctionPrecedence
     higherThan: AssignmentPrecedence
 }
 
-infix operator >>-: MonodLeftPrecedence
+infix operator >>-: MonadLeftPrecedence
 
 /// Composes a `Parser` which invokes the `Parser` parameter and uses its returned value to invoke the function
 /// parameter, and then invokes the function's returned `Parser`.
@@ -50,13 +50,13 @@ public func >><I, V1, V2>(
     return Combinators.then(lhs, to: rhs)
 }
 
-precedencegroup AltPrecedence {
+precedencegroup ChoiceLeftPrecedence {
     associativity: left
     higherThan: LogicalConjunctionPrecedence
     lowerThan: ComparisonPrecedence
 }
 
-infix operator <|>: AltPrecedence
+infix operator <|>: ChoiceLeftPrecedence
 
 /// Returns a `Parser` which invokes the first `Parser`, and if it fails, invokes the second `Parser`.
 ///
@@ -70,13 +70,13 @@ public func <|><I, V1>(
     return Combinators.choice(lhs, rhs)
 }
 
-precedencegroup AppPrecedence {
+precedencegroup ApplicativeFunctorLeftPrecedence {
     associativity: left
-    higherThan: AltPrecedence
+    higherThan: ChoiceLeftPrecedence
     lowerThan: NilCoalescingPrecedence
 }
 
-infix operator <*>: AppPrecedence
+infix operator <*>: ApplicativeFunctorLeftPrecedence
 
 /// Sequentially invokes two Parsers while applying the second parser's result into the first parser's function
 /// with the label parameter.
@@ -92,7 +92,7 @@ public func <*><I, V1, V2>(
     return Combinators.apply(lhs, rhs)
 }
 
-infix operator <^>: AppPrecedence
+infix operator <^>: ApplicativeFunctorLeftPrecedence
 
 /// Maps a `Parser`'s value using the function parameter.
 ///
