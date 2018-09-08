@@ -117,4 +117,22 @@ public extension Combinators {
                 .parse(input)
         }
     }
+
+    /// Returns a `Parser` which discards the return value of the `parser` parameter zero or more times.
+    ///
+    /// - Parameters:
+    ///     - parser: The Parser to invoke
+    /// - Returns: A `Parser` which discards the return value of the `parser` parameter zero or more times.
+    static func skipMany<I, V>(_ parser: Parser<I, V>) -> Parser<I, ()> {
+        return skipMany1(parser) <|> pure(())
+    }
+
+    /// Returns a `Parser` which discards the return value of the `parser` parameter one or more times.
+    ///
+    /// - Parameters:
+    ///     - parser: The Parser to invoke
+    /// - Returns: A `Parser` which discards the return value of the `parser` parameter one or more times.
+    static func skipMany1<I, V>(_ parser: Parser<I, V>) -> Parser<I, ()> {
+        return many1(parser) *> pure(())
+    }
 }

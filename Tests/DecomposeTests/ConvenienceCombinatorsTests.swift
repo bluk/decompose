@@ -15,6 +15,8 @@
 @testable import Decompose
 import XCTest
 
+// swiftlint:disable type_body_length
+
 internal final class ConvenienceCombinatorsTests: XCTestCase {
 
     func testIsLetter() {
@@ -229,6 +231,76 @@ internal final class ConvenienceCombinatorsTests: XCTestCase {
         XCTAssertEqual(msg.expectedProductions, [])
     }
 
+    func testSkipMany() {
+        let skipManyParser: Parser<StringInput, ()> = Combinators.skipMany(Combinators.letter())
+        let input = StringInput("foobar123")
+
+        let output = skipManyParser.parse(input)
+        guard case let .success(value, advancedInput, msgGenerator) = output.reply, .consumed == output.state else {
+            XCTFail("Expected parse to fail and no consumption")
+            return
+        }
+
+        XCTAssertTrue(value == ())
+        XCTAssertEqual(advancedInput.position, 6)
+        let msg = msgGenerator()
+        XCTAssertEqual(msg.unexpectedInput, "")
+        XCTAssertEqual(msg.position, 6)
+        XCTAssertEqual(msg.expectedProductions, [])
+    }
+
+    func testSkipManyWithNoMatch() {
+        let skipManyParser: Parser<StringInput, ()> = Combinators.skipMany(Combinators.letter())
+        let input = StringInput("123foobar")
+
+        let output = skipManyParser.parse(input)
+        guard case let .success(value, advancedInput, msgGenerator) = output.reply, .empty == output.state else {
+            XCTFail("Expected parse to fail and no consumption")
+            return
+        }
+
+        XCTAssertTrue(value == ())
+        XCTAssertEqual(advancedInput.position, 0)
+        let msg = msgGenerator()
+        XCTAssertEqual(msg.unexpectedInput, "1")
+        XCTAssertEqual(msg.position, 0)
+        XCTAssertEqual(msg.expectedProductions, [])
+    }
+
+    func testSkipMany1() {
+        let skipManyParser: Parser<StringInput, ()> = Combinators.skipMany1(Combinators.letter())
+        let input = StringInput("foobar123")
+
+        let output = skipManyParser.parse(input)
+        guard case let .success(value, advancedInput, msgGenerator) = output.reply, .consumed == output.state else {
+            XCTFail("Expected parse to fail and no consumption")
+            return
+        }
+
+        XCTAssertTrue(value == ())
+        XCTAssertEqual(advancedInput.position, 6)
+        let msg = msgGenerator()
+        XCTAssertEqual(msg.unexpectedInput, "")
+        XCTAssertEqual(msg.position, 6)
+        XCTAssertEqual(msg.expectedProductions, [])
+    }
+
+    func testSkipMany1WithNoMatch() {
+        let skipManyParser: Parser<StringInput, ()> = Combinators.skipMany1(Combinators.letter())
+        let input = StringInput("123foobar")
+
+        let output = skipManyParser.parse(input)
+        guard case let .error(msgGenerator) = output.reply, .empty == output.state else {
+            XCTFail("Expected parse to fail and no consumption")
+            return
+        }
+
+        let msg = msgGenerator()
+        XCTAssertEqual(msg.unexpectedInput, "1")
+        XCTAssertEqual(msg.position, 0)
+        XCTAssertEqual(msg.expectedProductions, [])
+    }
+
     static var allTests = [
         ("testIsLetter", testIsLetter),
         ("testIsLetterNotMatch", testIsLetterNotMatch),
@@ -240,6 +312,11 @@ internal final class ConvenienceCombinatorsTests: XCTestCase {
         ("testStringEmptyReturnValueWithNoMatch", testStringEmptyReturnValueWithNoMatch),
         ("testMany1", testMany1),
         ("testMany1Complex", testMany1Complex),
-        ("testMany1NoMatch", testMany1NoMatch)
+        ("testMany1NoMatch", testMany1NoMatch),
+        ("testSkipMany", testSkipMany),
+        ("testSkipManyWithNoMatch", testSkipManyWithNoMatch),
+        ("testSkipMany1", testSkipMany1),
+        ("testSkipMany1WithNoMatch", testSkipMany1WithNoMatch)
     ]
 }
+// swiftlint:enable type_body_length
