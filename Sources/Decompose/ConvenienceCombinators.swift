@@ -98,6 +98,30 @@ public extension Combinators {
         }
     }
 
+    /// Returns a `Parser` which invokes the `parser` parameter zero or more times.
+    ///
+    /// - Parameters:
+    ///     - parser: The Parser to invoke
+    /// - Returns: A `Parser` which invokes the `parser` parameter zero or more times.
+    static func many<I, V>(_ parser: Parser<I, V>) -> Parser<I, [V]> {
+        return Parser { input in
+            let firstParser: Parser<I, [V]> = Combinators.map(parser, { [$0] }) <|> Combinators.pure([])
+            return Combinators
+                .bind(firstParser) { matchedValue in
+                    if matchedValue.isEmpty {
+                        return Combinators.pure([])
+                    }
+
+                    return Combinators.bind(many(parser)) { optionalMatchedValues in
+                        var returnValue: [V] = matchedValue
+                        returnValue.append(contentsOf: optionalMatchedValues)
+                        return Combinators.pure(returnValue)
+                    }
+                }
+                .parse(input)
+        }
+    }
+
     /// Returns a `Parser` which invokes the `parser` parameter one or more times.
     ///
     /// - Parameters:

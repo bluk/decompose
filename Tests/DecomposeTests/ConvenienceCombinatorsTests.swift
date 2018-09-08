@@ -144,6 +144,40 @@ internal final class ConvenienceCombinatorsTests: XCTestCase {
         XCTAssertEqual(msg.expectedProductions, [])
     }
 
+    func testMany() {
+        let many1Parser: Parser<StringInput, [Character]> = Combinators.many(Combinators.char("o"))
+        let input = StringInput("oooh")
+
+        let output = many1Parser.parse(input)
+        guard case let .success(value, advancedInput, msgGenerator) = output.reply, .consumed == output.state else {
+            XCTFail("Expected parse to succeed and consumption of `ooo`")
+            return
+        }
+        XCTAssertEqual(String(value), "ooo")
+        XCTAssertEqual(advancedInput.position, 3)
+        let msg = msgGenerator()
+        XCTAssertEqual(msg.unexpectedInput, "")
+        XCTAssertEqual(msg.position, 3)
+        XCTAssertEqual(msg.expectedProductions, [])
+    }
+
+    func testManyNoMatch() {
+        let many1Parser: Parser<StringInput, [Character]> = Combinators.many(Combinators.char("o"))
+        let input = StringInput("boo")
+
+        let output = many1Parser.parse(input)
+        guard case let .success(value, advancedInput, msgGenerator) = output.reply, .empty == output.state else {
+            XCTFail("Expected parse to succeed but no consumption")
+            return
+        }
+        XCTAssertEqual(String(value), "")
+        XCTAssertEqual(advancedInput.position, 0)
+        let msg = msgGenerator()
+        XCTAssertEqual(msg.unexpectedInput, "b")
+        XCTAssertEqual(msg.position, 0)
+        XCTAssertEqual(msg.expectedProductions, [])
+    }
+
     func testMany1() {
         let many1Parser: Parser<StringInput, [Character]> = Combinators.many1(Combinators.char("o"))
         let input = StringInput("oooh")
@@ -181,7 +215,7 @@ internal final class ConvenienceCombinatorsTests: XCTestCase {
     }
 
     func testMany1NoMatch() {
-        let many1Parser: Parser<StringInput, [Character]> = Combinators.stringEmptyReturnValue("o")
+        let many1Parser: Parser<StringInput, [Character]> = Combinators.many1(Combinators.char("o"))
         let input = StringInput("boo")
 
         let output = many1Parser.parse(input)
