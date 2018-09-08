@@ -135,4 +135,16 @@ public extension Combinators {
     static func skipMany1<I, V>(_ parser: Parser<I, V>) -> Parser<I, ()> {
         return many1(parser) *> pure(())
     }
+
+    /// Returns a `Parser` which attempts the parser parameter and if it succeeds, return the value, but if it fails,
+    /// use the second parameter.
+    ///
+    /// - Parameters:
+    ///     - parser: The Parser to attempt
+    ///     - value: The value to return if the `parser` parameter is not successful
+    /// - Returns: A `Parser` which attempts the parser parameter and if it succeeds, return the value, but if it fails,
+    ///            use the second parameter.
+    static func opt<I, V>(_ parser: Parser<I, V>, _ value: V) -> Parser<I, V> {
+        return parser <|> pure(value)
+    }
 }

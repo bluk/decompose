@@ -301,6 +301,42 @@ internal final class ConvenienceCombinatorsTests: XCTestCase {
         XCTAssertEqual(msg.expectedProductions, [])
     }
 
+    func testOptWithParserSuccessful() {
+        let optParser: Parser<StringInput, Character> = Combinators.opt(Combinators.letter(), "A")
+        let input = StringInput("foobar123")
+
+        let output = optParser.parse(input)
+        guard case let .success(value, advancedInput, msgGenerator) = output.reply, .consumed == output.state else {
+            XCTFail("Expected parse to fail and no consumption")
+            return
+        }
+
+        XCTAssertEqual(value, "f")
+        XCTAssertEqual(advancedInput.position, 1)
+        let msg = msgGenerator()
+        XCTAssertEqual(msg.unexpectedInput, "")
+        XCTAssertEqual(msg.position, 0)
+        XCTAssertEqual(msg.expectedProductions, [])
+    }
+
+    func testOptWithParserFailed() {
+        let optParser: Parser<StringInput, Character> = Combinators.opt(Combinators.letter(), "A")
+        let input = StringInput("123foobar")
+
+        let output = optParser.parse(input)
+        guard case let .success(value, advancedInput, msgGenerator) = output.reply, .empty == output.state else {
+            XCTFail("Expected parse to fail and no consumption")
+            return
+        }
+
+        XCTAssertEqual(value, "A")
+        XCTAssertEqual(advancedInput.position, 0)
+        let msg = msgGenerator()
+        XCTAssertEqual(msg.unexpectedInput, "1")
+        XCTAssertEqual(msg.position, 0)
+        XCTAssertEqual(msg.expectedProductions, [])
+    }
+
     static var allTests = [
         ("testIsLetter", testIsLetter),
         ("testIsLetterNotMatch", testIsLetterNotMatch),
@@ -316,7 +352,9 @@ internal final class ConvenienceCombinatorsTests: XCTestCase {
         ("testSkipMany", testSkipMany),
         ("testSkipManyWithNoMatch", testSkipManyWithNoMatch),
         ("testSkipMany1", testSkipMany1),
-        ("testSkipMany1WithNoMatch", testSkipMany1WithNoMatch)
+        ("testSkipMany1WithNoMatch", testSkipMany1WithNoMatch),
+        ("testOptWithParserSuccessful", testOptWithParserSuccessful),
+        ("testOptWithParserFailed", testOptWithParserFailed)
     ]
 }
 // swiftlint:enable type_body_length
