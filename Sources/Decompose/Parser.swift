@@ -28,8 +28,16 @@ public extension Parser {
     /// - Parameters:
     ///     - func1: The function to bind the value of this parser to.
     /// - Returns: A bound `Parser`.
-    func flatMap<V2>(
-        _ func1 : @escaping (V) -> Parser<I, V2>) -> Parser<I, V2> {
+    func flatMap<V2>(_ func1 : @escaping (V) -> Parser<I, V2>) -> Parser<I, V2> {
         return Combinators.bind(self, to: func1)
+    }
+
+    /// Maps this `Parser`'s value using the function parameter.
+    ///
+    /// - Parameters:
+    ///     - func1: A function which will transform the `parser`'s return value into a new value.
+    /// - Returns: A Parser which transforms the original value to a value using the function.
+    func map<V2>(_ func1: @escaping (V) -> V2) -> Parser<I, V2> {
+        return Combinators.map(self, func1)
     }
 }
