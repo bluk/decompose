@@ -105,3 +105,41 @@ public func <^><I, V1, V2>(
     rhs: Parser<I, V1>) -> Parser<I, V2> {
     return Combinators.map(rhs, lhs)
 }
+
+precedencegroup ApplicativeFunctorSequenceLeftPrecedence {
+    associativity: left
+    higherThan: ApplicativeFunctorLeftPrecedence
+    lowerThan: NilCoalescingPrecedence
+}
+
+infix operator *>: ApplicativeFunctorSequenceLeftPrecedence
+
+/// Sequentially invokes two Parsers while ignoring the first value.
+///
+/// - Parameters:
+///     - lhs: The first `Parser` to invoke
+///     - rhs: The second `Parser` to invoke
+/// - Returns: A `Parser` which invokes the first `Parser` parameter, then the second `Parser` parameter and then
+///            returns the second `Parser`'s returned value.
+public func *><I, V1, V2>(
+    lhs: Parser<I, V1>,
+    rhs: Parser<I, V2>) -> Parser<I, V2> {
+    let ignoreFirstValue: (V1) -> (V2) -> V2 = { _ in { $0 } }
+    return Combinators.apply(Combinators.map(lhs, ignoreFirstValue), rhs)
+}
+
+infix operator <*: ApplicativeFunctorSequenceLeftPrecedence
+
+/// Sequentially invokes two Parsers while ignoring the second value.
+///
+/// - Parameters:
+///     - lhs: The first `Parser` to invoke
+///     - rhs: The second `Parser` to invoke
+/// - Returns: A `Parser` which invokes the first `Parser` parameter, then the first `Parser` parameter and then
+///            returns the first `Parser`'s returned value.
+public func <*<I, V1, V2>(
+    lhs: Parser<I, V1>,
+    rhs: Parser<I, V2>) -> Parser<I, V1> {
+    let ignoreSecondValue: (V1) -> (V2) -> V1 = { value1 in { _ in value1 } }
+    return Combinators.apply(Combinators.map(lhs, ignoreSecondValue), rhs)
+}

@@ -40,4 +40,24 @@ public extension Parser {
     func map<V2>(_ func1: @escaping (V) -> V2) -> Parser<I, V2> {
         return Combinators.map(self, func1)
     }
+
+    /// Sequentially invokes this `Parser`, then the parameter argument, and finally invokes the second parser's result
+    /// into this parser's function.
+    ///
+    /// - Parameters:
+    ///     - parser2: The second `Parser` to invoke
+    /// - Returns: A `Parser` which invokes this `Parser`, then the parameter argument, and finally invokes the second
+    ///            parser's result into this parser's function.
+    func apply<V2, V3>(_ parser2: Parser<I, V2>) -> Parser<I, V3> where V == (V2) -> V3 {
+        return Combinators.apply(self, parser2)
+    }
+
+    /// Returns a `Parser` which invokes this `Parser`, and if it fails, invokes the second `Parser`.
+    ///
+    /// - Parameters:
+    ///     - parser2: The second `Parser` to invoke the input with if this `Parser` fails.
+    /// - Returns: A `Parser` which invokes this `Parser`, and if it fails, invokes the second `Parser`.
+    func or(_ parser2: Parser<I, V>) -> Parser<I, V> {
+        return Combinators.choice(self, parser2)
+    }
 }

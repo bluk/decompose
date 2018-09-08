@@ -231,8 +231,7 @@ public enum Combinators {
         return Combinators.bind(parser, to: { Combinators.pure(func1($0)) })
     }
 
-    /// Sequentially invokes two Parsers while applying the second parser's result into the first parser's function
-    /// with the label parameter.
+    /// Sequentially invokes two Parsers while invoking the second parser's result into the first parser's function.
     ///
     /// - Parameters:
     ///     - parser1: The first `Parser` to invoke
