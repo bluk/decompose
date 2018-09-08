@@ -143,3 +143,18 @@ public func <*<I, V1, V2>(
     let ignoreSecondValue: (V1) -> (V2) -> V1 = { value1 in { _ in value1 } }
     return Combinators.apply(Combinators.map(lhs, ignoreSecondValue), rhs)
 }
+
+infix operator <?>: MonadLeftPrecedence
+
+/// Instantiates a new `Parser` which will overwrite the parameter `Parser`'s `ParseMessage`'s `expectedProductions`
+/// with the label parameter.
+///
+/// - Parameters:
+///     - lhs: The `Parser` to override `ParseMessage`'s `expectedProductions` with.
+///     - rhs: The value of any produced `ParseMessage`'s `expectedProductions`.
+/// - Returns: A `Parser` which has a label attached for any produced `ParseMessage`s.
+public func <?><I, V1>(
+    lhs: Parser<I, V1>,
+    rhs: String) -> Parser<I, V1> {
+    return Combinators.label(lhs, with: rhs)
+}

@@ -100,10 +100,30 @@ internal final class OperatorsTests: XCTestCase {
         XCTAssertEqual(msg.expectedProductions, [])
     }
 
+    func testLabelAsOperatorUnexpectedInput() {
+        let digit: Parser<StringInput, Character> = Combinators.label(Combinators.digit(), with: "digit")
+        let letter: Parser<StringInput, Character> = Combinators.label(Combinators.letter(), with: "letter")
+        let charUnderscore: Parser<StringInput, Character> = Combinators.char("_") <?> "_"
+
+        let identifier: Parser<StringInput, [Character]> = Combinators.many1(letter <|> digit <|> charUnderscore)
+        let input = StringInput("@")
+
+        let output = identifier.parse(input)
+        guard case let .error(msgGenerator) = output.reply, .empty == output.state else {
+            XCTFail("Expected parse to fail and no consumption of input")
+            return
+        }
+        let msg = msgGenerator()
+        XCTAssertEqual(msg.unexpectedInput, "@")
+        XCTAssertEqual(msg.position, 0)
+        XCTAssertEqual(msg.expectedProductions, ["letter", "digit", "_"])
+    }
+
     static var allTests = [
         ("testBindAsOperator", testBindAsOperator),
         ("testChoiceAsOperator", testChoiceAsOperator),
         ("testMapAsOperator", testMapAsOperator),
-        ("testApplyAsOperator", testApplyAsOperator)
+        ("testApplyAsOperator", testApplyAsOperator),
+        ("testLabelAsOperatorUnexpectedInput", testLabelAsOperatorUnexpectedInput)
     ]
 }
