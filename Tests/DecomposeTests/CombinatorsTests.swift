@@ -18,7 +18,7 @@ import XCTest
 // swiftlint:disable type_body_length file_length
 internal final class CombinatorsTests: XCTestCase {
 
-    func testReturnValue() {
+    func testPure() {
         let output = Combinators.pure("Hello, World!").parse(StringInput("A"))
 
         guard case let .success(value, advancedInput, msgGenerator) = output.reply, .empty == output.state else {
@@ -466,7 +466,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     static var allTests = [
-        ("testReturnValue", testReturnValue),
+        ("testPure", testPure),
         ("testBind", testBind),
         ("testBindWhereOriginalParserFails", testBindWhereOriginalParserFails),
         ("testBindAsOperator", testBindAsOperator),
