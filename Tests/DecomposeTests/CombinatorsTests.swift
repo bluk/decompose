@@ -34,6 +34,23 @@ internal final class CombinatorsTests: XCTestCase {
         XCTAssertEqual(msg.expectedProductions, [])
     }
 
+    func testSymbol() {
+        let symbolParser: Parser<StringInput, Character> = Combinators.symbol("A")
+        let output = symbolParser.parse(StringInput("Hello World!"))
+
+        guard case let .success(value, advancedInput, msgGenerator) = output.reply, .empty == output.state else {
+            XCTFail("Expected parse to be successful but no consumption of characters")
+            return
+        }
+        XCTAssertEqual(value, "A")
+        XCTAssertEqual(advancedInput.current(), "H")
+        XCTAssertEqual(advancedInput.position, 0)
+        let msg = msgGenerator()
+        XCTAssertEqual(msg.unexpectedInput, "")
+        XCTAssertEqual(msg.position, 0)
+        XCTAssertEqual(msg.expectedProductions, [])
+    }
+
     func testBind() {
         let originalParser: Parser<StringInput, String> = Combinators.pure("foo")
         let boundParser: Parser<StringInput, String> = Combinators.bind(originalParser) { result1 in
@@ -467,6 +484,7 @@ internal final class CombinatorsTests: XCTestCase {
 
     static var allTests = [
         ("testPure", testPure),
+        ("testSymbol", testSymbol),
         ("testBind", testBind),
         ("testBindWhereOriginalParserFails", testBindWhereOriginalParserFails),
         ("testBindAsOperator", testBindAsOperator),

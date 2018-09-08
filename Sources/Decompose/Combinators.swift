@@ -28,6 +28,17 @@ public enum Combinators {
         }
     }
 
+    /// Instantiates a `Parser` which returns the symbol parameter and does not advanced the `Input`.
+    ///
+    /// - Parameters:
+    ///     - symbol: The value to return from the `Parser`.
+    /// - Returns: A `Parser` which returns the symbol parameter and does not advanced the `Input`.
+    public static func symbol<I, S>(_ symbol: S) -> Parser<I, S> where S == I.Element {
+        return Parser { input in
+            Consumed(.empty, .success(symbol, input, { ParseMessage(position: input.position) }))
+        }
+    }
+
     /// Composes a `Parser` which invokes the `Parser` parameter and uses its returned value to invoke the function
     /// parameter, and then invokes the function's returned `Parser`.
     ///
