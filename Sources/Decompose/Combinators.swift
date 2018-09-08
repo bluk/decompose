@@ -302,12 +302,12 @@ public enum Combinators {
     /// Instantiates a `Parser` which succeeds if the end of the input is reached.
     ///
     /// - Returns: A `Parser` which succeeds if the end of the input is reached.
-    public static func endOfInput<I>() -> Parser<I, Bool> {
+    public static func endOfInput<I>() -> Parser<I, ()> {
         return Parser { input in
             if input.isEmpty {
                 return Consumed(
                     .empty,
-                    .success(true, input, {
+                    .success((), input, {
                         ParseMessage(
                             position: input.position,
                             unexpectedInput: "",

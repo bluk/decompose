@@ -30,7 +30,7 @@ public extension Combinators {
     /// Returns a `Parser` which tests if the current element is a letter.
     ///
     /// - Returns: A `Parser` which tests if the current element is a letter.
-    static func isLetter<I>() -> Parser<I, Character>
+    static func letter<I>() -> Parser<I, Character>
         where I.Element == Character {
         let characterSet = CharacterSet.letters
         #if swift(>=4.2)
@@ -44,7 +44,7 @@ public extension Combinators {
     /// Returns a `Parser` which tests if the current element is a digit.
     ///
     /// - Returns: A `Parser` which tests if the current element is a digit.
-    static func isDigit<I>() -> Parser<I, Character>
+    static func digit<I>() -> Parser<I, Character>
         where I.Element == Character {
         let characterSet = CharacterSet.decimalDigits
         #if swift(>=4.2)
@@ -65,16 +65,8 @@ public extension Combinators {
             return Combinators.pure("")
         }
 
-        return Parser { input in
-            let firstChar = value.first!
-            return Combinators
-                .bind(Combinators.char(firstChar)) { firstCharValue in
-                    Combinators.bind(Combinators.string(String(value.dropFirst()))) { restOfStringValues in
-                        Combinators.pure(String([firstCharValue] + restOfStringValues))
-                    }
-                }
-                .parse(input)
-        }
+        let firstChar = value.first!
+        return char(firstChar) *> string(String(value.dropFirst())) *> pure(value)
     }
 
     /// Returns a `Parser` which matches a given string. If successful, the returned value is an empty array.
@@ -104,22 +96,7 @@ public extension Combinators {
     ///     - parser: The Parser to invoke
     /// - Returns: A `Parser` which invokes the `parser` parameter zero or more times.
     static func many<I, V>(_ parser: Parser<I, V>) -> Parser<I, [V]> {
-        return Parser { input in
-            let firstParser: Parser<I, [V]> = Combinators.map(parser, { [$0] }) <|> Combinators.pure([])
-            return Combinators
-                .bind(firstParser) { matchedValue in
-                    if matchedValue.isEmpty {
-                        return Combinators.pure([])
-                    }
-
-                    return Combinators.bind(many(parser)) { optionalMatchedValues in
-                        var returnValue: [V] = matchedValue
-                        returnValue.append(contentsOf: optionalMatchedValues)
-                        return Combinators.pure(returnValue)
-                    }
-                }
-                .parse(input)
-        }
+        return choice(many1(parser), pure([]))
     }
 
     /// Returns a `Parser` which invokes the `parser` parameter one or more times.

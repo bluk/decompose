@@ -18,9 +18,9 @@ import XCTest
 internal final class ConvenienceCombinatorsTests: XCTestCase {
 
     func testIsLetter() {
-        let isLetter: Parser<StringInput, Character> = Combinators.isLetter()
+        let letter: Parser<StringInput, Character> = Combinators.letter()
 
-        let output = isLetter.parse(StringInput("AB"))
+        let output = letter.parse(StringInput("AB"))
         guard case let .success(value, advancedInput, msgGenerator) = output.reply, .consumed == output.state else {
             XCTFail("Expected parse to be successful and consumption of `A`")
             return
@@ -34,10 +34,10 @@ internal final class ConvenienceCombinatorsTests: XCTestCase {
     }
 
     func testIsLetterNotMatch() {
-        let isLetter: Parser<StringInput, Character> = Combinators.isLetter()
+        let letter: Parser<StringInput, Character> = Combinators.letter()
         let input = StringInput("1A")
 
-        let output = isLetter.parse(input)
+        let output = letter.parse(input)
         guard case let .error(msgGenerator) = output.reply, .empty == output.state else {
             XCTFail("Expected parse to fail and no consumption")
             return
@@ -49,10 +49,10 @@ internal final class ConvenienceCombinatorsTests: XCTestCase {
     }
 
     func testIsDigit() {
-        let isDigit: Parser<StringInput, Character> = Combinators.isDigit()
+        let digit: Parser<StringInput, Character> = Combinators.digit()
         let input = StringInput("12")
 
-        let output = isDigit.parse(input)
+        let output = digit.parse(input)
         guard case let .success(value, advancedInput, msgGenerator) = output.reply, .consumed == output.state else {
             XCTFail("Expected parse to be successful and consumption of `1`")
             return
@@ -66,10 +66,10 @@ internal final class ConvenienceCombinatorsTests: XCTestCase {
     }
 
     func testIsDigitNotMatch() {
-        let isDigit: Parser<StringInput, Character> = Combinators.isDigit()
+        let digit: Parser<StringInput, Character> = Combinators.digit()
         let input = StringInput("A1")
 
-        let output = isDigit.parse(input)
+        let output = digit.parse(input)
         guard case let .error(msgGenerator) = output.reply, .empty == output.state else {
             XCTFail("Expected parse to fail and no consumption")
             return

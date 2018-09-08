@@ -344,8 +344,8 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testLabel() {
-        let digit: Parser<StringInput, Character> = Combinators.label(Combinators.isDigit(), with: "digit")
-        let letter: Parser<StringInput, Character> = Combinators.label(Combinators.isLetter(), with: "letter")
+        let digit: Parser<StringInput, Character> = Combinators.label(Combinators.digit(), with: "digit")
+        let letter: Parser<StringInput, Character> = Combinators.label(Combinators.letter(), with: "letter")
         let charUnderscore: Parser<StringInput, Character> = Combinators.label(Combinators.char("_"), with: "_")
 
         let identifier: Parser<StringInput, [Character]> = Combinators.many1(letter <|> digit <|> charUnderscore)
@@ -365,8 +365,8 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testLabelEmptyInput() {
-        let digit: Parser<StringInput, Character> = Combinators.label(Combinators.isDigit(), with: "digit")
-        let letter: Parser<StringInput, Character> = Combinators.label(Combinators.isLetter(), with: "letter")
+        let digit: Parser<StringInput, Character> = Combinators.label(Combinators.digit(), with: "digit")
+        let letter: Parser<StringInput, Character> = Combinators.label(Combinators.letter(), with: "letter")
         let charUnderscore: Parser<StringInput, Character> = Combinators.label(Combinators.char("_"), with: "_")
 
         let identifier: Parser<StringInput, [Character]> = Combinators.many1(letter <|> digit <|> charUnderscore)
@@ -384,8 +384,8 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testLabelUnexpectedInput() {
-        let digit: Parser<StringInput, Character> = Combinators.label(Combinators.isDigit(), with: "digit")
-        let letter: Parser<StringInput, Character> = Combinators.label(Combinators.isLetter(), with: "letter")
+        let digit: Parser<StringInput, Character> = Combinators.label(Combinators.digit(), with: "digit")
+        let letter: Parser<StringInput, Character> = Combinators.label(Combinators.letter(), with: "letter")
         let charUnderscore: Parser<StringInput, Character> = Combinators.label(Combinators.char("_"), with: "_")
 
         let identifier: Parser<StringInput, [Character]> = Combinators.many1(letter <|> digit <|> charUnderscore)
@@ -403,9 +403,9 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testLabelNeedOKMessage() {
-        let digit: Parser<StringInput, Character> = Combinators.label(Combinators.isDigit(), with: "digit")
+        let digit: Parser<StringInput, Character> = Combinators.label(Combinators.digit(), with: "digit")
         let pure0: Parser<StringInput, Character> = Combinators.pure("0")
-        let letter: Parser<StringInput, Character> = Combinators.label(Combinators.isLetter(), with: "letter")
+        let letter: Parser<StringInput, Character> = Combinators.label(Combinators.letter(), with: "letter")
         let test = Combinators.then(digit <|> pure0, to: { letter })
         let input = StringInput("*")
 
@@ -436,7 +436,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testEndOfInput() {
-        let fail: Parser<StringInput, Bool> = Combinators.endOfInput()
+        let fail: Parser<StringInput, ()> = Combinators.endOfInput()
         let input = StringInput("")
 
         let output = fail.parse(input)
@@ -451,7 +451,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testEndOfInputNotTheEnd() {
-        let fail: Parser<StringInput, Bool> = Combinators.endOfInput()
+        let fail: Parser<StringInput, ()> = Combinators.endOfInput()
         let input = StringInput("foo")
 
         let output = fail.parse(input)
