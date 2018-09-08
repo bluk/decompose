@@ -164,10 +164,10 @@ internal final class ConvenienceCombinatorsTests: XCTestCase {
     }
 
     func testManyNoMatch() {
-        let many1Parser: Parser<StringInput, [Character]> = Combinators.many(Combinators.char("o"))
+        let manyParser: Parser<StringInput, [Character]> = Combinators.many(Combinators.char("o"))
         let input = StringInput("boo")
 
-        let output = many1Parser.parse(input)
+        let output = manyParser.parse(input)
         guard case let .success(value, advancedInput, msgGenerator) = output.reply, .empty == output.state else {
             XCTFail("Expected parse to succeed but no consumption")
             return

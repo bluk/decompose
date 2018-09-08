@@ -158,3 +158,17 @@ public func <?><I, V1>(
     rhs: String) -> Parser<I, V1> {
     return Combinators.label(lhs, with: rhs)
 }
+
+/// Returns a `Parser` which attempts the parser parameter and if it succeeds, return the value, but if it fails,
+/// use the value parameter.
+///
+/// - Parameters:
+///     - lhs: The Parser to attempt
+///     - rhs: The value to return if the `lhs` parameter is not successful
+/// - Returns: A `Parser` which attempts the parser parameter and if it succeeds, return the value, but if it fails,
+///            use the value parameter.
+public func ??<I, V1>(
+    lhs: Parser<I, V1>,
+    rhs: V1) -> Parser<I, V1> {
+    return Combinators.opt(lhs, rhs)
+}

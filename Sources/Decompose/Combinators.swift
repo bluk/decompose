@@ -340,4 +340,15 @@ public enum Combinators {
                 }))
         }
     }
+
+    /// Instantiates a `Parser` which constructs its real parser via a function.
+    ///
+    /// Useful in instances of recursion where the recursive call can be wrapped in a closure.
+    ///
+    /// - Parameters:
+    ///     - func1: A function which returns a parser.
+    /// - Returns: A `Parser` which calls the returned parser from `func1`.
+    public static func wrap<I, V>(_ func1: @escaping () -> Parser<I, V>) -> Parser<I, V> {
+        return Parser { func1().parse($0) }
+    }
 }
