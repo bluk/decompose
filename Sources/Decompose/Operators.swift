@@ -101,7 +101,7 @@ infix operator <^>: ApplicativeFunctorLeftPrecedence
 ///     - rhs: A function which will transform the `parser`'s return value into a new value.
 /// - Returns: A Parser which transforms the original value to a value using the function.
 public func <^><I, V1, V2>(
-    lhs: Parser<I, V1>,
-    rhs: @escaping (V1) -> V2) -> Parser<I, V2> {
-    return Combinators.map(lhs, rhs)
+    lhs: @escaping (V1) -> V2,
+    rhs: Parser<I, V1>) -> Parser<I, V2> {
+    return Combinators.map(rhs, lhs)
 }

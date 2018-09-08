@@ -261,7 +261,7 @@ internal final class CombinatorsTests: XCTestCase {
     func testMapAsOperator() {
         let satisfy2: Parser<StringInput, Character> = Combinators.char("2")
         let func1: (Character) -> Int? = { Int(String($0)) }
-        let mappedParser = satisfy2 <^> func1
+        let mappedParser = func1 <^> satisfy2
 
         let output = mappedParser.parse(StringInput("2"))
         guard case let .success(value, _, msgGenerator) = output.reply, .consumed == output.state else {
@@ -329,7 +329,7 @@ internal final class CombinatorsTests: XCTestCase {
                 }
             }
         }
-        let applyParser = satisfy2 <^> func1 <*> satisfyTimes <*> satisfy3
+        let applyParser = func1 <^> satisfy2 <*> satisfyTimes <*> satisfy3
 
         let output = applyParser.parse(StringInput("2*3"))
         guard case let .success(value, _, msgGenerator) = output.reply, .consumed == output.state else {
