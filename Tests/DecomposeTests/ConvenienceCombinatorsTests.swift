@@ -236,6 +236,8 @@ internal final class ConvenienceCombinatorsTests: XCTestCase {
         ("testIsDigitNotMatch", testIsDigitNotMatch),
         ("testString", testString),
         ("testStringWithNoMatch", testStringWithNoMatch),
+        ("testStringEmptyReturnValue", testStringEmptyReturnValue),
+        ("testStringEmptyReturnValueWithNoMatch", testStringEmptyReturnValueWithNoMatch),
         ("testMany1", testMany1),
         ("testMany1Complex", testMany1Complex),
         ("testMany1NoMatch", testMany1NoMatch)
