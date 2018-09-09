@@ -15,7 +15,7 @@
 @testable import Decompose
 import XCTest
 
-// swiftlint:disable type_body_length
+// swiftlint:disable type_body_length file_length
 
 internal final class ConvenienceCombinatorsTests: XCTestCase {
 
@@ -337,6 +337,334 @@ internal final class ConvenienceCombinatorsTests: XCTestCase {
         XCTAssertEqual(msg.expectedProductions, [])
     }
 
+    func testChainr() {
+        let intFunc: (Character) -> Parser<StringInput, Int> = { value in
+            let intValue = Int(String(value))!
+            return Combinators.pure(intValue)
+        }
+        let subtractFunc: (Int) -> (Int) -> Int = {
+            value in { value2 in value2 - value }
+        }
+        let chainrParser: Parser<StringInput, Int> = Combinators.chainr(
+            Combinators.bind(Combinators.digit(), to: intFunc),
+            Combinators.then(Combinators.char("-"), to: { Combinators.pure(subtractFunc) })
+        )
+        let input = StringInput("4-2-1")
+
+        let output = chainrParser.parse(input)
+        guard case let .success(value, advancedInput, msgGenerator) = output.reply, .consumed == output.state else {
+            XCTFail("Expected parse to succeed and consumption of `4-2-1`")
+            return
+        }
+
+        XCTAssertEqual(value, 3)
+        XCTAssertEqual(advancedInput.position, 5)
+        let msg = msgGenerator()
+        XCTAssertEqual(msg.unexpectedInput, "")
+        XCTAssertEqual(msg.position, 5)
+        XCTAssertEqual(msg.expectedProductions, [])
+    }
+
+    func testChainrWithNoMatch() {
+        let intFunc: (Character) -> Parser<StringInput, Int> = { value in
+            let intValue = Int(String(value))!
+            return Combinators.pure(intValue)
+        }
+        let subtractFunc: (Int) -> (Int) -> Int = {
+            value in { value2 in value2 - value }
+        }
+        let chainrParser: Parser<StringInput, Int> = Combinators.chainr(
+            Combinators.bind(Combinators.digit(), to: intFunc),
+            Combinators.then(Combinators.char("-"), to: { Combinators.pure(subtractFunc) })
+        )
+        let input = StringInput("2@")
+
+        let output = chainrParser.parse(input)
+        guard case let .success(value, advancedInput, msgGenerator) = output.reply, .consumed == output.state else {
+            XCTFail("Expected parse to succeed and consumption of `2`")
+            return
+        }
+
+        XCTAssertEqual(value, 2)
+        XCTAssertEqual(advancedInput.position, 1)
+        let msg = msgGenerator()
+        XCTAssertEqual(msg.unexpectedInput, "@")
+        XCTAssertEqual(msg.position, 1)
+        XCTAssertEqual(msg.expectedProductions, [])
+    }
+
+    func testChainrWithOnlyOperandMatch() {
+        let intFunc: (Character) -> Parser<StringInput, Int> = { value in
+            let intValue = Int(String(value))!
+            return Combinators.pure(intValue)
+        }
+        let subtractFunc: (Int) -> (Int) -> Int = {
+            value in { value2 in value2 - value }
+        }
+        let chainrParser: Parser<StringInput, Int> = Combinators.chainr(
+            Combinators.bind(Combinators.digit(), to: intFunc),
+            Combinators.then(Combinators.char("-"), to: { Combinators.pure(subtractFunc) })
+        )
+        let input = StringInput("2")
+
+        let output = chainrParser.parse(input)
+        guard case let .success(value, advancedInput, msgGenerator) = output.reply, .consumed == output.state else {
+            XCTFail("Expected parse to succeed and consumption of `2`")
+            return
+        }
+
+        XCTAssertEqual(value, 2)
+        XCTAssertEqual(advancedInput.position, 1)
+        let msg = msgGenerator()
+        XCTAssertEqual(msg.unexpectedInput, "end of input")
+        XCTAssertEqual(msg.position, 1)
+        XCTAssertEqual(msg.expectedProductions, [])
+    }
+
+    func testChainr1() {
+        let intFunc: (Character) -> Parser<StringInput, Int> = { value in
+            let intValue = Int(String(value))!
+            return Combinators.pure(intValue)
+        }
+        let subtractFunc: (Int) -> (Int) -> Int = {
+            value in { value2 in value2 - value }
+        }
+        let chainrParser: Parser<StringInput, Int> = Combinators.chainr1(
+            Combinators.bind(Combinators.digit(), to: intFunc),
+            Combinators.then(Combinators.char("-"), to: { Combinators.pure(subtractFunc) })
+        )
+        let input = StringInput("4-2-1")
+
+        let output = chainrParser.parse(input)
+        guard case let .success(value, advancedInput, msgGenerator) = output.reply, .consumed == output.state else {
+            XCTFail("Expected parse to succeed and consumption of `4-2-1`")
+            return
+        }
+
+        XCTAssertEqual(value, 3)
+        XCTAssertEqual(advancedInput.position, 5)
+        let msg = msgGenerator()
+        XCTAssertEqual(msg.unexpectedInput, "")
+        XCTAssertEqual(msg.position, 5)
+        XCTAssertEqual(msg.expectedProductions, [])
+    }
+
+    func testChainr1WithNoMatch() {
+        let intFunc: (Character) -> Parser<StringInput, Int> = { value in
+            let intValue = Int(String(value))!
+            return Combinators.pure(intValue)
+        }
+        let subtractFunc: (Int) -> (Int) -> Int = {
+            value in { value2 in value2 - value }
+        }
+        let chainrParser: Parser<StringInput, Int> = Combinators.chainr1(
+            Combinators.bind(Combinators.digit(), to: intFunc),
+            Combinators.then(Combinators.char("-"), to: { Combinators.pure(subtractFunc) })
+        )
+        let input = StringInput("2@")
+
+        let output = chainrParser.parse(input)
+        guard case let .error(msgGenerator) = output.reply, .consumed == output.state else {
+            XCTFail("Expected parse to fail and consumption of `2`")
+            return
+        }
+
+        let msg = msgGenerator()
+        XCTAssertEqual(msg.unexpectedInput, "@")
+        XCTAssertEqual(msg.position, 1)
+        XCTAssertEqual(msg.expectedProductions, [])
+    }
+
+    func testChainr1WithOnlyOperand() {
+        let intFunc: (Character) -> Parser<StringInput, Int> = { value in
+            let intValue = Int(String(value))!
+            return Combinators.pure(intValue)
+        }
+        let subtractFunc: (Int) -> (Int) -> Int = {
+            value in { value2 in value2 - value }
+        }
+        let chainrParser: Parser<StringInput, Int> = Combinators.chainr1(
+            Combinators.bind(Combinators.digit(), to: intFunc),
+            Combinators.then(Combinators.char("-"), to: { Combinators.pure(subtractFunc) })
+        )
+        let input = StringInput("2")
+
+        let output = chainrParser.parse(input)
+        guard case let .error(msgGenerator) = output.reply, .consumed == output.state else {
+            XCTFail("Expected parse to fail and consumption of `2`")
+            return
+        }
+
+        let msg = msgGenerator()
+        XCTAssertEqual(msg.unexpectedInput, "end of input")
+        XCTAssertEqual(msg.position, 1)
+        XCTAssertEqual(msg.expectedProductions, [])
+    }
+
+    func testChainl() {
+        let intFunc: (Character) -> Parser<StringInput, Int> = { value in
+            let intValue = Int(String(value))!
+            return Combinators.pure(intValue)
+        }
+        let subtractFunc: (Int) -> (Int) -> Int = {
+            value in { value2 in value2 - value }
+        }
+        let chainrParser: Parser<StringInput, Int> = Combinators.chainl(
+            Combinators.bind(Combinators.digit(), to: intFunc),
+            Combinators.then(Combinators.char("-"), to: { Combinators.pure(subtractFunc) })
+        )
+        let input = StringInput("4-2-1")
+
+        let output = chainrParser.parse(input)
+        guard case let .success(value, advancedInput, msgGenerator) = output.reply, .consumed == output.state else {
+            XCTFail("Expected parse to succeed and consumption of `4-2-1`")
+            return
+        }
+
+        XCTAssertEqual(value, 1)
+        XCTAssertEqual(advancedInput.position, 5)
+        let msg = msgGenerator()
+        XCTAssertEqual(msg.unexpectedInput, "")
+        XCTAssertEqual(msg.position, 5)
+        XCTAssertEqual(msg.expectedProductions, [])
+    }
+
+    func testChainlWithNoMatch() {
+        let intFunc: (Character) -> Parser<StringInput, Int> = { value in
+            let intValue = Int(String(value))!
+            return Combinators.pure(intValue)
+        }
+        let subtractFunc: (Int) -> (Int) -> Int = {
+            value in { value2 in value2 - value }
+        }
+        let chainrParser: Parser<StringInput, Int> = Combinators.chainl(
+            Combinators.bind(Combinators.digit(), to: intFunc),
+            Combinators.then(Combinators.char("-"), to: { Combinators.pure(subtractFunc) })
+        )
+        let input = StringInput("2@")
+
+        let output = chainrParser.parse(input)
+        guard case let .success(value, advancedInput, msgGenerator) = output.reply, .consumed == output.state else {
+            XCTFail("Expected parse to succeed and consumption of `2`")
+            return
+        }
+
+        XCTAssertEqual(value, 2)
+        XCTAssertEqual(advancedInput.position, 1)
+        let msg = msgGenerator()
+        XCTAssertEqual(msg.unexpectedInput, "@")
+        XCTAssertEqual(msg.position, 1)
+        XCTAssertEqual(msg.expectedProductions, [])
+    }
+
+    func testChainlWithOnlyOperandMatch() {
+        let intFunc: (Character) -> Parser<StringInput, Int> = { value in
+            let intValue = Int(String(value))!
+            return Combinators.pure(intValue)
+        }
+        let subtractFunc: (Int) -> (Int) -> Int = {
+            value in { value2 in value2 - value }
+        }
+        let chainrParser: Parser<StringInput, Int> = Combinators.chainl(
+            Combinators.bind(Combinators.digit(), to: intFunc),
+            Combinators.then(Combinators.char("-"), to: { Combinators.pure(subtractFunc) })
+        )
+        let input = StringInput("2")
+
+        let output = chainrParser.parse(input)
+        guard case let .success(value, advancedInput, msgGenerator) = output.reply, .consumed == output.state else {
+            XCTFail("Expected parse to succeed and consumption of `2`")
+            return
+        }
+
+        XCTAssertEqual(value, 2)
+        XCTAssertEqual(advancedInput.position, 1)
+        let msg = msgGenerator()
+        XCTAssertEqual(msg.unexpectedInput, "end of input")
+        XCTAssertEqual(msg.position, 1)
+        XCTAssertEqual(msg.expectedProductions, [])
+    }
+
+    func testChainl1() {
+        let intFunc: (Character) -> Parser<StringInput, Int> = { value in
+            let intValue = Int(String(value))!
+            return Combinators.pure(intValue)
+        }
+        let subtractFunc: (Int) -> (Int) -> Int = {
+            value in { value2 in value2 - value }
+        }
+        let chainrParser: Parser<StringInput, Int> = Combinators.chainl1(
+            Combinators.bind(Combinators.digit(), to: intFunc),
+            Combinators.then(Combinators.char("-"), to: { Combinators.pure(subtractFunc) })
+        )
+        let input = StringInput("4-2-1")
+
+        let output = chainrParser.parse(input)
+        guard case let .success(value, advancedInput, msgGenerator) = output.reply, .consumed == output.state else {
+            XCTFail("Expected parse to succeed and consumption of `4-2-1`")
+            return
+        }
+
+        XCTAssertEqual(value, 1)
+        XCTAssertEqual(advancedInput.position, 5)
+        let msg = msgGenerator()
+        XCTAssertEqual(msg.unexpectedInput, "")
+        XCTAssertEqual(msg.position, 5)
+        XCTAssertEqual(msg.expectedProductions, [])
+    }
+
+    func testChainl1WithNoMatch() {
+        let intFunc: (Character) -> Parser<StringInput, Int> = { value in
+            let intValue = Int(String(value))!
+            return Combinators.pure(intValue)
+        }
+        let subtractFunc: (Int) -> (Int) -> Int = {
+            value in { value2 in value2 - value }
+        }
+        let chainrParser: Parser<StringInput, Int> = Combinators.chainl1(
+            Combinators.bind(Combinators.digit(), to: intFunc),
+            Combinators.then(Combinators.char("-"), to: { Combinators.pure(subtractFunc) })
+        )
+        let input = StringInput("2@")
+
+        let output = chainrParser.parse(input)
+        guard case let .error(msgGenerator) = output.reply, .consumed == output.state else {
+            XCTFail("Expected parse to fail and consumption of `2`")
+            return
+        }
+
+        let msg = msgGenerator()
+        XCTAssertEqual(msg.unexpectedInput, "@")
+        XCTAssertEqual(msg.position, 1)
+        XCTAssertEqual(msg.expectedProductions, [])
+    }
+
+    func testChainl1WithOnlyOperand() {
+        let intFunc: (Character) -> Parser<StringInput, Int> = { value in
+            let intValue = Int(String(value))!
+            return Combinators.pure(intValue)
+        }
+        let subtractFunc: (Int) -> (Int) -> Int = {
+            value in { value2 in value2 - value }
+        }
+        let chainrParser: Parser<StringInput, Int> = Combinators.chainl1(
+            Combinators.bind(Combinators.digit(), to: intFunc),
+            Combinators.then(Combinators.char("-"), to: { Combinators.pure(subtractFunc) })
+        )
+        let input = StringInput("2")
+
+        let output = chainrParser.parse(input)
+        guard case let .error(msgGenerator) = output.reply, .consumed == output.state else {
+            XCTFail("Expected parse to fail and consumption of `2`")
+            return
+        }
+
+        let msg = msgGenerator()
+        XCTAssertEqual(msg.unexpectedInput, "end of input")
+        XCTAssertEqual(msg.position, 1)
+        XCTAssertEqual(msg.expectedProductions, [])
+    }
+
     static var allTests = [
         ("testIsLetter", testIsLetter),
         ("testIsLetterNotMatch", testIsLetterNotMatch),
@@ -354,7 +682,19 @@ internal final class ConvenienceCombinatorsTests: XCTestCase {
         ("testSkipMany1", testSkipMany1),
         ("testSkipMany1WithNoMatch", testSkipMany1WithNoMatch),
         ("testOptWithParserSuccessful", testOptWithParserSuccessful),
-        ("testOptWithParserFailed", testOptWithParserFailed)
+        ("testOptWithParserFailed", testOptWithParserFailed),
+        ("testChainr", testChainr),
+        ("testChainrWithNoMatch", testChainrWithNoMatch),
+        ("testChainrWithOnlyOperandMatch", testChainrWithOnlyOperandMatch),
+        ("testChainr1", testChainr1),
+        ("testChainr1WithNoMatch", testChainr1WithNoMatch),
+        ("testChainr1WithOnlyOperand", testChainr1WithOnlyOperand),
+        ("testChainl", testChainl),
+        ("testChainlWithNoMatch", testChainlWithNoMatch),
+        ("testChainlWithOnlyOperandMatch", testChainlWithOnlyOperandMatch),
+        ("testChainl1", testChainl1),
+        ("testChainl1WithNoMatch", testChainl1WithNoMatch),
+        ("testChainl1WithOnlyOperand", testChainl1WithOnlyOperand)
     ]
 }
-// swiftlint:enable type_body_length
+// swiftlint:enable type_body_length file_length
