@@ -24,7 +24,7 @@ public struct StringInput: Input, Equatable, Hashable {
 
     public let position: Int
 
-    public var isEmpty: Bool {
+    public var isAvailable: Bool {
         return self.position >= self.value.count
     }
 

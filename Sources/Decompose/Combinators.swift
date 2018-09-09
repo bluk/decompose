@@ -40,7 +40,7 @@ public enum Combinators {
     /// - Returns: A `Parser` which accepts the symbol parameter and and advances the `Input`.
     public static func symbol<I, S>(_ symbol: S) -> Parser<I, S> where S == I.Element {
         return Parser(acceptsEmpty: false, firstSetSymbols: [Symbol.value(symbol)]) { input in
-            guard let element = input.current(), !input.isEmpty else {
+            guard let element = input.current(), !input.isAvailable else {
                 let msgGenerator = {
                     ParseMessage(position: input.position, unexpectedInput: "end of input")
                 }
@@ -209,7 +209,7 @@ public enum Combinators {
             acceptsEmpty: false,
             firstSetSymbols: [Symbol.predicate(name: conditionName, condition)]
         ) { input in
-            guard let element = input.current(), !input.isEmpty else {
+            guard let element = input.current(), !input.isAvailable else {
                 let msgGenerator = {
                     ParseMessage(position: input.position, unexpectedInput: "end of input")
                 }
@@ -388,7 +388,7 @@ public enum Combinators {
     /// - Returns: A `Parser` which succeeds if the end of the input is reached.
     public static func endOfInput<I>() -> Parser<I, ()> {
         return Parser(acceptsEmpty: true, firstSetSymbols: [Symbol.empty]) { input in
-            if input.isEmpty {
+            if input.isAvailable {
                 return Consumed(
                     .empty,
                     .success((), input, {

@@ -22,7 +22,7 @@ public protocol Input {
     var position: Int { get }
 
     /// Indicates if there are remaining elements available in the view.
-    var isEmpty: Bool { get }
+    var isAvailable: Bool { get }
 
     /// Returns the current element.
     ///

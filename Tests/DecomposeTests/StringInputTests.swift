@@ -21,7 +21,7 @@ internal final class StringInputTests: XCTestCase {
 
         XCTAssertEqual(input.position, 0)
         XCTAssertEqual(input.current(), "H")
-        XCTAssertFalse(input.isEmpty)
+        XCTAssertFalse(input.isAvailable)
         // Still at the 0 position
         XCTAssertEqual(input.position, 0)
     }
@@ -31,7 +31,7 @@ internal final class StringInputTests: XCTestCase {
 
         XCTAssertEqual(input.position, 1)
         XCTAssertEqual(input.current(), "e")
-        XCTAssertFalse(input.isEmpty)
+        XCTAssertFalse(input.isAvailable)
         // Still at the 1 position
         XCTAssertEqual(input.position, 1)
     }
@@ -101,7 +101,7 @@ internal final class StringInputTests: XCTestCase {
     func testEmptyString() {
         let input = StringInput("")
 
-        XCTAssertTrue(input.isEmpty)
+        XCTAssertTrue(input.isAvailable)
         XCTAssertEqual(input.position, 0)
         XCTAssertNil(input.current())
         XCTAssertEqual(input.current(count: 2), [])
@@ -112,13 +112,13 @@ internal final class StringInputTests: XCTestCase {
 
         var input = StringInput(testString)
         for (counter, char) in testString.enumerated() {
-            XCTAssertFalse(input.isEmpty)
+            XCTAssertFalse(input.isAvailable)
             XCTAssertEqual(input.position, counter)
             XCTAssertEqual(input.current(), char)
             input = input.advanced()
         }
 
-        XCTAssertTrue(input.isEmpty)
+        XCTAssertTrue(input.isAvailable)
         XCTAssertEqual(input.position, 13)
         XCTAssertNil(input.current())
         XCTAssertEqual(input.current(count: 1), [])
@@ -128,11 +128,11 @@ internal final class StringInputTests: XCTestCase {
         let originalInput = StringInput("Hello, World!")
         let newInput = originalInput.advanced(by: 13)
 
-        XCTAssertTrue(newInput.isEmpty)
+        XCTAssertTrue(newInput.isAvailable)
         XCTAssertEqual(newInput.position, 13)
 
         let beyondEndOfStringInput = newInput.advanced()
-        XCTAssertTrue(beyondEndOfStringInput.isEmpty)
+        XCTAssertTrue(beyondEndOfStringInput.isAvailable)
         XCTAssertEqual(beyondEndOfStringInput.position, 14)
     }
 
