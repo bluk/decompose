@@ -99,10 +99,10 @@ public enum Combinators {
                             return result2
                         case .empty:
                             switch result2.reply {
-                            case let .success(value2, advancedInput2, msgGenerator2):
+                            case let .success(value2, remainingInput2, msgGenerator2):
                                 return mergeSuccess(
                                     value: value2,
-                                    input: advancedInput2,
+                                    input: remainingInput2,
                                     msgGenerator1: msgGenerator1,
                                     msgGenerator2: msgGenerator2)
                             case let .error(msgGenerator2):
@@ -255,10 +255,10 @@ public enum Combinators {
                         switch result2.reply {
                         case let .error(msgGenerator2):
                             return mergeError(msgGenerator1: msgGenerator1, msgGenerator2: msgGenerator2)
-                        case let .success(value2, advancedInput2, msgGenerator2):
+                        case let .success(value2, remainingInput2, msgGenerator2):
                             return mergeSuccess(
                                 value: value2,
-                                input: advancedInput2,
+                                input: remainingInput2,
                                 msgGenerator1: msgGenerator1,
                                 msgGenerator2: msgGenerator2
                             )
@@ -266,7 +266,7 @@ public enum Combinators {
                     case .consumed:
                         return result2
                     }
-                case let .success(value1, advancedInput1, msgGenerator1):
+                case let .success(value1, remainingInput1, msgGenerator1):
                     let result2 = parser2.parse(input)
                     switch result2.state {
                     case .empty:
@@ -274,14 +274,14 @@ public enum Combinators {
                         case let .error(msgGenerator2):
                             return mergeSuccess(
                                 value: value1,
-                                input: advancedInput1,
+                                input: remainingInput1,
                                 msgGenerator1: msgGenerator1,
                                 msgGenerator2: msgGenerator2
                             )
                         case let .success(_, _, msgGenerator2):
                             return mergeSuccess(
                                 value: value1,
-                                input: advancedInput1,
+                                input: remainingInput1,
                                 msgGenerator1: msgGenerator1,
                                 msgGenerator2: msgGenerator2
                             )
@@ -354,7 +354,7 @@ public enum Combinators {
                         )
                     }
                     return Consumed(.empty, .error(labelMsgGenerator))
-                case let .success(value, advancedInput, msgGenerator):
+                case let .success(value, remainingInput, msgGenerator):
                     let labelMsgGenerator: () -> ParseMessage = {
                         let originalMsg = msgGenerator()
                         return ParseMessage(
@@ -363,7 +363,7 @@ public enum Combinators {
                             expectedProductions: [label]
                         )
                     }
-                    return Consumed(.empty, .success(value, advancedInput, labelMsgGenerator))
+                    return Consumed(.empty, .success(value, remainingInput, labelMsgGenerator))
                 }
             case .consumed:
                 return result

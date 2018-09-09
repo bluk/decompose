@@ -21,13 +21,13 @@ internal final class CombinatorsTests: XCTestCase {
     func testPure() {
         let output = Combinators.pure("Hello, World!").parse(StringInput("A"))
 
-        guard case let .success(value, advancedInput, msgGenerator) = output.reply, .empty == output.state else {
+        guard case let .success(value, remainingInput, msgGenerator) = output.reply, .empty == output.state else {
             XCTFail("Expected parse to be successful but no consumption of characters")
             return
         }
         XCTAssertEqual(value, "Hello, World!")
-        XCTAssertEqual(advancedInput.current(), "A")
-        XCTAssertEqual(advancedInput.position, 0)
+        XCTAssertEqual(remainingInput.current(), "A")
+        XCTAssertEqual(remainingInput.position, 0)
         let msg = msgGenerator()
         XCTAssertEqual(msg.unexpectedInput, "")
         XCTAssertEqual(msg.position, 0)
@@ -38,13 +38,13 @@ internal final class CombinatorsTests: XCTestCase {
         let symbolParser: Parser<StringInput, Character> = Combinators.symbol("H")
         let output = symbolParser.parse(StringInput("Hello World!"))
 
-        guard case let .success(value, advancedInput, msgGenerator) = output.reply, .consumed == output.state else {
+        guard case let .success(value, remainingInput, msgGenerator) = output.reply, .consumed == output.state else {
             XCTFail("Expected parse to be successful but no consumption of characters")
             return
         }
         XCTAssertEqual(value, "H")
-        XCTAssertEqual(advancedInput.current(), "e")
-        XCTAssertEqual(advancedInput.position, 1)
+        XCTAssertEqual(remainingInput.current(), "e")
+        XCTAssertEqual(remainingInput.position, 1)
         let msg = msgGenerator()
         XCTAssertEqual(msg.unexpectedInput, "")
         XCTAssertEqual(msg.position, 0)
@@ -61,12 +61,12 @@ internal final class CombinatorsTests: XCTestCase {
         let input = StringInput("test")
 
         let output = boundParser.parse(input)
-        guard case let .success(value, advancedInput, msgGenerator) = output.reply, .empty == output.state else {
+        guard case let .success(value, remainingInput, msgGenerator) = output.reply, .empty == output.state else {
             XCTFail("Expected parse to be successful but no consumption of characters")
             return
         }
         XCTAssertEqual(value, "bar")
-        XCTAssertEqual(advancedInput, input)
+        XCTAssertEqual(remainingInput, input)
         let msg = msgGenerator()
         XCTAssertEqual(msg.unexpectedInput, "")
         XCTAssertEqual(msg.position, 0)
@@ -102,12 +102,12 @@ internal final class CombinatorsTests: XCTestCase {
         let input = StringInput("test")
 
         let output = boundParser.parse(input)
-        guard case let .success(value, advancedInput, msgGenerator) = output.reply, .empty == output.state else {
+        guard case let .success(value, remainingInput, msgGenerator) = output.reply, .empty == output.state else {
             XCTFail("Expected parse to be successful but no consumption of characters")
             return
         }
         XCTAssertEqual(value, "bar")
-        XCTAssertEqual(advancedInput, input)
+        XCTAssertEqual(remainingInput, input)
         let msg = msgGenerator()
         XCTAssertEqual(msg.unexpectedInput, "")
         XCTAssertEqual(msg.position, 0)
@@ -125,12 +125,12 @@ internal final class CombinatorsTests: XCTestCase {
         let input = StringInput("test")
 
         let output = boundParser.parse(input)
-        guard case let .success(value, advancedInput, msgGenerator) = output.reply, .empty == output.state else {
+        guard case let .success(value, remainingInput, msgGenerator) = output.reply, .empty == output.state else {
             XCTFail("Expected parse to be successful but no consumption of characters")
             return
         }
         XCTAssertEqual(value, "bar")
-        XCTAssertEqual(advancedInput, input)
+        XCTAssertEqual(remainingInput, input)
         let msg = msgGenerator()
         XCTAssertEqual(msg.unexpectedInput, "")
         XCTAssertEqual(msg.position, 0)
@@ -142,12 +142,12 @@ internal final class CombinatorsTests: XCTestCase {
         let input = StringInput("foo")
 
         let output = matchesF.parse(input)
-        guard case let .success(value, advancedInput, msgGenerator) = output.reply, .consumed == output.state else {
+        guard case let .success(value, remainingInput, msgGenerator) = output.reply, .consumed == output.state else {
             XCTFail("Expected parse to be successful and consumption of `f`")
             return
         }
         XCTAssertEqual(value, "f")
-        XCTAssertEqual(advancedInput.position, 1)
+        XCTAssertEqual(remainingInput.position, 1)
         let msg = msgGenerator()
         XCTAssertEqual(msg.unexpectedInput, "")
         XCTAssertEqual(msg.position, 0)
@@ -175,28 +175,28 @@ internal final class CombinatorsTests: XCTestCase {
         let orParser = Combinators.choice(matchesF, matchesB)
 
         let output1 = orParser.parse(StringInput("foo"))
-        guard case let .success(value1, advancedInput1, msgGenerator1) = output1.reply,
+        guard case let .success(value1, remainingInput1, msgGenerator1) = output1.reply,
             .consumed == output1.state else {
             XCTFail("Expected parse to be successful and consumption of `f`")
             return
         }
         XCTAssertEqual(value1, "f")
-        XCTAssertEqual(advancedInput1.position, 1)
-        XCTAssertEqual(advancedInput1.current(), "o")
+        XCTAssertEqual(remainingInput1.position, 1)
+        XCTAssertEqual(remainingInput1.current(), "o")
         let msg1 = msgGenerator1()
         XCTAssertEqual(msg1.unexpectedInput, "")
         XCTAssertEqual(msg1.position, 0)
         XCTAssertEqual(msg1.expectedProductions, [])
 
         let output2 = orParser.parse(StringInput("bar"))
-        guard case let .success(value2, advancedInput2, msgGenerator2) = output2.reply,
+        guard case let .success(value2, remainingInput2, msgGenerator2) = output2.reply,
             .consumed == output2.state else {
             XCTFail("Expected parse to be successful and consumption of `b`")
             return
         }
         XCTAssertEqual(value2, "b")
-        XCTAssertEqual(advancedInput2.position, 1)
-        XCTAssertEqual(advancedInput2.current(), "a")
+        XCTAssertEqual(remainingInput2.position, 1)
+        XCTAssertEqual(remainingInput2.current(), "a")
         let msg2 = msgGenerator2()
         XCTAssertEqual(msg2.unexpectedInput, "")
         XCTAssertEqual(msg2.position, 0)
@@ -227,13 +227,13 @@ internal final class CombinatorsTests: XCTestCase {
         let input = StringInput("bar")
 
         let output = orParser.parse(input)
-        guard case let .success(value, advancedInput, msgGenerator) = output.reply, .consumed == output.state else {
+        guard case let .success(value, remainingInput, msgGenerator) = output.reply, .consumed == output.state else {
             XCTFail("Expected parse to be successful and consumption of `b`")
             return
         }
         XCTAssertEqual(value, "b")
-        XCTAssertEqual(advancedInput.position, 1)
-        XCTAssertEqual(advancedInput.current(), "a")
+        XCTAssertEqual(remainingInput.position, 1)
+        XCTAssertEqual(remainingInput.current(), "a")
         let msg = msgGenerator()
         XCTAssertEqual(msg.unexpectedInput, "")
         XCTAssertEqual(msg.position, 0)
@@ -365,12 +365,12 @@ internal final class CombinatorsTests: XCTestCase {
         let input = StringInput("foo123_bar456@")
 
         let output = identifier.parse(input)
-        guard case let .success(value, advancedInput, msgGenerator) = output.reply, .consumed == output.state else {
+        guard case let .success(value, remainingInput, msgGenerator) = output.reply, .consumed == output.state else {
             XCTFail("Expected parse to be successful and consumption of `foo123_bar456`")
             return
         }
         XCTAssertEqual(String(value), "foo123_bar456")
-        XCTAssertEqual(advancedInput.position, 13)
+        XCTAssertEqual(remainingInput.position, 13)
         let msg = msgGenerator()
         XCTAssertEqual(msg.unexpectedInput, "")
         XCTAssertEqual(msg.position, 13)

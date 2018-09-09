@@ -28,12 +28,12 @@ internal final class OperatorsTests: XCTestCase {
         let input = StringInput("test")
 
         let output = boundParser.parse(input)
-        guard case let .success(value, advancedInput, msgGenerator) = output.reply, .empty == output.state else {
+        guard case let .success(value, remainingInput, msgGenerator) = output.reply, .empty == output.state else {
             XCTFail("Expected parse to be successful but no consumption of characters")
             return
         }
         XCTAssertEqual(value, "bar")
-        XCTAssertEqual(advancedInput, input)
+        XCTAssertEqual(remainingInput, input)
         let msg = msgGenerator()
         XCTAssertEqual(msg.unexpectedInput, "")
         XCTAssertEqual(msg.position, 0)
@@ -47,13 +47,13 @@ internal final class OperatorsTests: XCTestCase {
         let input = StringInput("bar")
 
         let output = orParser.parse(input)
-        guard case let .success(value, advancedInput, msgGenerator) = output.reply, .consumed == output.state else {
+        guard case let .success(value, remainingInput, msgGenerator) = output.reply, .consumed == output.state else {
             XCTFail("Expected parse to be successful and consumption of `b`")
             return
         }
         XCTAssertEqual(value, "b")
-        XCTAssertEqual(advancedInput.position, 1)
-        XCTAssertEqual(advancedInput.current(), "a")
+        XCTAssertEqual(remainingInput.position, 1)
+        XCTAssertEqual(remainingInput.current(), "a")
         let msg = msgGenerator()
         XCTAssertEqual(msg.unexpectedInput, "")
         XCTAssertEqual(msg.position, 0)
