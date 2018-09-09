@@ -14,7 +14,7 @@
 
 import Foundation
 
-// swiftlint:disable type_body_length
+// swiftlint:disable type_body_length file_length
 
 /// Convenience methods to create and compose `Parser`s.
 public enum Combinators {
@@ -25,22 +25,43 @@ public enum Combinators {
     ///     - value: The value to return from the `Parser`.
     /// - Returns: A `Parser` which returns the value parameter and does not advanced the `Input`.
     public static func pure<I, V>(_ value: V) -> Parser<I, V> {
-        return Parser(acceptsEmpty: true) { input in
+        return Parser(
+            acceptsEmpty: true,
+            firstSetSymbols: [Symbol.empty]
+        ) { input in
             Consumed(.empty, .success(value, input, { ParseMessage(position: input.position) }))
         }
     }
 
-    /// Instantiates a `Parser` which returns the symbol parameter and does not advanced the `Input`.
+    /// Instantiates a `Parser` which accepts the symbol parameter and advances the `Input`.
     ///
     /// - Parameters:
-    ///     - symbol: The value to return from the `Parser`.
-    /// - Returns: A `Parser` which returns the symbol parameter and does not advanced the `Input`.
+    ///     - symbol: The value to expect.
+    /// - Returns: A `Parser` which accepts the symbol parameter and and advances the `Input`.
     public static func symbol<I, S>(_ symbol: S) -> Parser<I, S> where S == I.Element {
-        return Parser(acceptsEmpty: false) { input in
-            Consumed(.empty, .success(symbol, input, { ParseMessage(position: input.position) }))
+        return Parser(acceptsEmpty: false, firstSetSymbols: [Symbol.value(symbol)]) { input in
+            guard let element = input.current(), !input.isEmpty else {
+                let msgGenerator = {
+                    ParseMessage(position: input.position, unexpectedInput: "end of input")
+                }
+                return Consumed(.empty, .error(msgGenerator))
+            }
+
+            guard element == symbol else {
+                let msgGenerator = {
+                    ParseMessage(position: input.position, unexpectedInput: "\(element)")
+                }
+                return Consumed(.empty, .error(msgGenerator))
+            }
+
+            let msgGenerator = {
+                ParseMessage(position: input.position)
+            }
+            return Consumed(.consumed, .success(element, input.advanced(), msgGenerator))
         }
     }
 
+    // swiftlint:disable cyclomatic_complexity function_body_length
     /// Composes a `Parser` which invokes the `Parser` parameter and uses its returned value to invoke the function
     /// parameter, and then invokes the function's returned `Parser`.
     ///
@@ -53,71 +74,26 @@ public enum Combinators {
     public static func bind<I, V1, V2>(_ parser1: Parser<I, V1>, to func1: @escaping (V1) -> Parser<I, V2>)
         -> Parser<I, V2> {
         var parser2ComputeAcceptsEmpty: (() -> Bool)?
-        return Parser(acceptsEmpty:
-            parser1.computeAcceptsEmpty() && (parser2ComputeAcceptsEmpty?() ?? false)
-        ) { input in
-            let result1 = parser1.parse(input)
-            switch result1.state {
-            case .empty:
-                switch result1.reply {
-                case let .success(value1, advancedInput1, msgGenerator1):
-                    let parser2 = func1(value1)
-                    parser2ComputeAcceptsEmpty = parser2.computeAcceptsEmpty
-                    let result2 = parser2.parse(advancedInput1)
-                    switch result2.state {
-                    case .consumed:
-                        return result2
-                    case .empty:
-                        switch result2.reply {
-                        case let .success(value2, advancedInput2, msgGenerator2):
-                            return mergeSuccess(
-                                value: value2,
-                                input: advancedInput2,
-                                msgGenerator1: msgGenerator1,
-                                msgGenerator2: msgGenerator2)
-                        case let .error(msgGenerator2):
-                            return mergeError(msgGenerator1: msgGenerator1, msgGenerator2: msgGenerator2)
-                        }
-                    }
-                case let .error(error):
-                    return Consumed(.empty, .error(error))
+        var parser2ComputeFirstSetSymbols: (() -> [Symbol<I.Element>])?
+        return Parser(
+            acceptsEmpty: parser1.computeAcceptsEmpty() && (parser2ComputeAcceptsEmpty?() ?? false),
+            firstSetSymbols: {
+                let symbols = parser1.computeFirstSetSymbols()
+                if let parser2ComputeFirstSetSymbols = parser2ComputeFirstSetSymbols, parser1.computeAcceptsEmpty() {
+                    return symbols + parser2ComputeFirstSetSymbols()
                 }
-            case .consumed:
-                return Consumed(.consumed, {
-                    switch result1.reply {
-                    case let .success(value1, advancedInput1, _):
-                        let parser2 = func1(value1)
-                        parser2ComputeAcceptsEmpty = parser2.computeAcceptsEmpty
-                        return parser2.parse(advancedInput1).reply
-                    case let .error(error):
-                        return .error(error)
-                    }
-                })
-            }
-        }
-    }
-
-    /// Composes a `Parser` which invokes the `Parser` parameter and then invokes the function's returned `Parser`.
-    ///
-    /// - Parameters:
-    ///     - parser1: The first `Parser` to invoke the input with.
-    ///     - func1: A function which will return a `Parser`, which is then invoked with the remaining input
-    /// - Returns: A composited `Parser` which invoke's the first parser and then uses the function to return a
-    ///            `Parser` to invoke with the remaining `Input`.
-    public static func then<I, V1, V2>(_ parser1: Parser<I, V1>, to func1: @escaping () -> Parser<I, V2>)
-        -> Parser<I, V2> {
-            var parser2ComputeAcceptsEmpty: (() -> Bool)?
-            return Parser(acceptsEmpty:
-                parser1.computeAcceptsEmpty() && (parser2ComputeAcceptsEmpty?() ?? false)
-            ) { input in
+                return symbols
+            }(),
+            parse: { input in
                 let result1 = parser1.parse(input)
                 switch result1.state {
                 case .empty:
                     switch result1.reply {
-                    case let .success(_, advancedInput1, msgGenerator1):
-                        let parser2 = func1()
+                    case let .success(value1, remainingInput1, msgGenerator1):
+                        let parser2 = func1(value1)
                         parser2ComputeAcceptsEmpty = parser2.computeAcceptsEmpty
-                        let result2 = parser2.parse(advancedInput1)
+                        parser2ComputeFirstSetSymbols = parser2.computeFirstSetSymbols
+                        let result2 = parser2.parse(remainingInput1)
                         switch result2.state {
                         case .consumed:
                             return result2
@@ -139,26 +115,100 @@ public enum Combinators {
                 case .consumed:
                     return Consumed(.consumed, {
                         switch result1.reply {
-                        case let .success(_, advancedInput1, _):
-                            let parser2 = func1()
+                        case let .success(value1, remainingInput1, _):
+                            let parser2 = func1(value1)
                             parser2ComputeAcceptsEmpty = parser2.computeAcceptsEmpty
-                            return parser2.parse(advancedInput1).reply
+                            parser2ComputeFirstSetSymbols = parser2.computeFirstSetSymbols
+                            return parser2.parse(remainingInput1).reply
                         case let .error(error):
                             return .error(error)
                         }
                     })
                 }
-            }
+            })
     }
+    // swiftlint:enable cyclomatic_complexity function_body_length
+
+    // swiftlint:disable cyclomatic_complexity function_body_length
+    /// Composes a `Parser` which invokes the `Parser` parameter and then invokes the function's returned `Parser`.
+    ///
+    /// - Parameters:
+    ///     - parser1: The first `Parser` to invoke the input with.
+    ///     - func1: A function which will return a `Parser`, which is then invoked with the remaining input
+    /// - Returns: A composited `Parser` which invoke's the first parser and then uses the function to return a
+    ///            `Parser` to invoke with the remaining `Input`.
+    public static func then<I, V1, V2>(_ parser1: Parser<I, V1>, to func1: @escaping () -> Parser<I, V2>)
+        -> Parser<I, V2> {
+            var parser2ComputeAcceptsEmpty: (() -> Bool)?
+            var parser2ComputeFirstSetSymbols: (() -> [Symbol<I.Element>])?
+            return Parser(
+                acceptsEmpty: parser1.computeAcceptsEmpty() && (parser2ComputeAcceptsEmpty?() ?? false),
+                firstSetSymbols: {
+                    let symbols = parser1.computeFirstSetSymbols()
+                    if let parser2ComputeFirstSetSymbols = parser2ComputeFirstSetSymbols,
+                        parser1.computeAcceptsEmpty() {
+                        return symbols + parser2ComputeFirstSetSymbols()
+                    }
+                    return symbols
+                }(),
+                parse: { input in
+                    let result1 = parser1.parse(input)
+                    switch result1.state {
+                    case .empty:
+                        switch result1.reply {
+                        case let .success(_, remainingInput1, msgGenerator1):
+                            let parser2 = func1()
+                            parser2ComputeAcceptsEmpty = parser2.computeAcceptsEmpty
+                            parser2ComputeFirstSetSymbols = parser2.computeFirstSetSymbols
+                            let result2 = parser2.parse(remainingInput1)
+                            switch result2.state {
+                            case .consumed:
+                                return result2
+                            case .empty:
+                                switch result2.reply {
+                                case let .success(value2, remainingInput2, msgGenerator2):
+                                    return mergeSuccess(
+                                        value: value2,
+                                        input: remainingInput2,
+                                        msgGenerator1: msgGenerator1,
+                                        msgGenerator2: msgGenerator2)
+                                case let .error(msgGenerator2):
+                                    return mergeError(msgGenerator1: msgGenerator1, msgGenerator2: msgGenerator2)
+                                }
+                            }
+                        case let .error(error):
+                            return Consumed(.empty, .error(error))
+                        }
+                    case .consumed:
+                        return Consumed(.consumed, {
+                            switch result1.reply {
+                            case let .success(_, remainingInput1, _):
+                                let parser2 = func1()
+                                parser2ComputeAcceptsEmpty = parser2.computeAcceptsEmpty
+                                parser2ComputeFirstSetSymbols = parser2.computeFirstSetSymbols
+                                return parser2.parse(remainingInput1).reply
+                            case let .error(error):
+                                return .error(error)
+                            }
+                        })
+                    }
+                })
+    }
+    // swiftlint:enable cyclomatic_complexity function_body_length
 
     /// Returns a `Parser` which passes an element to the `condition` function and succeeds if the `condition` returns
     /// true or fails if `condition` returns false.
     ///
     /// - Parameters:
+    ///     - conditionName: The name of the condition.
     ///     - condition: A function which is passed in an element, and determines if the element meets some criteria.
     /// - Returns: A `Parser` which returns an element if it succeeds the condition.
-    public static func satisfy<I, V>(_ condition: @escaping (V) -> Bool) -> Parser<I, V> where I.Element == V {
-        return Parser(acceptsEmpty: false) { input in
+    public static func satisfy<I, V>(conditionName: String, _ condition: @escaping (V) -> Bool)
+        -> Parser<I, V> where I.Element == V {
+        return Parser(
+            acceptsEmpty: false,
+            firstSetSymbols: [Symbol.predicate(name: conditionName, condition)]
+        ) { input in
             guard let element = input.current(), !input.isEmpty else {
                 let msgGenerator = {
                     ParseMessage(position: input.position, unexpectedInput: "end of input")
@@ -190,8 +240,9 @@ public enum Combinators {
     public static func choice<I, V>(
         _ parser1: Parser<I, V>,
         _ parser2: Parser<I, V>) -> Parser<I, V> {
-        return Parser(acceptsEmpty:
-            parser1.computeAcceptsEmpty() || parser2.computeAcceptsEmpty()
+        return Parser(
+            acceptsEmpty: parser1.computeAcceptsEmpty() || parser2.computeAcceptsEmpty(),
+            firstSetSymbols: parser1.computeFirstSetSymbols() + parser2.computeFirstSetSymbols()
         ) { input in
             let result1 = parser1.parse(input)
             switch result1.state {
@@ -285,7 +336,10 @@ public enum Combinators {
     ///     - label: The value of any produced `ParseMessage`'s `expectedProductions`.
     /// - Returns: A `Parser` which has a label attached for any produced `ParseMessage`s.
     public static func label<I, V>(_ parser: Parser<I, V>, with label: String) -> Parser<I, V> {
-        return Parser(acceptsEmpty: true) { input in
+        return Parser(
+            acceptsEmpty: false,
+            firstSetSymbols: parser.computeFirstSetSymbols()
+        ) { input in
             let result = parser.parse(input)
             switch result.state {
             case .empty:
@@ -321,7 +375,10 @@ public enum Combinators {
     ///
     /// - Returns: A `Parser` which only fails.
     public static func fail<I, V>() -> Parser<I, V> {
-        return Parser(acceptsEmpty: true) { input in
+        return Parser(
+            acceptsEmpty: true,
+            firstSetSymbols: [Symbol.empty]
+        ) { input in
             Consumed(.empty, .error({ ParseMessage(position: input.position) }))
         }
     }
@@ -330,7 +387,7 @@ public enum Combinators {
     ///
     /// - Returns: A `Parser` which succeeds if the end of the input is reached.
     public static func endOfInput<I>() -> Parser<I, ()> {
-        return Parser(acceptsEmpty: true) { input in
+        return Parser(acceptsEmpty: true, firstSetSymbols: [Symbol.empty]) { input in
             if input.isEmpty {
                 return Consumed(
                     .empty,
@@ -365,7 +422,12 @@ public enum Combinators {
     ///     - func1: A function which returns a parser.
     /// - Returns: A `Parser` which calls the returned parser from `func1`.
     public static func wrap<I, V>(_ func1: @escaping () -> Parser<I, V>) -> Parser<I, V> {
-        return Parser(acceptsEmpty: func1().computeAcceptsEmpty()) { func1().parse($0) }
+        return Parser(
+            acceptsEmpty: func1().computeAcceptsEmpty(),
+            firstSetSymbols: func1().computeFirstSetSymbols()
+        ) {
+            func1().parse($0)
+        }
     }
 }
-// swiftlint:enable type_body_length
+// swiftlint:enable type_body_length file_length

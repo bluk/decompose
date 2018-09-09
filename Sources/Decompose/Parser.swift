@@ -13,7 +13,7 @@
 //  limitations under the License.
 
 /// A value type for the `parse` function.
-public struct Parser<I, V> where I: Input {
+public struct Parser<I, V> where I: Input, I.Element: Comparable, I.Element: Hashable {
 
     /// Initializes a parser.
     ///
@@ -21,13 +21,18 @@ public struct Parser<I, V> where I: Input {
     ///     - computeAcceptsEmpty: A function to lazily compute if the `Parser` accepts an empty input.
     ///     - parse: A function to parse the `Input`
     public init(acceptsEmpty computeAcceptsEmpty: @autoclosure @escaping () -> Bool,
+                firstSetSymbols computeFirstSetSymbols: @autoclosure @escaping () -> [Symbol<I.Element>],
                 parse: @escaping (I) -> Consumed<I, V>) {
         self.computeAcceptsEmpty = computeAcceptsEmpty
+        self.computeFirstSetSymbols = computeFirstSetSymbols
         self.parse = parse
     }
 
     /// Returns true if this `Parser` accepts an empty input.
     public let computeAcceptsEmpty: () -> Bool
+
+    /// Returns the first set of symbols which can be accepted as input.
+    public let computeFirstSetSymbols: () -> [Symbol<I.Element>]
 
     /// A function which takes an `Input` and returns a type which indicates if the `Input` is consumed when parsing
     /// the result and either a parsed value or an error message.

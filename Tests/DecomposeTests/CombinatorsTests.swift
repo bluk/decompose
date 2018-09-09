@@ -35,16 +35,16 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testSymbol() {
-        let symbolParser: Parser<StringInput, Character> = Combinators.symbol("A")
+        let symbolParser: Parser<StringInput, Character> = Combinators.symbol("H")
         let output = symbolParser.parse(StringInput("Hello World!"))
 
-        guard case let .success(value, advancedInput, msgGenerator) = output.reply, .empty == output.state else {
+        guard case let .success(value, advancedInput, msgGenerator) = output.reply, .consumed == output.state else {
             XCTFail("Expected parse to be successful but no consumption of characters")
             return
         }
-        XCTAssertEqual(value, "A")
-        XCTAssertEqual(advancedInput.current(), "H")
-        XCTAssertEqual(advancedInput.position, 0)
+        XCTAssertEqual(value, "H")
+        XCTAssertEqual(advancedInput.current(), "e")
+        XCTAssertEqual(advancedInput.position, 1)
         let msg = msgGenerator()
         XCTAssertEqual(msg.unexpectedInput, "")
         XCTAssertEqual(msg.position, 0)
@@ -138,7 +138,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testSatisfy() {
-        let matchesF: Parser<StringInput, Character> = Combinators.satisfy { $0 == "f" }
+        let matchesF: Parser<StringInput, Character> = Combinators.satisfy(conditionName: "f") { $0 == "f" }
         let input = StringInput("foo")
 
         let output = matchesF.parse(input)
@@ -155,7 +155,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testSatisfyWhenItDoesNotParse() {
-        let matchesF: Parser<StringInput, Character> = Combinators.satisfy { $0 == "f" }
+        let matchesF: Parser<StringInput, Character> = Combinators.satisfy(conditionName: "f") { $0 == "f" }
         let input = StringInput("bar")
 
         let output = matchesF.parse(input)

@@ -24,7 +24,7 @@ public extension Combinators {
     /// - Returns: A `Parser` which tests if the current element is a specific `Character`.
     static func char<I>(_ value: Character) -> Parser<I, Character>
         where I.Element == Character {
-        return satisfy { $0 == value }
+        return satisfy(conditionName: "\"\(value)\"") { $0 == value }
     }
 
     /// Returns a `Parser` which tests if the current element is a letter.
@@ -37,7 +37,7 @@ public extension Combinators {
         return satisfy { $0.unicodeScalars.allSatisfy(characterSet.contains) }
         #else
         // https://github.com/apple/swift-evolution/blob/master/proposals/0207-containsOnly.md
-        return satisfy { !$0.unicodeScalars.contains { !characterSet.contains($0) } }
+        return satisfy(conditionName: "letter") { !$0.unicodeScalars.contains { !characterSet.contains($0) } }
         #endif
     }
 
@@ -51,7 +51,7 @@ public extension Combinators {
         return satisfy { $0.unicodeScalars.allSatisfy(characterSet.contains) }
         #else
         // https://github.com/apple/swift-evolution/blob/master/proposals/0207-containsOnly.md
-        return satisfy { !$0.unicodeScalars.contains { !characterSet.contains($0) } }
+        return satisfy(conditionName: "digit") { !$0.unicodeScalars.contains { !characterSet.contains($0) } }
         #endif
     }
 
@@ -80,9 +80,9 @@ public extension Combinators {
             return Combinators.pure([])
         }
 
-        return Parser(acceptsEmpty: false) { input in
-            let firstChar = value.first!
-            return Combinators
+        let firstChar = value.first!
+        return Parser(acceptsEmpty: false, firstSetSymbols: [Symbol.value(firstChar)]) { input in
+            Combinators
                 .then(Combinators.char(firstChar)) {
                     Combinators.stringEmptyReturnValue(String(value.dropFirst()))
                 }
@@ -106,7 +106,10 @@ public extension Combinators {
     ///     - parser: The Parser to invoke.
     /// - Returns: A `Parser` which invokes the `parser` parameter one or more times.
     static func many1<I, V>(_ parser: Parser<I, V>) -> Parser<I, [V]> {
-        return Parser(acceptsEmpty: parser.computeAcceptsEmpty()) { input in
+        return Parser(
+            acceptsEmpty: parser.computeAcceptsEmpty(),
+            firstSetSymbols: parser.computeFirstSetSymbols()
+        ) { input in
             Combinators
                 .bind(parser) { matchedValue in
                     Combinators.bind(many1(parser) <|> Combinators.pure([])) { optionalMatchedValues in
