@@ -97,7 +97,7 @@ public extension Combinators {
     /// - Returns: A `Parser` which invokes the `parser` parameter zero or more times.
     static func many<I, V>(_ parser: Parser<I, V>) -> Parser<I, [V]> {
         let appendFunc: (V) -> ([V]) -> [V] = { element in { [element] + $0 } }
-        return (appendFunc <^> parser <*> wrap { many(parser) }) ?? []
+        return appendFunc <^> parser <*> wrap { many(parser) } <??> []
     }
 
     /// Returns a `Parser` which invokes the `parser` parameter one or more times.
