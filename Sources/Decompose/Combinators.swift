@@ -14,6 +14,8 @@
 
 import Foundation
 
+// swiftlint:disable type_body_length
+
 /// Convenience methods to create and compose `Parser`s.
 public enum Combinators {
 
@@ -23,7 +25,7 @@ public enum Combinators {
     ///     - value: The value to return from the `Parser`.
     /// - Returns: A `Parser` which returns the value parameter and does not advanced the `Input`.
     public static func pure<I, V>(_ value: V) -> Parser<I, V> {
-        return Parser { input in
+        return Parser(acceptsEmpty: true) { input in
             Consumed(.empty, .success(value, input, { ParseMessage(position: input.position) }))
         }
     }
@@ -34,7 +36,7 @@ public enum Combinators {
     ///     - symbol: The value to return from the `Parser`.
     /// - Returns: A `Parser` which returns the symbol parameter and does not advanced the `Input`.
     public static func symbol<I, S>(_ symbol: S) -> Parser<I, S> where S == I.Element {
-        return Parser { input in
+        return Parser(acceptsEmpty: false) { input in
             Consumed(.empty, .success(symbol, input, { ParseMessage(position: input.position) }))
         }
     }
@@ -50,13 +52,17 @@ public enum Combinators {
     ///            `func1`, which generates a new `Parser` to invoke the remaining input with.
     public static func bind<I, V1, V2>(_ parser1: Parser<I, V1>, to func1: @escaping (V1) -> Parser<I, V2>)
         -> Parser<I, V2> {
-        return Parser { input in
+        var parser2ComputeAcceptsEmpty: (() -> Bool)?
+        return Parser(acceptsEmpty:
+            parser1.computeAcceptsEmpty() && (parser2ComputeAcceptsEmpty?() ?? false)
+        ) { input in
             let result1 = parser1.parse(input)
             switch result1.state {
             case .empty:
                 switch result1.reply {
                 case let .success(value1, advancedInput1, msgGenerator1):
                     let parser2 = func1(value1)
+                    parser2ComputeAcceptsEmpty = parser2.computeAcceptsEmpty
                     let result2 = parser2.parse(advancedInput1)
                     switch result2.state {
                     case .consumed:
@@ -80,7 +86,9 @@ public enum Combinators {
                 return Consumed(.consumed, {
                     switch result1.reply {
                     case let .success(value1, advancedInput1, _):
-                        return func1(value1).parse(advancedInput1).reply
+                        let parser2 = func1(value1)
+                        parser2ComputeAcceptsEmpty = parser2.computeAcceptsEmpty
+                        return parser2.parse(advancedInput1).reply
                     case let .error(error):
                         return .error(error)
                     }
@@ -98,13 +106,17 @@ public enum Combinators {
     ///            `Parser` to invoke with the remaining `Input`.
     public static func then<I, V1, V2>(_ parser1: Parser<I, V1>, to func1: @escaping () -> Parser<I, V2>)
         -> Parser<I, V2> {
-            return Parser { input in
+            var parser2ComputeAcceptsEmpty: (() -> Bool)?
+            return Parser(acceptsEmpty:
+                parser1.computeAcceptsEmpty() && (parser2ComputeAcceptsEmpty?() ?? false)
+            ) { input in
                 let result1 = parser1.parse(input)
                 switch result1.state {
                 case .empty:
                     switch result1.reply {
                     case let .success(_, advancedInput1, msgGenerator1):
                         let parser2 = func1()
+                        parser2ComputeAcceptsEmpty = parser2.computeAcceptsEmpty
                         let result2 = parser2.parse(advancedInput1)
                         switch result2.state {
                         case .consumed:
@@ -128,7 +140,9 @@ public enum Combinators {
                     return Consumed(.consumed, {
                         switch result1.reply {
                         case let .success(_, advancedInput1, _):
-                            return func1().parse(advancedInput1).reply
+                            let parser2 = func1()
+                            parser2ComputeAcceptsEmpty = parser2.computeAcceptsEmpty
+                            return parser2.parse(advancedInput1).reply
                         case let .error(error):
                             return .error(error)
                         }
@@ -144,7 +158,7 @@ public enum Combinators {
     ///     - condition: A function which is passed in an element, and determines if the element meets some criteria.
     /// - Returns: A `Parser` which returns an element if it succeeds the condition.
     public static func satisfy<I, V>(_ condition: @escaping (V) -> Bool) -> Parser<I, V> where I.Element == V {
-        return Parser { input in
+        return Parser(acceptsEmpty: false) { input in
             guard let element = input.current(), !input.isEmpty else {
                 let msgGenerator = {
                     ParseMessage(position: input.position, unexpectedInput: "end of input")
@@ -176,7 +190,9 @@ public enum Combinators {
     public static func choice<I, V>(
         _ parser1: Parser<I, V>,
         _ parser2: Parser<I, V>) -> Parser<I, V> {
-        return Parser { input in
+        return Parser(acceptsEmpty:
+            parser1.computeAcceptsEmpty() || parser2.computeAcceptsEmpty()
+        ) { input in
             let result1 = parser1.parse(input)
             switch result1.state {
             case .empty:
@@ -269,7 +285,7 @@ public enum Combinators {
     ///     - label: The value of any produced `ParseMessage`'s `expectedProductions`.
     /// - Returns: A `Parser` which has a label attached for any produced `ParseMessage`s.
     public static func label<I, V>(_ parser: Parser<I, V>, with label: String) -> Parser<I, V> {
-        return Parser { input in
+        return Parser(acceptsEmpty: true) { input in
             let result = parser.parse(input)
             switch result.state {
             case .empty:
@@ -305,7 +321,7 @@ public enum Combinators {
     ///
     /// - Returns: A `Parser` which only fails.
     public static func fail<I, V>() -> Parser<I, V> {
-        return Parser { input in
+        return Parser(acceptsEmpty: true) { input in
             Consumed(.empty, .error({ ParseMessage(position: input.position) }))
         }
     }
@@ -314,7 +330,7 @@ public enum Combinators {
     ///
     /// - Returns: A `Parser` which succeeds if the end of the input is reached.
     public static func endOfInput<I>() -> Parser<I, ()> {
-        return Parser { input in
+        return Parser(acceptsEmpty: true) { input in
             if input.isEmpty {
                 return Consumed(
                     .empty,
@@ -349,6 +365,7 @@ public enum Combinators {
     ///     - func1: A function which returns a parser.
     /// - Returns: A `Parser` which calls the returned parser from `func1`.
     public static func wrap<I, V>(_ func1: @escaping () -> Parser<I, V>) -> Parser<I, V> {
-        return Parser { func1().parse($0) }
+        return Parser(acceptsEmpty: func1().computeAcceptsEmpty()) { func1().parse($0) }
     }
 }
+// swiftlint:enable type_body_length

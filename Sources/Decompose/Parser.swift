@@ -15,6 +15,20 @@
 /// A value type for the `parse` function.
 public struct Parser<I, V> where I: Input {
 
+    /// Initializes a parser.
+    ///
+    /// - Parameters:
+    ///     - computeAcceptsEmpty: A function to lazily compute if the `Parser` accepts an empty input.
+    ///     - parse: A function to parse the `Input`
+    public init(acceptsEmpty computeAcceptsEmpty: @autoclosure @escaping () -> Bool,
+                parse: @escaping (I) -> Consumed<I, V>) {
+        self.computeAcceptsEmpty = computeAcceptsEmpty
+        self.parse = parse
+    }
+
+    /// Returns true if this `Parser` accepts an empty input.
+    public let computeAcceptsEmpty: () -> Bool
+
     /// A function which takes an `Input` and returns a type which indicates if the `Input` is consumed when parsing
     /// the result and either a parsed value or an error message.
     public let parse: (I) -> Consumed<I, V>

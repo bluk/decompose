@@ -80,7 +80,7 @@ public extension Combinators {
             return Combinators.pure([])
         }
 
-        return Parser { input in
+        return Parser(acceptsEmpty: false) { input in
             let firstChar = value.first!
             return Combinators
                 .then(Combinators.char(firstChar)) {
@@ -106,7 +106,7 @@ public extension Combinators {
     ///     - parser: The Parser to invoke.
     /// - Returns: A `Parser` which invokes the `parser` parameter one or more times.
     static func many1<I, V>(_ parser: Parser<I, V>) -> Parser<I, [V]> {
-        return Parser { input in
+        return Parser(acceptsEmpty: parser.computeAcceptsEmpty()) { input in
             Combinators
                 .bind(parser) { matchedValue in
                     Combinators.bind(many1(parser) <|> Combinators.pure([])) { optionalMatchedValues in

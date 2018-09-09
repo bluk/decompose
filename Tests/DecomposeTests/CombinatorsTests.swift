@@ -74,11 +74,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testBindWhereOriginalParserFails() {
-        let originalParser: Parser<StringInput, String> = Parser { input in
-            Consumed(.empty, .error({
-                ParseMessage(position: input.position, unexpectedInput: "customInput", expectedProductions: [])
-            }))
-        }
+        let originalParser: Parser<StringInput, String> = Combinators.fail()
         let boundParser: Parser<StringInput, String> = Combinators.bind(originalParser) { _ in
             XCTFail("Function should not be called")
             return Combinators.pure("unused")
@@ -91,7 +87,7 @@ internal final class CombinatorsTests: XCTestCase {
             return
         }
         let msg = msgGenerator()
-        XCTAssertEqual(msg.unexpectedInput, "customInput")
+        XCTAssertEqual(msg.unexpectedInput, "")
         XCTAssertEqual(msg.position, 0)
         XCTAssertEqual(msg.expectedProductions, [])
     }
