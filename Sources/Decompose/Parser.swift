@@ -105,4 +105,32 @@ public extension Parser {
     func andR<V2>(_ parser2: Parser<I, V2>) -> Parser<I, V2> {
         return Combinators.apply(map({ _ in { second in second } }), parser2)
     }
+
+    /// Returns a `Parser` which invokes this `Parser` zero or more times.
+    ///
+    /// - Returns: A `Parser` which invokes this `Parser` zero or more times.
+    func many() -> Parser<I, [V]> {
+        return Combinators.many(self)
+    }
+
+    /// Returns a `Parser` which invokes this `Parser` one or more times.
+    ///
+    /// - Returns: A `Parser` which invokes this `Parser` one or more times.
+    func many1() -> Parser<I, [V]> {
+        return Combinators.many1(self)
+    }
+
+    /// Returns a `Parser` which discards the return value of this `parser` zero or more times.
+    ///
+    /// - Returns: A `Parser` which discards the return value of this `parser` zero or more times.
+    func skipMany() -> Parser<I, Empty> {
+        return Combinators.skipMany(self)
+    }
+
+    /// Returns a `Parser` which discards the return value of this `parser` one or more times.
+    ///
+    /// - Returns: A `Parser` which discards the return value of this `parser` oneor more times.
+    func skipMany1() -> Parser<I, Empty> {
+        return Combinators.skipMany1(self)
+    }
 }
