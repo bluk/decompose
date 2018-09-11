@@ -21,7 +21,7 @@ internal final class StringInputTests: XCTestCase {
 
         XCTAssertEqual(input.position, 0)
         XCTAssertEqual(input.current(), "H")
-        XCTAssertFalse(input.isAvailable)
+        XCTAssertTrue(input.isAvailable)
         // Still at the 0 position
         XCTAssertEqual(input.position, 0)
     }
@@ -31,7 +31,7 @@ internal final class StringInputTests: XCTestCase {
 
         XCTAssertEqual(input.position, 1)
         XCTAssertEqual(input.current(), "e")
-        XCTAssertFalse(input.isAvailable)
+        XCTAssertTrue(input.isAvailable)
         // Still at the 1 position
         XCTAssertEqual(input.position, 1)
     }
@@ -54,7 +54,7 @@ internal final class StringInputTests: XCTestCase {
         XCTAssertEqual(input.position, 7)
     }
 
-    func testConsume() {
+    func testAdvanced() {
         let originalInput = StringInput("Hello, World!")
         let newInput = originalInput.advanced()
 
@@ -65,7 +65,7 @@ internal final class StringInputTests: XCTestCase {
         XCTAssertEqual(originalInput.position, 0)
     }
 
-    func testOriginalPositionNotAt0AndConsume() {
+    func testOriginalPositionNotAt0AndAdvanced() {
         let originalInput = StringInput("Hello, World!", position: 7)
         let newInput = originalInput.advanced()
 
@@ -76,7 +76,7 @@ internal final class StringInputTests: XCTestCase {
         XCTAssertEqual(originalInput.position, 7)
     }
 
-    func testConsumeWithCount() {
+    func testAdvancedWithCount() {
         let originalInput = StringInput("Hello, World!")
         let newInput = originalInput.advanced(by: 5)
 
@@ -87,7 +87,7 @@ internal final class StringInputTests: XCTestCase {
         XCTAssertEqual(originalInput.position, 0)
     }
 
-    func testOriginalPositionNotAt0AndConsumeWithCount() {
+    func testOriginalPositionNotAt0AndAdvancedWithCount() {
         let originalInput = StringInput("Hello, World!", position: 5)
         let newInput = originalInput.advanced(by: 2)
 
@@ -101,38 +101,38 @@ internal final class StringInputTests: XCTestCase {
     func testEmptyString() {
         let input = StringInput("")
 
-        XCTAssertTrue(input.isAvailable)
+        XCTAssertFalse(input.isAvailable)
         XCTAssertEqual(input.position, 0)
         XCTAssertNil(input.current())
         XCTAssertEqual(input.current(count: 2), [])
     }
 
-    func testConsumeTillEndOfString() {
+    func testAdvancedTillEndOfString() {
         let testString = "Hello, World!"
 
         var input = StringInput(testString)
         for (counter, char) in testString.enumerated() {
-            XCTAssertFalse(input.isAvailable)
+            XCTAssertTrue(input.isAvailable)
             XCTAssertEqual(input.position, counter)
             XCTAssertEqual(input.current(), char)
             input = input.advanced()
         }
 
-        XCTAssertTrue(input.isAvailable)
+        XCTAssertFalse(input.isAvailable)
         XCTAssertEqual(input.position, 13)
         XCTAssertNil(input.current())
         XCTAssertEqual(input.current(count: 1), [])
     }
 
-    func testConsumePastEndOfString() {
+    func testAdvancedPastEndOfString() {
         let originalInput = StringInput("Hello, World!")
         let newInput = originalInput.advanced(by: 13)
 
-        XCTAssertTrue(newInput.isAvailable)
+        XCTAssertFalse(newInput.isAvailable)
         XCTAssertEqual(newInput.position, 13)
 
         let beyondEndOfStringInput = newInput.advanced()
-        XCTAssertTrue(beyondEndOfStringInput.isAvailable)
+        XCTAssertFalse(beyondEndOfStringInput.isAvailable)
         XCTAssertEqual(beyondEndOfStringInput.position, 14)
     }
 
@@ -141,12 +141,12 @@ internal final class StringInputTests: XCTestCase {
         ("testInitWithPosition", testInitWithPosition),
         ("testPeekWithCount", testPeekWithCount),
         ("testOriginalPositionNotAt0AndPeekWithCount", testOriginalPositionNotAt0AndPeekWithCount),
-        ("testConsume", testConsume),
-        ("testOriginalPositionNotAt0AndConsume", testOriginalPositionNotAt0AndConsume),
-        ("testConsumeWithCount", testConsumeWithCount),
-        ("testOriginalPositionNotAt0AndConsumeWithCount", testOriginalPositionNotAt0AndConsumeWithCount),
+        ("testAdvanced", testAdvanced),
+        ("testOriginalPositionNotAt0AndAdvanced", testOriginalPositionNotAt0AndAdvanced),
+        ("testAdvancedWithCount", testAdvancedWithCount),
+        ("testOriginalPositionNotAt0AndAdvancedWithCount", testOriginalPositionNotAt0AndAdvancedWithCount),
         ("testEmptyString", testEmptyString),
-        ("testConsumeTillEndOfString", testConsumeTillEndOfString),
-        ("testConsumePastEndOfString", testConsumePastEndOfString)
+        ("testAdvancedTillEndOfString", testAdvancedTillEndOfString),
+        ("testAdvancedPastEndOfString", testAdvancedPastEndOfString)
     ]
 }

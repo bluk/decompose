@@ -66,7 +66,7 @@ public extension Combinators {
         }
 
         let firstChar = value.first!
-        return char(firstChar) *> string(String(value.dropFirst())) *> pure(value)
+        return symbol(firstChar) *> string(String(value.dropFirst())) *> pure(value)
     }
 
     /// Returns a `Parser` which matches a given string. If successful, the returned value is an empty array.
@@ -75,19 +75,13 @@ public extension Combinators {
     ///     - value: The `String` to test with.
     /// - Returns: A `Parser` which matches a given string. If successful, the returned value is an empty array.
     static func stringEmptyReturnValue<I>(_ value: String)
-        -> Parser<I, [Character]> where I.Element == Character {
+        -> Parser<I, Empty> where I.Element == Character {
         guard !value.isEmpty else {
-            return Combinators.pure([])
+            return Combinators.pure(Empty.empty)
         }
 
         let firstChar = value.first!
-        return Parser(acceptsEmpty: false, firstSetSymbols: [Symbol.value(firstChar)]) { input in
-            Combinators
-                .then(Combinators.char(firstChar)) {
-                    Combinators.stringEmptyReturnValue(String(value.dropFirst()))
-                }
-                .parse(input)
-        }
+        return symbol(firstChar) *> string(String(value.dropFirst())) *> pure(Empty.empty)
     }
 
     /// Returns a `Parser` which invokes the `parser` parameter zero or more times.
@@ -96,8 +90,33 @@ public extension Combinators {
     ///     - parser: The Parser to invoke.
     /// - Returns: A `Parser` which invokes the `parser` parameter zero or more times.
     static func many<I, V>(_ parser: Parser<I, V>) -> Parser<I, [V]> {
-        let appendFunc: (V) -> ([V]) -> [V] = { element in { [element] + $0 } }
-        return appendFunc <^> parser <*> wrap { many(parser) } <??> []
+        return Parser(
+            acceptsEmpty: true,
+            firstSetSymbols: parser.computeFirstSetSymbols()
+        ) { input, followSetSymbols in
+            var results: [V] = []
+            let followSetSymbolsMany = followSetSymbols.union(parser.computeFirstSetSymbols())
+            var remainingInput = input
+            repeat {
+                if let currentValue = remainingInput.current(), remainingInput.isAvailable {
+                    if parser.computeFirstSetSymbols().contains(where: { $0.matches(currentValue) }) {
+                        let result = parser.apply(remainingInput, followSetSymbolsMany)
+                        switch result {
+                        case let .failure(remainingInput, symbols):
+                            return Result<I, [V]>.failure(remainingInput, symbols)
+                        case let .failureUnavailableInput(remainingInput, symbols):
+                            return Result<I, [V]>.failureUnavailableInput(remainingInput, symbols)
+                        case let .success(remainingInput2, value):
+                            results.append(value)
+                            remainingInput = remainingInput2
+                            continue
+                        }
+                    }
+                }
+
+                return Result.success(remainingInput, results)
+            } while true
+        }
     }
 
     /// Returns a `Parser` which invokes the `parser` parameter one or more times.
@@ -106,20 +125,7 @@ public extension Combinators {
     ///     - parser: The Parser to invoke.
     /// - Returns: A `Parser` which invokes the `parser` parameter one or more times.
     static func many1<I, V>(_ parser: Parser<I, V>) -> Parser<I, [V]> {
-        return Parser(
-            acceptsEmpty: parser.computeAcceptsEmpty(),
-            firstSetSymbols: parser.computeFirstSetSymbols()
-        ) { input in
-            Combinators
-                .bind(parser) { matchedValue in
-                    Combinators.bind(many1(parser) <|> Combinators.pure([])) { optionalMatchedValues in
-                        var returnValue: [V] = [matchedValue]
-                        returnValue.append(contentsOf: optionalMatchedValues)
-                        return Combinators.pure(returnValue)
-                    }
-                }
-                .parse(input)
-        }
+        return { first in { list in [first] + list } } <^> parser <*> many(parser)
     }
 
     /// Returns a `Parser` which discards the return value of the `parser` parameter zero or more times.
@@ -127,8 +133,8 @@ public extension Combinators {
     /// - Parameters:
     ///     - parser: The Parser to invoke.
     /// - Returns: A `Parser` which discards the return value of the `parser` parameter zero or more times.
-    static func skipMany<I, V>(_ parser: Parser<I, V>) -> Parser<I, ()> {
-        return skipMany1(parser) <|> pure(())
+    static func skipMany<I, V>(_ parser: Parser<I, V>) -> Parser<I, Empty> {
+        return many(parser).map({ _ in Empty.empty })
     }
 
     /// Returns a `Parser` which discards the return value of the `parser` parameter one or more times.
@@ -136,79 +142,85 @@ public extension Combinators {
     /// - Parameters:
     ///     - parser: The Parser to invoke.
     /// - Returns: A `Parser` which discards the return value of the `parser` parameter one or more times.
-    static func skipMany1<I, V>(_ parser: Parser<I, V>) -> Parser<I, ()> {
-        return many1(parser) *> pure(())
+    static func skipMany1<I, V>(_ parser: Parser<I, V>) -> Parser<I, Empty> {
+        return { first in { list in  Empty.empty } } <^> parser <*> many(parser)
     }
 
     /// Returns a `Parser` which attempts the parser parameter and if it succeeds, return the value, but if it fails,
-    /// use the second parameter.
+    /// return nil.
     ///
     /// - Parameters:
     ///     - parser: The Parser to attempt.
-    ///     - value: The value to return if the `parser` parameter is not successful.
     /// - Returns: A `Parser` which attempts the parser parameter and if it succeeds, return the value, but if it fails,
-    ///            use the second parameter.
-    static func opt<I, V>(_ parser: Parser<I, V>, _ value: V) -> Parser<I, V> {
+    ///            return nil
+    static func optionOptional<I, V>(_ parser: Parser<I, V>) -> Parser<I, V?> {
+        return parser.map({ Optional($0) }) <|> pure(nil)
+    }
+
+    /// Returns a `Parser` which attempts the parser parameter and if it succeeds, return the value, but if it fails,
+    /// return the second paramater.
+    ///
+    /// - Parameters:
+    ///     - parser: The Parser to attempt.
+    /// - Returns: A `Parser` which attempts the parser parameter and if it succeeds, return the value, but if it fails,
+    ///            return nil
+    static func option<I, V>(_ parser: Parser<I, V>, _ value: V) -> Parser<I, V> {
         return parser <|> pure(value)
     }
 
-    /// Parses a value operand and an optional repeat of operator and operand where the final parsed value is the
+    /// Parses an optional operand with an optional repeat of operator and operand where the final parsed value is the
     /// calculation of the operands with the operators with right associativity.
     ///
     /// - Parameters:
     ///     - parserV: The value operand Parser.
     ///     - parserOp: The operator Parser.
-    /// - Returns: A `Parser` which parses a value operand and an optional repeat of operator and operand where the
+    ///     - value: The value to use if the `parserV` fails.
+    /// - Returns: A `Parser` which parses an optional operand and an optional repeat of operator and operand where the
     ///            final parsed value is the calculation of the operands with the operators with right associativity.
-    static func chainr<I, V>(_ parserV: Parser<I, V>, _ parserOp: Parser<I, (V) -> (V) -> V>) -> Parser<I, V> {
-        return reduceOperations() <^> parserV <*> (many(chainrInternal(parserV, parserOp)) <??> [ { $0 } ])
-
-//        return foldRight <^> parserX <*> many(chainrInternal(parserX, parserOp))
-//        let f: Parser<I, (V) -> V> =
-//            { op in { op($0) } } <^> parserOp <*> wrap { chainr(parserX, parserOp) }  <??> { $0 }
-//        return  { xParam in { $0(xParam) } } <^> parserX <*> f
+    static func chainr<I, V>(_ parserV: Parser<I, V>, _ parserOp: Parser<I, (V) -> (V) -> V>, _ value: V)
+        -> Parser<I, V> {
+        return chainr1(parserV, parserOp) <|> pure(value)
     }
 
-    /// Parses a value operand and at least one operator and operand where the final parsed value is the
+    /// Parses a value operand and zero or more operator and operand where the final parsed value is the
     /// calculation of the operands with the operators with right associativity.
     ///
     /// - Parameters:
     ///     - parserV: The value operand Parser.
     ///     - parserOp: The operator Parser.
-    /// - Returns: A `Parser` which parses a value operand and at least one operator and operand where the
+    /// - Returns: A `Parser` which parses an operand and zero or more operator and operand where the
     ///            final parsed value is the calculation of the operands with the operators with right associativity.
     static func chainr1<I, V>(_ parserV: Parser<I, V>, _ parserOp: Parser<I, (V) -> (V) -> V>) -> Parser<I, V> {
-        return reduceOperations() <^> parserV <*> many1(chainrInternal(parserV, parserOp))
+        let operatorParser: Parser<I, (V) -> V> = { operation in { operation($0) } }
+            <^> parserOp <*> wrap { chainr1(parserV, parserOp) } <??> { $0 }
+        return { xParam in { $0(xParam) } } <^> parserV <*> operatorParser
     }
 
-    private static func chainrInternal<I, V>(
-        _ parserV: Parser<I, V>,
-        _ parserOp: Parser<I, (V) -> (V) -> V>) -> Parser<I, (V) -> (V)> {
-        return { operation in { yParam in { operation($0)(yParam) } } } <^> parserOp <*> parserV
-    }
-
-    /// Parses a value operand and an optional repeat of operator and operand where the final parsed value is the
+    /// Parses an optional operand with an optional repeat of operator and operand where the final parsed value is the
     /// calculation of the operands with the operators with left associativity.
     ///
     /// - Parameters:
     ///     - parserV: The value operand Parser.
     ///     - parserOp: The operator Parser.
-    /// - Returns: A `Parser` which parses a value operand and an optional repeat of operator and operand where the
-    ///            final parsed value is the calculation of the operands with the operators with left associativity.
-    static func chainl<I, V>(_ parserV: Parser<I, V>, _ parserOp: Parser<I, (V) -> (V) -> V>) -> Parser<I, V> {
-        return reduceOperations() <^> parserV <*> (many(chainlInternal(parserV, parserOp)) <??> [ { $0 } ])
+    ///     - value: The value to use if the `parserV` fails.
+    /// - Returns: A `Parser` which parses an optional operand operand and an optional repeat of operator and operand
+    ///            where the final parsed value is the calculation of the operands with the operators with left
+    ///            associativity.
+    static func chainl<I, V>(_ parserV: Parser<I, V>, _ parserOp: Parser<I, (V) -> (V) -> V>, _ value: V)
+        -> Parser<I, V> {
+        return chainl1(parserV, parserOp)  <|> pure(value)
     }
 
-    /// Parses a value operand and at least one operator and operand where the final parsed value is the
+    /// Parses a value operand and zero or more operator and operand where the final parsed value is the
     /// calculation of the operands with the operators with left associativity.
     ///
     /// - Parameters:
     ///     - parserV: The value operand Parser.
     ///     - parserOp: The operator Parser.
-    /// - Returns: A `Parser` which parses a value operand and at least one operator and operand where the
+    /// - Returns: A `Parser` which parses an operand and zero more operator and operand where the
     ///            final parsed value is the calculation of the operands with the operators with left associativity.
     static func chainl1<I, V>(_ parserV: Parser<I, V>, _ parserOp: Parser<I, (V) -> (V) -> V>) -> Parser<I, V> {
-        return reduceOperations() <^> parserV <*> many1(chainlInternal(parserV, parserOp))
+        return reduceOperations() <^> parserV <*> (many(chainlInternal(parserV, parserOp)) <??> [ { $0 } ])
     }
 
     private static func chainlInternal<I, V>(

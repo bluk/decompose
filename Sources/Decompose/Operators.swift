@@ -18,38 +18,6 @@ precedencegroup MonadLeftPrecedence {
     higherThan: AssignmentPrecedence
 }
 
-infix operator >>-: MonadLeftPrecedence
-
-/// Composes a `Parser` which invokes the `Parser` parameter and uses its returned value to invoke the function
-/// parameter, and then invokes the function's returned `Parser`.
-///
-/// - Parameters:
-///     - lhs: The first Parser to invoke the input with.
-///     - rhs: A function which will take the `lhs`'s returned value and return another `Parser`, which is
-///              then invoked with the remaining input
-/// - Returns: A composited `Parser` which binds the parameter `lhs`'s value and passes it to the function
-///            `rhs`, which generates a new `Parser` to invoke the remaining input with.
-public func >>-<I, V1, V2>(
-    lhs: Parser<I, V1>,
-    rhs: @escaping (V1) -> Parser<I, V2>) -> Parser<I, V2> {
-    return Combinators.bind(lhs, to: rhs)
-}
-
-/// Composes a `Parser` which invokes the `Parser` parameter and uses its returned value to invoke the function
-/// parameter, and then invokes the function's returned `Parser`.
-///
-/// - Parameters:
-///     - lhs: The first Parser to invoke the input with.
-///     - rhs: A function which will take the `lhs`'s returned value and return another `Parser`, which is
-///              then invoked with the remaining input
-/// - Returns: A composited `Parser` which binds the parameter `lhs`'s value and passes it to the function
-///            `rhs`, which generates a new `Parser` to invoke the remaining input with.
-public func >><I, V1, V2>(
-    lhs: Parser<I, V1>,
-    rhs: @escaping () -> Parser<I, V2>) -> Parser<I, V2> {
-    return Combinators.then(lhs, to: rhs)
-}
-
 precedencegroup ChoiceLeftPrecedence {
     associativity: left
     higherThan: LogicalConjunctionPrecedence
@@ -67,7 +35,7 @@ infix operator <|>: ChoiceLeftPrecedence
 public func <|><I, V1>(
     lhs: Parser<I, V1>,
     rhs: Parser<I, V1>) -> Parser<I, V1> {
-    return Combinators.choice(lhs, rhs)
+    return Combinators.or(lhs, rhs)
 }
 
 precedencegroup ApplicativeFunctorLeftPrecedence {
@@ -124,8 +92,7 @@ infix operator *>: ApplicativeFunctorSequenceLeftPrecedence
 public func *><I, V1, V2>(
     lhs: Parser<I, V1>,
     rhs: Parser<I, V2>) -> Parser<I, V2> {
-    let ignoreFirstValue: (V1) -> (V2) -> V2 = { _ in { $0 } }
-    return Combinators.apply(Combinators.map(lhs, ignoreFirstValue), rhs)
+    return lhs.andR(rhs)
 }
 
 infix operator <*: ApplicativeFunctorSequenceLeftPrecedence
@@ -140,23 +107,7 @@ infix operator <*: ApplicativeFunctorSequenceLeftPrecedence
 public func <*<I, V1, V2>(
     lhs: Parser<I, V1>,
     rhs: Parser<I, V2>) -> Parser<I, V1> {
-    let ignoreSecondValue: (V1) -> (V2) -> V1 = { value1 in { _ in value1 } }
-    return Combinators.apply(Combinators.map(lhs, ignoreSecondValue), rhs)
-}
-
-infix operator <?>: MonadLeftPrecedence
-
-/// Instantiates a new `Parser` which will overwrite the parameter `Parser`'s `ParseMessage`'s `expectedProductions`
-/// with the label parameter.
-///
-/// - Parameters:
-///     - lhs: The `Parser` to override `ParseMessage`'s `expectedProductions` with.
-///     - rhs: The value of any produced `ParseMessage`'s `expectedProductions`.
-/// - Returns: A `Parser` which has a label attached for any produced `ParseMessage`s.
-public func <?><I, V1>(
-    lhs: Parser<I, V1>,
-    rhs: String) -> Parser<I, V1> {
-    return Combinators.label(lhs, with: rhs)
+    return lhs.andL(rhs)
 }
 
 infix operator <??>: MonadLeftPrecedence
@@ -172,5 +123,5 @@ infix operator <??>: MonadLeftPrecedence
 public func <??><I, V1>(
     lhs: Parser<I, V1>,
     rhs: V1) -> Parser<I, V1> {
-    return Combinators.opt(lhs, rhs)
+    return Combinators.option(lhs, rhs)
 }

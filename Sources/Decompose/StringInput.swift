@@ -25,7 +25,7 @@ public struct StringInput: Input, Equatable, Hashable {
     public let position: Int
 
     public var isAvailable: Bool {
-        return self.position >= self.value.count
+        return self.position < self.value.count
     }
 
     public func current() -> Character? {

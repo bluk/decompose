@@ -4,7 +4,9 @@
 
 [![Build Status](https://travis-ci.com/bluk/decompose.svg?branch=master)](https://travis-ci.com/bluk/decompose)
 
-A(nother) parser combinator library.
+A(nother) parser combinator library inspired mainly by [Parsec](https://hackage.haskell.org/package/parsec) and
+a port of some of the functionality from
+[funcj.parser, Java parser combinator framework](https://github.com/typemeta/funcj/tree/master/parser).
 
 ## Getting Started
 

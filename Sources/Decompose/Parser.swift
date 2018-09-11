@@ -12,44 +12,50 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 
-/// A value type for the `parse` function.
+/// A value type for the `apply` function.
 public struct Parser<I, V> where I: Input, I.Element: Comparable, I.Element: Hashable {
 
     /// Initializes a parser.
     ///
     /// - Parameters:
     ///     - computeAcceptsEmpty: A function to lazily compute if the `Parser` accepts an empty input.
+    ///     - firstSetSymbols: A function to lazily compute the first set of accepted symbols.
     ///     - parse: A function to parse the `Input`
     public init(acceptsEmpty computeAcceptsEmpty: @autoclosure @escaping () -> Bool,
-                firstSetSymbols computeFirstSetSymbols: @autoclosure @escaping () -> [Symbol<I.Element>],
-                parse: @escaping (I) -> Consumed<I, V>) {
+                firstSetSymbols computeFirstSetSymbols: @autoclosure @escaping () -> Set<Symbol<I.Element>>,
+                parse: @escaping (I, Set<Symbol<I.Element>>) -> Result<I, V>) {
         self.computeAcceptsEmpty = computeAcceptsEmpty
         self.computeFirstSetSymbols = computeFirstSetSymbols
-        self.parse = parse
+        self.apply = parse
     }
 
     /// Returns true if this `Parser` accepts an empty input.
     public let computeAcceptsEmpty: () -> Bool
 
     /// Returns the first set of symbols which can be accepted as input.
-    public let computeFirstSetSymbols: () -> [Symbol<I.Element>]
+    public let computeFirstSetSymbols: () -> Set<Symbol<I.Element>>
 
-    /// A function which takes an `Input` and returns a type which indicates if the `Input` is consumed when parsing
-    /// the result and either a parsed value or an error message.
-    public let parse: (I) -> Consumed<I, V>
+    /// A function which takes an `Input` and a set of follow symbols and returns a type which either a parsed value
+    /// or an error message.
+    public let apply: (I, Set<Symbol<I.Element>>) -> Result<I, V>
+
+    /// A method to run the parser with an `Input`.
+    public func parse(_ input: I) -> Result<I, V> {
+        let parserAndEndOfInput = self <* Combinators.endOfInput()
+        if computeAcceptsEmpty() {
+            return parserAndEndOfInput.apply(input, [Symbol.empty])
+        } else if !input.isAvailable {
+            return Result.failureUnavailableInput(input, computeFirstSetSymbols())
+        } else if let current = input.current(), computeFirstSetSymbols().contains(where: { $0.matches(current) }) {
+            return parserAndEndOfInput.apply(input, [Symbol.empty])
+        } else {
+            return Result.failure(input, computeFirstSetSymbols())
+        }
+    }
 }
 
 /// Convenience methods for `Parser`.
 public extension Parser {
-
-    /// Binds this `Parser`'s return value to a function which generates another `Parser`.
-    ///
-    /// - Parameters:
-    ///     - func1: The function to bind the value of this parser to.
-    /// - Returns: A bound `Parser`.
-    func flatMap<V2>(_ func1 : @escaping (V) -> Parser<I, V2>) -> Parser<I, V2> {
-        return Combinators.bind(self, to: func1)
-    }
 
     /// Maps this `Parser`'s value using the function parameter.
     ///
@@ -77,6 +83,26 @@ public extension Parser {
     ///     - parser2: The second `Parser` to invoke the input with if this `Parser` fails.
     /// - Returns: A `Parser` which invokes this `Parser`, and if it fails, invokes the second `Parser`.
     func or(_ parser2: Parser<I, V>) -> Parser<I, V> {
-        return Combinators.choice(self, parser2)
+        return Combinators.or(self, parser2)
+    }
+
+    /// Sequentially invokes this `Parser` and then the `Parser` argument while ignoring the second value.
+    ///
+    /// - Parameters:
+    ///     - parser2: The second `Parser` to invoke
+    /// - Returns: A `Parser` which invokes this `Parser`, then the second `Parser` parameter and then
+    ///            returns this `Parser`'s returned value.
+    func andL<V2>(_ parser2: Parser<I, V2>) -> Parser<I, V> {
+        return Combinators.apply(map({ first in { _ in first } }), parser2)
+    }
+
+    /// Sequentially invokes this `Parser` and then the `Parser` argument while ignoring the first value.
+    ///
+    /// - Parameters:
+    ///     - parser2: The second `Parser` to invoke
+    /// - Returns: A `Parser` which invokes this `Parser`, then the second `Parser` parameter and then
+    ///            returns the second `Parser`'s returned value.
+    func andR<V2>(_ parser2: Parser<I, V2>) -> Parser<I, V2> {
+        return Combinators.apply(map({ _ in { second in second } }), parser2)
     }
 }

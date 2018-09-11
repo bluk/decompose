@@ -17,113 +17,60 @@ import XCTest
 
 internal final class OperatorsTests: XCTestCase {
 
-    func testBindAsOperator() {
-        let originalParser: Parser<StringInput, String> = Combinators.pure("foo")
-        let func1: (String) -> Parser<StringInput, String> = { result1 in
-            XCTAssertEqual(result1, "foo")
+    func testChoiceSuccessAsOperator() {
+        let matchesF: Parser<StringInput, Character> = Combinators.symbol("f")
+        let matchesB: Parser<StringInput, Character> = Combinators.symbol("b")
+        let choiceParser = matchesF <|> matchesB
+        let input = StringInput("b")
 
-            return Combinators.pure("bar")
-        }
-        let boundParser: Parser<StringInput, String> = originalParser >>- func1
-        let input = StringInput("test")
-
-        let output = boundParser.parse(input)
-        guard case let .success(value, remainingInput, msgGenerator) = output.reply, .empty == output.state else {
-            XCTFail("Expected parse to be successful but no consumption of characters")
-            return
-        }
-        XCTAssertEqual(value, "bar")
-        XCTAssertEqual(remainingInput, input)
-        let msg = msgGenerator()
-        XCTAssertEqual(msg.unexpectedInput, "")
-        XCTAssertEqual(msg.position, 0)
-        XCTAssertEqual(msg.expectedProductions, [])
-    }
-
-    func testChoiceAsOperator() {
-        let matchesF: Parser<StringInput, Character> = Combinators.char("f")
-        let matchesB: Parser<StringInput, Character> = Combinators.char("b")
-        let orParser = matchesF <|> matchesB
-        let input = StringInput("bar")
-
-        let output = orParser.parse(input)
-        guard case let .success(value, remainingInput, msgGenerator) = output.reply, .consumed == output.state else {
-            XCTFail("Expected parse to be successful and consumption of `b`")
+        let result = choiceParser.parse(input)
+        guard case let .success(remainingInput, value) = result else {
+            XCTFail("Expected parse to be successful.")
             return
         }
         XCTAssertEqual(value, "b")
+        XCTAssertNil(remainingInput.current())
         XCTAssertEqual(remainingInput.position, 1)
-        XCTAssertEqual(remainingInput.current(), "a")
-        let msg = msgGenerator()
-        XCTAssertEqual(msg.unexpectedInput, "")
-        XCTAssertEqual(msg.position, 0)
-        XCTAssertEqual(msg.expectedProductions, [])
     }
 
-    func testMapAsOperator() {
-        let satisfy2: Parser<StringInput, Character> = Combinators.char("2")
-        let func1: (Character) -> Int? = { Int(String($0)) }
-        let mappedParser = func1 <^> satisfy2
+    func testMapSuccessAsOperator() {
+        let matches2: Parser<StringInput, Character> = Combinators.symbol("2")
+        let mappedParser = { Int(String($0)) } <^> matches2
 
-        let output = mappedParser.parse(StringInput("2"))
-        guard case let .success(value, _, msgGenerator) = output.reply, .consumed == output.state else {
-            XCTFail("Expected parse to be successful and consumption of `2`")
+        let result = mappedParser.parse(StringInput("2"))
+        guard case let .success(remainingInput, value) = result else {
+            XCTFail("Expected parse to be successful.")
             return
         }
         XCTAssertEqual(value, 2)
-        let msg = msgGenerator()
-        XCTAssertEqual(msg.unexpectedInput, "")
-        XCTAssertEqual(msg.position, 1)
-        XCTAssertEqual(msg.expectedProductions, [])
+        XCTAssertNil(remainingInput.current())
+        XCTAssertEqual(remainingInput.position, 1)
     }
 
-    func testApplyAsOperator() {
-        let satisfy2: Parser<StringInput, Character> = Combinators.char("2")
-        let satisfy3: Parser<StringInput, Character> = Combinators.char("3")
-        let satisfyTimes: Parser<StringInput, Character> = Combinators.char("*")
+    func testApplySuccessAsOperator() {
+        let symbol2: Parser<StringInput, Character> = Combinators.symbol("2")
+        let symbol3: Parser<StringInput, Character> = Combinators.symbol("3")
+        let symbolTimes: Parser<StringInput, Character> = Combinators.symbol("*")
         let func1: (Character) -> (Character) -> (Character) -> Int? = { first in { _ in { second in
-                    Int(String(first))! * Int(String(second))!
-                }
+            Int(String(first))! * Int(String(second))!
+            }
             }
         }
-        let applyParser = func1 <^> satisfy2 <*> satisfyTimes <*> satisfy3
+        let applyParser = func1 <^> symbol2 <*> symbolTimes <*> symbol3
 
-        let output = applyParser.parse(StringInput("2*3"))
-        guard case let .success(value, _, msgGenerator) = output.reply, .consumed == output.state else {
-            XCTFail("Expected parse to be successful and consumption of `2*3`")
+        let result = applyParser.parse(StringInput("2*3"))
+        guard case let .success(remainingInput, value) = result else {
+            XCTFail("Expected parse to be successful.")
             return
         }
         XCTAssertEqual(value, 6)
-        let msg = msgGenerator()
-        XCTAssertEqual(msg.unexpectedInput, "")
-        XCTAssertEqual(msg.position, 3)
-        XCTAssertEqual(msg.expectedProductions, [])
-    }
-
-    func testLabelAsOperatorUnexpectedInput() {
-        let digit: Parser<StringInput, Character> = Combinators.label(Combinators.digit(), with: "digit")
-        let letter: Parser<StringInput, Character> = Combinators.label(Combinators.letter(), with: "letter")
-        let charUnderscore: Parser<StringInput, Character> = Combinators.char("_") <?> "_"
-
-        let identifier: Parser<StringInput, [Character]> = Combinators.many1(letter <|> digit <|> charUnderscore)
-        let input = StringInput("@")
-
-        let output = identifier.parse(input)
-        guard case let .error(msgGenerator) = output.reply, .empty == output.state else {
-            XCTFail("Expected parse to fail and no consumption of input")
-            return
-        }
-        let msg = msgGenerator()
-        XCTAssertEqual(msg.unexpectedInput, "@")
-        XCTAssertEqual(msg.position, 0)
-        XCTAssertEqual(msg.expectedProductions, ["letter", "digit", "_"])
+        XCTAssertNil(remainingInput.current())
+        XCTAssertEqual(remainingInput.position, 3)
     }
 
     static var allTests = [
-        ("testBindAsOperator", testBindAsOperator),
-        ("testChoiceAsOperator", testChoiceAsOperator),
-        ("testMapAsOperator", testMapAsOperator),
-        ("testApplyAsOperator", testApplyAsOperator),
-        ("testLabelAsOperatorUnexpectedInput", testLabelAsOperatorUnexpectedInput)
+        ("testChoiceSuccessAsOperator", testChoiceSuccessAsOperator),
+        ("testMapSuccessAsOperator", testMapSuccessAsOperator),
+        ("testApplySuccessAsOperator", testApplySuccessAsOperator)
     ]
 }

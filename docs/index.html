@@ -13,7 +13,7 @@
     <a title="Decompose  Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="index.html">Decompose Docs</a> (98% documented)</p>
+        <p><a href="index.html">Decompose Docs</a> (96% documented)</p>
         <p class="header-right"><a href="https://github.com/bluk/decompose"><img src="img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
@@ -28,24 +28,19 @@
       <nav class="sidebar">
         <ul class="nav-groups">
           <li class="nav-group-name">
-            <a href="Classes.html">Classes</a>
-            <ul class="nav-group-tasks">
-              <li class="nav-group-task">
-                <a href="Classes/Consumed.html">Consumed</a>
-              </li>
-            </ul>
-          </li>
-          <li class="nav-group-name">
             <a href="Enums.html">Enumerations</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
                 <a href="Enums/Combinators.html">Combinators</a>
               </li>
               <li class="nav-group-task">
-                <a href="Enums/ConsumedState.html">ConsumedState</a>
+                <a href="Enums/Empty.html">Empty</a>
               </li>
               <li class="nav-group-task">
-                <a href="Enums/Reply.html">Reply</a>
+                <a href="Enums/Result.html">Result</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Enums/Symbol.html">Symbol</a>
               </li>
             </ul>
           </li>
@@ -53,25 +48,22 @@
             <a href="Functions.html">Functions</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="Functions.html#/s:9Decompose2mgoiyAA6ParserVyxq0_GADyxq_G_AEtAA5InputRzr1_lF">*&gt;(_:_:)</a>
+                <a href="Functions.html#/s:9Decompose2mgoiyAA6ParserVyxq0_GADyxq_G_AEtAA5InputRzSL7ElementRpzSHAIRQr1_lF">*&gt;(_:_:)</a>
               </li>
               <li class="nav-group-task">
-                <a href="Functions.html#/s:9Decompose2lmoiyAA6ParserVyxq_GAE_ADyxq0_GtAA5InputRzr1_lF">&lt;*(_:_:)</a>
+                <a href="Functions.html#/s:9Decompose2lmoiyAA6ParserVyxq_GAE_ADyxq0_GtAA5InputRzSL7ElementRpzSHAIRQr1_lF">&lt;*(_:_:)</a>
               </li>
               <li class="nav-group-task">
-                <a href="Functions.html#/s:9Decompose3lmgoiyAA6ParserVyxq0_GADyxq0_q_cG_ADyxq_GtAA5InputRzr1_lF">&lt;*&gt;(_:_:)</a>
+                <a href="Functions.html#/s:9Decompose3lmgoiyAA6ParserVyxq0_GADyxq0_q_cG_ADyxq_GtAA5InputRzSL7ElementRpzSHAJRQr1_lF">&lt;*&gt;(_:_:)</a>
               </li>
               <li class="nav-group-task">
-                <a href="Functions.html#/s:9Decompose3lxgoiyAA6ParserVyxq0_Gq0_q_c_ADyxq_GtAA5InputRzr1_lF">&lt;^&gt;(_:_:)</a>
+                <a href="Functions.html#/s:9Decompose4lqqgoiyAA6ParserVyxq_GAE_q_tAA5InputRzSL7ElementRpzSHAHRQr0_lF">&lt;??&gt;(_:_:)</a>
               </li>
               <li class="nav-group-task">
-                <a href="Functions.html#/s:9Decompose3logoiyAA6ParserVyxq_GAE_AEtAA5InputRzr0_lF">&lt;|&gt;(_:_:)</a>
+                <a href="Functions.html#/s:9Decompose3lxgoiyAA6ParserVyxq0_Gq0_q_c_ADyxq_GtAA5InputRzSL7ElementRpzSHAIRQr1_lF">&lt;^&gt;(_:_:)</a>
               </li>
               <li class="nav-group-task">
-                <a href="Functions.html#/s:9Decompose2ggoiyAA6ParserVyxq0_GADyxq_G_AEyctAA5InputRzr1_lF">&gt;&gt;(_:_:)</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="Functions.html#/s:9Decompose3ggsoiyAA6ParserVyxq0_GADyxq_G_AEq_ctAA5InputRzr1_lF">&gt;&gt;-(_:_:)</a>
+                <a href="Functions.html#/s:9Decompose3logoiyAA6ParserVyxq_GAE_AEtAA5InputRzSL7ElementRpzSHAHRQr0_lF">&lt;|&gt;(_:_:)</a>
               </li>
             </ul>
           </li>
@@ -87,21 +79,10 @@
             <a href="Structs.html">Structures</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="Structs/ParseMessage.html">ParseMessage</a>
-              </li>
-              <li class="nav-group-task">
                 <a href="Structs/Parser.html">Parser</a>
               </li>
               <li class="nav-group-task">
                 <a href="Structs/StringInput.html">StringInput</a>
-              </li>
-            </ul>
-          </li>
-          <li class="nav-group-name">
-            <a href="Typealiases.html">Type Aliases</a>
-            <ul class="nav-group-tasks">
-              <li class="nav-group-task">
-                <a href="Typealiases.html#/s:9Decompose21ParseMessageGeneratora">ParseMessageGenerator</a>
               </li>
             </ul>
           </li>
@@ -117,7 +98,9 @@
 
 <p><a href="https://travis-ci.com/bluk/decompose"><img src="https://travis-ci.com/bluk/decompose.svg?branch=master" alt="Build Status"></a></p>
 
-<p>A(nother) parser combinator library.</p>
+<p>A(nother) parser combinator library inspired mainly by <a href="https://hackage.haskell.org/package/parsec">Parsec</a> and
+a port of some of the functionality from
+<a href="https://github.com/typemeta/funcj/tree/master/parser">funcj.parser, Java parser combinator framework</a>.</p>
 <h2 id='getting-started' class='heading'>Getting Started</h2>
 
 <p>This package is intended for use with <a href="https://swift.org/package-manager/">Swift Package Manager</a>. To use in your
@@ -167,7 +150,7 @@ jazzy -o docs --module "Decompose" --module-version &lt;version&gt; -g https://g
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2018 <a class="link" href="" target="_blank" rel="external"></a>. All rights reserved. (Last updated: 2018-09-07)</p>
+          <p>&copy; 2018 <a class="link" href="" target="_blank" rel="external"></a>. All rights reserved. (Last updated: 2018-09-11)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>

@@ -14,7 +14,7 @@
     <a title="Parser Structure Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="../index.html">Decompose Docs</a> (98% documented)</p>
+        <p><a href="../index.html">Decompose Docs</a> (96% documented)</p>
         <p class="header-right"><a href="https://github.com/bluk/decompose"><img src="../img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
@@ -29,24 +29,19 @@
       <nav class="sidebar">
         <ul class="nav-groups">
           <li class="nav-group-name">
-            <a href="../Classes.html">Classes</a>
-            <ul class="nav-group-tasks">
-              <li class="nav-group-task">
-                <a href="../Classes/Consumed.html">Consumed</a>
-              </li>
-            </ul>
-          </li>
-          <li class="nav-group-name">
             <a href="../Enums.html">Enumerations</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
                 <a href="../Enums/Combinators.html">Combinators</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Enums/ConsumedState.html">ConsumedState</a>
+                <a href="../Enums/Empty.html">Empty</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Enums/Reply.html">Reply</a>
+                <a href="../Enums/Result.html">Result</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/Symbol.html">Symbol</a>
               </li>
             </ul>
           </li>
@@ -54,25 +49,22 @@
             <a href="../Functions.html">Functions</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="../Functions.html#/s:9Decompose2mgoiyAA6ParserVyxq0_GADyxq_G_AEtAA5InputRzr1_lF">*&gt;(_:_:)</a>
+                <a href="../Functions.html#/s:9Decompose2mgoiyAA6ParserVyxq0_GADyxq_G_AEtAA5InputRzSL7ElementRpzSHAIRQr1_lF">*&gt;(_:_:)</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Functions.html#/s:9Decompose2lmoiyAA6ParserVyxq_GAE_ADyxq0_GtAA5InputRzr1_lF">&lt;*(_:_:)</a>
+                <a href="../Functions.html#/s:9Decompose2lmoiyAA6ParserVyxq_GAE_ADyxq0_GtAA5InputRzSL7ElementRpzSHAIRQr1_lF">&lt;*(_:_:)</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Functions.html#/s:9Decompose3lmgoiyAA6ParserVyxq0_GADyxq0_q_cG_ADyxq_GtAA5InputRzr1_lF">&lt;*&gt;(_:_:)</a>
+                <a href="../Functions.html#/s:9Decompose3lmgoiyAA6ParserVyxq0_GADyxq0_q_cG_ADyxq_GtAA5InputRzSL7ElementRpzSHAJRQr1_lF">&lt;*&gt;(_:_:)</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Functions.html#/s:9Decompose3lxgoiyAA6ParserVyxq0_Gq0_q_c_ADyxq_GtAA5InputRzr1_lF">&lt;^&gt;(_:_:)</a>
+                <a href="../Functions.html#/s:9Decompose4lqqgoiyAA6ParserVyxq_GAE_q_tAA5InputRzSL7ElementRpzSHAHRQr0_lF">&lt;??&gt;(_:_:)</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Functions.html#/s:9Decompose3logoiyAA6ParserVyxq_GAE_AEtAA5InputRzr0_lF">&lt;|&gt;(_:_:)</a>
+                <a href="../Functions.html#/s:9Decompose3lxgoiyAA6ParserVyxq0_Gq0_q_c_ADyxq_GtAA5InputRzSL7ElementRpzSHAIRQr1_lF">&lt;^&gt;(_:_:)</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Functions.html#/s:9Decompose2ggoiyAA6ParserVyxq0_GADyxq_G_AEyctAA5InputRzr1_lF">&gt;&gt;(_:_:)</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="../Functions.html#/s:9Decompose3ggsoiyAA6ParserVyxq0_GADyxq_G_AEq_ctAA5InputRzr1_lF">&gt;&gt;-(_:_:)</a>
+                <a href="../Functions.html#/s:9Decompose3logoiyAA6ParserVyxq_GAE_AEtAA5InputRzSL7ElementRpzSHAHRQr0_lF">&lt;|&gt;(_:_:)</a>
               </li>
             </ul>
           </li>
@@ -88,21 +80,10 @@
             <a href="../Structs.html">Structures</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="../Structs/ParseMessage.html">ParseMessage</a>
-              </li>
-              <li class="nav-group-task">
                 <a href="../Structs/Parser.html">Parser</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Structs/StringInput.html">StringInput</a>
-              </li>
-            </ul>
-          </li>
-          <li class="nav-group-name">
-            <a href="../Typealiases.html">Type Aliases</a>
-            <ul class="nav-group-tasks">
-              <li class="nav-group-task">
-                <a href="../Typealiases.html#/s:9Decompose21ParseMessageGeneratora">ParseMessageGenerator</a>
               </li>
             </ul>
           </li>
@@ -114,11 +95,11 @@
             <h1>Parser</h1>
               <div class="declaration">
                 <div class="language">
-                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">Parser</span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">V</span><span class="o">&gt;</span> <span class="k">where</span> <span class="kt">I</span> <span class="p">:</span> <span class="kt"><a href="../Protocols/Input.html">Input</a></span></code></pre>
+                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">Parser</span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">V</span><span class="o">&gt;</span> <span class="k">where</span> <span class="kt">I</span> <span class="p">:</span> <span class="kt"><a href="../Protocols/Input.html">Input</a></span><span class="p">,</span> <span class="kt">I</span><span class="o">.</span><span class="kt">Element</span> <span class="p">:</span> <span class="kt">Comparable</span><span class="p">,</span> <span class="kt">I</span><span class="o">.</span><span class="kt">Element</span> <span class="p">:</span> <span class="kt">Hashable</span></code></pre>
 
                 </div>
               </div>
-            <p>A value type for the <code>parse</code> function.</p>
+            <p>A value type for the <code>apply</code> function.</p>
 
           </section>
           <section class="section task-group-section">
@@ -127,9 +108,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:9Decompose6ParserV5parseyAA8ConsumedCyxq_Gxcvp"></a>
-                    <a name="//apple_ref/swift/Property/parse" class="dashAnchor"></a>
-                    <a class="token" href="#/s:9Decompose6ParserV5parseyAA8ConsumedCyxq_Gxcvp">parse</a>
+                    <a name="/s:9Decompose6ParserV12acceptsEmpty15firstSetSymbols5parseACyxq_GSbyXA_ShyAA6SymbolOy7ElementQzGGyXAAA6ResultOyxq_Gx_AMtctcfc"></a>
+                    <a name="//apple_ref/swift/Method/init(acceptsEmpty:firstSetSymbols:parse:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9Decompose6ParserV12acceptsEmpty15firstSetSymbols5parseACyxq_GSbyXA_ShyAA6SymbolOy7ElementQzGGyXAAA6ResultOyxq_Gx_AMtctcfc">init(acceptsEmpty:firstSetSymbols:parse:)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -137,46 +118,16 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>A function which takes an <code><a href="../Protocols/Input.html">Input</a></code> and returns a type which indicates if the <code><a href="../Protocols/Input.html">Input</a></code> is consumed when parsing
-the result and either a parsed value or an error message.</p>
+                        <p>Initializes a parser.</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">let</span> <span class="nv">parse</span><span class="p">:</span> <span class="p">(</span><span class="kt">I</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Consumed.html">Consumed</a></span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">V</span><span class="o">&gt;</span></code></pre>
-
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-              </ul>
-            </div>
-            <div class="task-group">
-              <ul>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:9Decompose6ParserV7flatMapyACyxqd__GAEq_clF"></a>
-                    <a name="//apple_ref/swift/Method/flatMap(_:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:9Decompose6ParserV7flatMapyACyxqd__GAEq_clF">flatMap(_:)</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Binds this <code>Parser</code>&lsquo;s return value to a function which generates another <code>Parser</code>.</p>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">func</span> <span class="n">flatMap</span><span class="o">&lt;</span><span class="kt">V2</span><span class="o">&gt;</span><span class="p">(</span><span class="n">_</span> <span class="nv">func1</span> <span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">V</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Parser</span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">V2</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Parser</span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">V2</span><span class="o">&gt;</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="nf">init</span><span class="p">(</span><span class="n">acceptsEmpty</span> <span class="nv">computeAcceptsEmpty</span><span class="p">:</span> <span class="kd">@autoclosure</span> <span class="kd">@escaping</span> <span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">Bool</span><span class="p">,</span>
+            <span class="n">firstSetSymbols</span> <span class="nv">computeFirstSetSymbols</span><span class="p">:</span> <span class="kd">@autoclosure</span> <span class="kd">@escaping</span> <span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">Set</span><span class="o">&lt;</span><span class="kt"><a href="../Enums/Symbol.html">Symbol</a></span><span class="o">&lt;</span><span class="kt">I</span><span class="o">.</span><span class="kt">Element</span><span class="o">&gt;&gt;</span><span class="p">,</span>
+            <span class="nv">parse</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">I</span><span class="p">,</span> <span class="kt">Set</span><span class="o">&lt;</span><span class="kt"><a href="../Enums/Symbol.html">Symbol</a></span><span class="o">&lt;</span><span class="kt">I</span><span class="o">.</span><span class="kt">Element</span><span class="o">&gt;&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Enums/Result.html">Result</a></span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">V</span><span class="o">&gt;</span><span class="p">)</span></code></pre>
 
                         </div>
                       </div>
@@ -187,25 +138,158 @@ the result and either a parsed value or an error message.</p>
                             <tr>
                               <td>
                                 <code>
-                                <em>func1</em>
+                                <em>computeAcceptsEmpty</em>
                                 </code>
                               </td>
                               <td>
                                 <div>
-                                  <p>The function to bind the value of this parser to.</p>
+                                  <p>A function to lazily compute if the <code>Parser</code> accepts an empty input.</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>firstSetSymbols</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>A function to lazily compute the first set of accepted symbols.</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>parse</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>A function to parse the <code><a href="../Protocols/Input.html">Input</a></code></p>
                                 </div>
                               </td>
                             </tr>
                           </tbody>
                         </table>
                       </div>
-                      <div>
-                        <h4>Return Value</h4>
-                        <p>A bound <code>Parser</code>.</p>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9Decompose6ParserV19computeAcceptsEmptySbycvp"></a>
+                    <a name="//apple_ref/swift/Property/computeAcceptsEmpty" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9Decompose6ParserV19computeAcceptsEmptySbycvp">computeAcceptsEmpty</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Returns true if this <code>Parser</code> accepts an empty input.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">let</span> <span class="nv">computeAcceptsEmpty</span><span class="p">:</span> <span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">Bool</span></code></pre>
+
+                        </div>
                       </div>
                     </section>
                   </div>
                 </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9Decompose6ParserV22computeFirstSetSymbolsShyAA6SymbolOy7ElementQzGGycvp"></a>
+                    <a name="//apple_ref/swift/Property/computeFirstSetSymbols" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9Decompose6ParserV22computeFirstSetSymbolsShyAA6SymbolOy7ElementQzGGycvp">computeFirstSetSymbols</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Returns the first set of symbols which can be accepted as input.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">let</span> <span class="nv">computeFirstSetSymbols</span><span class="p">:</span> <span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">Set</span><span class="o">&lt;</span><span class="kt"><a href="../Enums/Symbol.html">Symbol</a></span><span class="o">&lt;</span><span class="kt">I</span><span class="o">.</span><span class="kt">Element</span><span class="o">&gt;&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9Decompose6ParserV5applyyAA6ResultOyxq_Gx_ShyAA6SymbolOy7ElementQzGGtcvp"></a>
+                    <a name="//apple_ref/swift/Property/apply" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9Decompose6ParserV5applyyAA6ResultOyxq_Gx_ShyAA6SymbolOy7ElementQzGGtcvp">apply</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>A function which takes an <code><a href="../Protocols/Input.html">Input</a></code> and a set of follow symbols and returns a type which either a parsed value
+or an error message.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">let</span> <span class="nv">apply</span><span class="p">:</span> <span class="p">(</span><span class="kt">I</span><span class="p">,</span> <span class="kt">Set</span><span class="o">&lt;</span><span class="kt"><a href="../Enums/Symbol.html">Symbol</a></span><span class="o">&lt;</span><span class="kt">I</span><span class="o">.</span><span class="kt">Element</span><span class="o">&gt;&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Enums/Result.html">Result</a></span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">V</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9Decompose6ParserV5parseyAA6ResultOyxq_GxF"></a>
+                    <a name="//apple_ref/swift/Method/parse(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9Decompose6ParserV5parseyAA6ResultOyxq_GxF">parse(_:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>A method to run the parser with an <code><a href="../Protocols/Input.html">Input</a></code>.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">parse</span><span class="p">(</span><span class="n">_</span> <span class="nv">input</span><span class="p">:</span> <span class="kt">I</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Enums/Result.html">Result</a></span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">V</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <ul>
                 <li class="item">
                   <div>
                     <code>
@@ -277,7 +361,7 @@ into this parser&rsquo;s function.</p>
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">func</span> <span class="n">apply</span><span class="o">&lt;</span><span class="kt">V2</span><span class="p">,</span> <span class="kt">V3</span><span class="o">&gt;</span><span class="p">(</span><span class="n">_</span> <span class="nv">parser2</span><span class="p">:</span> <span class="kt">Parser</span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">V2</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Parser</span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">V3</span><span class="o">&gt;</span> <span class="k">where</span> <span class="kt">V</span> <span class="o">==</span> <span class="p">(</span><span class="kt">V2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">V3</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">func</span> <span class="n"><a href="../Structs/Parser.html#/s:9Decompose6ParserV5applyyAA6ResultOyxq_Gx_ShyAA6SymbolOy7ElementQzGGtcvp">apply</a></span><span class="o">&lt;</span><span class="kt">V2</span><span class="p">,</span> <span class="kt">V3</span><span class="o">&gt;</span><span class="p">(</span><span class="n">_</span> <span class="nv">parser2</span><span class="p">:</span> <span class="kt">Parser</span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">V2</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Parser</span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">V3</span><span class="o">&gt;</span> <span class="k">where</span> <span class="kt">V</span> <span class="o">==</span> <span class="p">(</span><span class="kt">V2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">V3</span></code></pre>
 
                         </div>
                       </div>
@@ -358,12 +442,114 @@ into this parser&rsquo;s function.</p>
                     </section>
                   </div>
                 </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9Decompose6ParserV4andLyACyxq_GACyxqd__GlF"></a>
+                    <a name="//apple_ref/swift/Method/andL(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9Decompose6ParserV4andLyACyxq_GACyxqd__GlF">andL(_:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Sequentially invokes this <code>Parser</code> and then the <code>Parser</code> argument while ignoring the second value.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">func</span> <span class="n">andL</span><span class="o">&lt;</span><span class="kt">V2</span><span class="o">&gt;</span><span class="p">(</span><span class="n">_</span> <span class="nv">parser2</span><span class="p">:</span> <span class="kt">Parser</span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">V2</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Parser</span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">V</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>parser2</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The second <code>Parser</code> to invoke</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>A <code>Parser</code> which invokes this <code>Parser</code>, then the second <code>Parser</code> parameter and then
+       returns this <code>Parser</code>&lsquo;s returned value.</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9Decompose6ParserV4andRyACyxqd__GAElF"></a>
+                    <a name="//apple_ref/swift/Method/andR(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9Decompose6ParserV4andRyACyxqd__GAElF">andR(_:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Sequentially invokes this <code>Parser</code> and then the <code>Parser</code> argument while ignoring the first value.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">func</span> <span class="n">andR</span><span class="o">&lt;</span><span class="kt">V2</span><span class="o">&gt;</span><span class="p">(</span><span class="n">_</span> <span class="nv">parser2</span><span class="p">:</span> <span class="kt">Parser</span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">V2</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Parser</span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">V2</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>parser2</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The second <code>Parser</code> to invoke</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>A <code>Parser</code> which invokes this <code>Parser</code>, then the second <code>Parser</code> parameter and then
+       returns the second <code>Parser</code>&lsquo;s returned value.</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
               </ul>
             </div>
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2018 <a class="link" href="" target="_blank" rel="external"></a>. All rights reserved. (Last updated: 2018-09-07)</p>
+          <p>&copy; 2018 <a class="link" href="" target="_blank" rel="external"></a>. All rights reserved. (Last updated: 2018-09-11)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>
