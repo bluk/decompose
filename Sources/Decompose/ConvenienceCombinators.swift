@@ -14,6 +14,8 @@
 
 import Foundation
 
+// swiftlint:disable file_length
+
 /// Convience methods to generate parsers
 public extension Combinators {
 
@@ -143,7 +145,7 @@ public extension Combinators {
     ///     - parser: The Parser to invoke.
     /// - Returns: A `Parser` which discards the return value of the `parser` parameter one or more times.
     static func skipMany1<I, V>(_ parser: Parser<I, V>) -> Parser<I, Empty> {
-        return { first in { list in  Empty.empty } } <^> parser <*> many(parser)
+        return { first in { list in Empty.empty } } <^> parser <*> many(parser)
     }
 
     /// Returns a `Parser` which attempts the parser parameter and if it succeeds, return the value, but if it fails,
@@ -155,6 +157,15 @@ public extension Combinators {
     ///            return nil
     static func optionOptional<I, V>(_ parser: Parser<I, V>) -> Parser<I, V?> {
         return parser.map({ Optional($0) }) <|> pure(nil)
+    }
+
+    /// Returns a `Parser` which attempts the parser parameter and if it succeeds or not, return an `Empty.empty`.
+    ///
+    /// - Parameters:
+    ///     - parser: The Parser to attempt.
+    /// - Returns: A `Parser` which attempts the parser parameter and if it succeeds or not, return an `Empty.empty`.
+    static func optional<I, V>(_ parser: Parser<I, V>) -> Parser<I, Empty> {
+        return { _ in Empty.empty } <^> parser <|> pure(Empty.empty)
     }
 
     /// Returns a `Parser` which attempts the parser parameter and if it succeeds, return the value, but if it fails,
@@ -208,7 +219,7 @@ public extension Combinators {
     ///            associativity.
     static func chainl<I, V>(_ parserV: Parser<I, V>, _ parserOp: Parser<I, (V) -> (V) -> V>, _ value: V)
         -> Parser<I, V> {
-        return chainl1(parserV, parserOp)  <|> pure(value)
+        return chainl1(parserV, parserOp) <|> pure(value)
     }
 
     /// Parses a value operand and zero or more operator and operand where the final parsed value is the
@@ -234,4 +245,176 @@ public extension Combinators {
             operations.reduce(firstValue, { resultValue, operation in operation(resultValue) }) }
         }
     }
+
+    /// Parses zero or more values separated by a separator and returns an array of the parsed values.
+    ///
+    /// - Parameters:
+    ///     - parserV: Parses a value.
+    ///     - parserSep: Parses a separator.
+    /// - Returns: A `Parser` which parses zero or more values separated by a separator and returns an array of the
+    ///            parsed values.
+    static func sepBy<I, V, S>(_ parserV: Parser<I, V>, _ parserSep: Parser<I, S>) -> Parser<I, [V]> {
+        return sepBy1(parserV, parserSep) <|> pure([])
+    }
+
+    /// Parses one or more values separated by a separator and returns an array of the parsed values.
+    ///
+    /// - Parameters:
+    ///     - parserV: Parses a value.
+    ///     - parserSep: Parses a separator.
+    /// - Returns: A `Parser` which parses one or more values separated by a separator and returns an array of the
+    ///            parsed values.
+    static func sepBy1<I, V, S>(_ parserV: Parser<I, V>, _ parserSep: Parser<I, S>) -> Parser<I, [V]> {
+        let appendValuesFunc: (V) -> ([V]) -> [V] = { value in { list in [value] + list } }
+        return appendValuesFunc <^> parserV <*> many(parserSep *> parserV)
+    }
+
+    /// Parses an open, value, and then a close, and returns the value.
+    ///
+    /// - Parameters:
+    ///     - parserV: Parses a value.
+    ///     - parserOpen: Parses an open value.
+    ///     - parserClose: Parses a close value.
+    /// - Returns: A `Parser` which parses an open, value, and then a close, and returns the value.
+    static func between<I, O, V, C>(_ parserOpen: Parser<I, O>, _ parserV: Parser<I, V>, _ parserClose: Parser<I, C>)
+        -> Parser<I, V> {
+        return parserOpen *> parserV <* parserClose
+    }
+
+    /// Parses a value for `count` number of times and returns an array of the values.
+    ///
+    /// - Parameters:
+    ///     - parserV: Parses a value.
+    ///     - count: The number of times to parse.
+    /// - Returns: A `Parser` which parses a value for `count` number of times and returns an array of the values.
+    static func count<I, V>(_ parser: Parser<I, V>, count: Int) -> Parser<I, [V]> {
+        return Parser(
+            acceptsEmpty: parser.computeAcceptsEmpty(),
+            firstSetSymbols: parser.computeFirstSetSymbols()
+        ) { input, followSetSymbols in
+            var results: [V] = []
+            var remainingInput = input
+            for _ in 0..<count {
+                if let currentValue = remainingInput.current(), remainingInput.isAvailable {
+                    if parser.computeFirstSetSymbols().contains(where: { $0.matches(currentValue) }) {
+                        let result = parser.apply(remainingInput, followSetSymbols)
+                        switch result {
+                        case let .failure(remainingInput, symbols):
+                            return Result<I, [V]>.failure(remainingInput, symbols)
+                        case let .failureUnavailableInput(remainingInput, symbols):
+                            return Result<I, [V]>.failureUnavailableInput(remainingInput, symbols)
+                        case let .success(remainingInput2, value):
+                            results.append(value)
+                            remainingInput = remainingInput2
+                        }
+                    }
+                } else {
+                    return Result<I, [V]>.failureUnavailableInput(remainingInput, parser.computeFirstSetSymbols())
+                }
+            }
+
+            return Result.success(remainingInput, results)
+        }
+    }
+
+    /// Parses zero or more values separated by and ends with a separator and returns an array of the parsed values.
+    ///
+    /// - Parameters:
+    ///     - parserV: Parses a value.
+    ///     - parserSep: Parses a separator.
+    /// - Returns: A `Parser` which parses zero or more values separated by and ends with a separator and returns an
+    ///            array of the parsed values.
+    static func endBy<I, V, S>(_ parserV: Parser<I, V>, _ parserSep: Parser<I, S>) -> Parser<I, [V]> {
+        return endBy1(parserV, parserSep) <|> pure([])
+    }
+
+    /// Parses one or more values separated by and ends with a separator and returns an array of the parsed values.
+    ///
+    /// - Parameters:
+    ///     - parserV: Parses a value.
+    ///     - parserSep: Parses a separator.
+    /// - Returns: A `Parser` which parses one or more values separated by and ends with a separator and returns an
+    ///            array of the parsed values.
+    static func endBy1<I, V, S>(_ parserV: Parser<I, V>, _ parserSep: Parser<I, S>) -> Parser<I, [V]> {
+        return many1(parserV <* parserSep)
+    }
+
+    /// Parses zero or more values separated by and optionally ends with a separator and returns an array of the parsed
+    /// values.
+    ///
+    /// - Parameters:
+    ///     - parserV: Parses a value.
+    ///     - parserSep: Parses a separator.
+    /// - Returns: A `Parser` which parses zero or more values separated by and optionally ends with a separator and
+    ///            returns an array of the parsed values.
+    static func sepEndBy<I, V, S>(_ parserV: Parser<I, V>, _ parserSep: Parser<I, S>) -> Parser<I, [V]> {
+        return sepEndBy1(parserV, parserSep) <|> pure([])
+    }
+
+    /// Parses one or more values separated by and optionally ends with a separator and returns an array of the parsed
+    /// values.
+    ///
+    /// - Parameters:
+    ///     - parserV: Parses a value.
+    ///     - parserSep: Parses a separator.
+    /// - Returns: A `Parser` which parses one or more values separated by and optionally ends with a separator and
+    ///            returns an array of the parsed values.
+    static func sepEndBy1<I, V, S>(_ parserV: Parser<I, V>, _ parserSep: Parser<I, S>) -> Parser<I, [V]> {
+        let appendValuesFunc: (V) -> ([V]) -> [V] = { value in { list in [value] + list } }
+        return appendValuesFunc <^> parserV <* optional(parserSep) <*> many(parserV <* parserSep)
+    }
+
+    /// Parses `parserV` zero or more times until `parserEnd` is encountered, and returns an array of the `parserV`
+    /// values.
+    ///
+    /// - Parameters:
+    ///     - parserV: Parses a value.
+    ///     - parserEnd: Parses an end value.
+    /// - Returns: A `Parser` which parses `parserV` values zero or more times until `parserEnd` is encountered, and
+    ///            returns an array of the `parserV` values.
+    static func manyTill<I, V, V2>(_ parser: Parser<I, V>, _ parserEnd: Parser<I, V2>) -> Parser<I, [V]> {
+        return Parser(
+            acceptsEmpty: parser.computeAcceptsEmpty() || parserEnd.computeAcceptsEmpty(),
+            firstSetSymbols: parser.computeFirstSetSymbols().union(parserEnd.computeFirstSetSymbols())
+        ) { input, followSetSymbols in
+            var results: [V] = []
+            var remainingInput = input
+            let followSetSymbolsManyTill = followSetSymbols
+                .union(parser.computeFirstSetSymbols())
+                .union(parserEnd.computeFirstSetSymbols())
+
+            repeat {
+                if let currentValue = remainingInput.current(), remainingInput.isAvailable {
+                    if parserEnd.computeFirstSetSymbols().contains(where: { $0.matches(currentValue) }) {
+                        let result = parserEnd.apply(remainingInput, followSetSymbolsManyTill)
+                        switch result {
+                        case let .failure(remainingInput, symbols):
+                            return Result<I, [V]>.failure(remainingInput, symbols)
+                        case let .failureUnavailableInput(remainingInput, symbols):
+                            return Result<I, [V]>.failureUnavailableInput(remainingInput, symbols)
+                        case let .success(remainingInput2, _):
+                            return Result.success(remainingInput2, results)
+                        }
+                    } else if parser.computeFirstSetSymbols().contains(where: { $0.matches(currentValue) }) {
+                        let result = parser.apply(remainingInput, followSetSymbolsManyTill)
+                        switch result {
+                        case let .failure(remainingInput, symbols):
+                            return Result<I, [V]>.failure(remainingInput, symbols)
+                        case let .failureUnavailableInput(remainingInput, symbols):
+                            return Result<I, [V]>.failureUnavailableInput(remainingInput, symbols)
+                        case let .success(remainingInput2, value):
+                            results.append(value)
+                            remainingInput = remainingInput2
+                        }
+                    } else {
+                        return Result<I, [V]>.failure(remainingInput, followSetSymbolsManyTill)
+                    }
+                } else {
+                    return Result<I, [V]>.failureUnavailableInput(remainingInput, parserEnd.computeFirstSetSymbols())
+                }
+            } while true
+        }
+    }
 }
+
+// swiftlint:enable file_length

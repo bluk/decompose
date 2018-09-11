@@ -291,7 +291,7 @@ internal final class ConvenienceCombinatorsTests: XCTestCase {
         XCTAssertEqual(expectedSymbols, Set([Symbol<Character>.predicate(name: "letter", { _ in true })]))
     }
 
-    func testOptWithParserSuccess() {
+    func testOptionOptionalWithParserSuccess() {
         let optParser: Parser<StringInput, Character?> = Combinators.optionOptional(Combinators.letter())
         let input = StringInput("f")
 
@@ -304,7 +304,7 @@ internal final class ConvenienceCombinatorsTests: XCTestCase {
         XCTAssertEqual(remainingInput.position, 1)
     }
 
-    func testOptWithParserFailure() {
+    func testOptionOptionalWithParserFailure() {
         let optParser: Parser<StringInput, Character?> = Combinators.optionOptional(Combinators.letter())
         let input = StringInput("")
 
@@ -317,7 +317,7 @@ internal final class ConvenienceCombinatorsTests: XCTestCase {
         XCTAssertEqual(remainingInput.position, 0)
     }
 
-    func testOptAndValueWithParserSuccess() {
+    func testOptionAndValueWithParserSuccess() {
         let optParser: Parser<StringInput, Character> = Combinators.option(Combinators.letter(), "A")
         let input = StringInput("f")
 
@@ -330,7 +330,7 @@ internal final class ConvenienceCombinatorsTests: XCTestCase {
         XCTAssertEqual(remainingInput.position, 1)
     }
 
-    func testOptAndValueWithParserFailure() {
+    func testOptionAndValueWithParserFailure() {
         let optParser: Parser<StringInput, Character> = Combinators.option(Combinators.letter(), "A")
         let input = StringInput("")
 
@@ -340,6 +340,32 @@ internal final class ConvenienceCombinatorsTests: XCTestCase {
             return
         }
         XCTAssertEqual(value, "A")
+        XCTAssertEqual(remainingInput.position, 0)
+    }
+
+    func testOptionalAndEmptyWithParserSuccess() {
+        let optParser: Parser<StringInput, Empty> = Combinators.optional(Combinators.letter())
+        let input = StringInput("f")
+
+        let result = optParser.parse(input)
+        guard case let .success(remainingInput, value) = result else {
+            XCTFail("Expected parse to be successful.")
+            return
+        }
+        XCTAssertEqual(value, Empty.empty)
+        XCTAssertEqual(remainingInput.position, 1)
+    }
+
+    func testOptionalAndEmptyWithParserFailure() {
+        let optParser: Parser<StringInput, Empty> = Combinators.optional(Combinators.letter())
+        let input = StringInput("")
+
+        let result = optParser.parse(input)
+        guard case let .success(remainingInput, value) = result else {
+            XCTFail("Expected parse to be successful.")
+            return
+        }
+        XCTAssertEqual(value, Empty.empty)
         XCTAssertEqual(remainingInput.position, 0)
     }
 
@@ -671,6 +697,795 @@ internal final class ConvenienceCombinatorsTests: XCTestCase {
         XCTAssertEqual(expectedSymbols, Set([Symbol<Character>.predicate(name: "digit", { _ in true }), Symbol.empty]))
     }
 
+    func testSepBySuccess() {
+        let sepByParser: Parser<StringInput, [Character]> = Combinators.sepBy(
+            Combinators.digit(),
+            Combinators.symbol("A")
+        )
+        let input = StringInput("1A2A3")
+
+        let result = sepByParser.parse(input)
+        guard case let .success(remainingInput, value) = result else {
+            XCTFail("Expected parse to be successful.")
+            return
+        }
+        XCTAssertEqual(value, ["1", "2", "3"])
+        XCTAssertEqual(remainingInput.position, 5)
+    }
+
+    func testSepBySuccessWithOnlyValue() {
+        let sepByParser: Parser<StringInput, [Character]> = Combinators.sepBy(
+            Combinators.digit(),
+            Combinators.symbol("A")
+        )
+        let input = StringInput("1")
+
+        let result = sepByParser.parse(input)
+        guard case let .success(remainingInput, value) = result else {
+            XCTFail("Expected parse to be successful.")
+            return
+        }
+        XCTAssertEqual(value, ["1"])
+        XCTAssertEqual(remainingInput.position, 1)
+    }
+
+    func testSepBySuccessWithEmptyInput() {
+        let sepByParser: Parser<StringInput, [Character]> = Combinators.sepBy(
+            Combinators.digit(),
+            Combinators.symbol("A")
+        )
+        let input = StringInput("")
+
+        let result = sepByParser.parse(input)
+        guard case let .success(remainingInput, value) = result else {
+            XCTFail("Expected parse to be successful.")
+            return
+        }
+        XCTAssertEqual(value, [])
+        XCTAssertEqual(remainingInput.position, 0)
+    }
+
+    func testSepByFailureWithValueAndSeparator() {
+        let sepByParser: Parser<StringInput, [Character]> = Combinators.sepBy(
+            Combinators.digit(),
+            Combinators.symbol("A")
+        )
+        let input = StringInput("1A")
+
+        let result = sepByParser.parse(input)
+        guard case let .failureUnavailableInput(remainingInput, expectedSymbols) = result else {
+            XCTFail("Expected parse to fail.")
+            return
+        }
+        XCTAssertEqual(expectedSymbols, [Symbol.predicate(name: "digit", { _ in true })])
+        XCTAssertEqual(remainingInput.position, 2)
+    }
+
+    func testSepByFailureWithSeparator() {
+        let sepByParser: Parser<StringInput, [Character]> = Combinators.sepBy(
+            Combinators.digit(),
+            Combinators.symbol("A")
+        )
+        let input = StringInput("A")
+
+        let result = sepByParser.parse(input)
+        guard case let .failure(remainingInput, expectedSymbols) = result else {
+            XCTFail("Expected parse to fail.")
+            return
+        }
+        XCTAssertEqual(expectedSymbols, [Symbol.predicate(name: "digit", { _ in true })])
+        XCTAssertEqual(remainingInput.position, 0)
+    }
+
+    func testSepByFailure() {
+        let sepByParser: Parser<StringInput, [Character]> = Combinators.sepBy(
+            Combinators.digit(),
+            Combinators.symbol("A")
+        )
+        let input = StringInput("B")
+
+        let result = sepByParser.parse(input)
+        guard case let .failure(remainingInput, expectedSymbols) = result else {
+            XCTFail("Expected parse to fail.")
+            return
+        }
+        XCTAssertEqual(expectedSymbols, [Symbol.predicate(name: "digit", { _ in true })])
+        XCTAssertEqual(remainingInput.position, 0)
+    }
+
+    func testSepBy1Success() {
+        let sepBy1Parser: Parser<StringInput, [Character]> = Combinators.sepBy1(
+            Combinators.digit(),
+            Combinators.symbol("A")
+        )
+        let input = StringInput("1A2A3")
+
+        let result = sepBy1Parser.parse(input)
+        guard case let .success(remainingInput, value) = result else {
+            XCTFail("Expected parse to be successful.")
+            return
+        }
+        XCTAssertEqual(value, ["1", "2", "3"])
+        XCTAssertEqual(remainingInput.position, 5)
+    }
+
+    func testSepBy1SuccessWithOnlyValue() {
+        let sepBy1Parser: Parser<StringInput, [Character]> = Combinators.sepBy1(
+            Combinators.digit(),
+            Combinators.symbol("A")
+        )
+        let input = StringInput("1")
+
+        let result = sepBy1Parser.parse(input)
+        guard case let .success(remainingInput, value) = result else {
+            XCTFail("Expected parse to be successful.")
+            return
+        }
+        XCTAssertEqual(value, ["1"])
+        XCTAssertEqual(remainingInput.position, 1)
+    }
+
+    func testSepBy1FailureWithEmptyInput() {
+        let sepBy1Parser: Parser<StringInput, [Character]> = Combinators.sepBy1(
+            Combinators.digit(),
+            Combinators.symbol("A")
+        )
+        let input = StringInput("")
+
+        let result = sepBy1Parser.parse(input)
+        guard case let .failureUnavailableInput(remainingInput, expectedSymbols) = result else {
+            XCTFail("Expected parse to fail.")
+            return
+        }
+        XCTAssertEqual(expectedSymbols, [Symbol.predicate(name: "digit", { _ in true })])
+        XCTAssertEqual(remainingInput.position, 0)
+    }
+
+    func testSepBy1FailureWithValueAndSeparator() {
+        let sepBy1Parser: Parser<StringInput, [Character]> = Combinators.sepBy1(
+            Combinators.digit(),
+            Combinators.symbol("A")
+        )
+        let input = StringInput("1A")
+
+        let result = sepBy1Parser.parse(input)
+        guard case let .failureUnavailableInput(remainingInput, expectedSymbols) = result else {
+            XCTFail("Expected parse to fail.")
+            return
+        }
+        XCTAssertEqual(expectedSymbols, [Symbol.predicate(name: "digit", { _ in true })])
+        XCTAssertEqual(remainingInput.position, 2)
+    }
+
+    func testSepBy1FailureWithSeparator() {
+        let sepBy1Parser: Parser<StringInput, [Character]> = Combinators.sepBy1(
+            Combinators.digit(),
+            Combinators.symbol("A")
+        )
+        let input = StringInput("A")
+
+        let result = sepBy1Parser.parse(input)
+        guard case let .failure(remainingInput, expectedSymbols) = result else {
+            XCTFail("Expected parse to fail.")
+            return
+        }
+        XCTAssertEqual(expectedSymbols, [Symbol.predicate(name: "digit", { _ in true })])
+        XCTAssertEqual(remainingInput.position, 0)
+    }
+
+    func testSepBy1Failure() {
+        let sepBy1Parser: Parser<StringInput, [Character]> = Combinators.sepBy1(
+            Combinators.digit(),
+            Combinators.symbol("A")
+        )
+        let input = StringInput("B")
+
+        let result = sepBy1Parser.parse(input)
+        guard case let .failure(remainingInput, expectedSymbols) = result else {
+            XCTFail("Expected parse to fail.")
+            return
+        }
+        XCTAssertEqual(expectedSymbols, [Symbol.predicate(name: "digit", { _ in true })])
+        XCTAssertEqual(remainingInput.position, 0)
+    }
+
+    func testBetweenSuccess() {
+        let betweenParser: Parser<StringInput, Character> = Combinators.between(
+            Combinators.symbol("("),
+            Combinators.digit(),
+            Combinators.symbol(")")
+        )
+        let input = StringInput("(1)")
+
+        let result = betweenParser.parse(input)
+        guard case let .success(remainingInput, value) = result else {
+            XCTFail("Expected parse to be successful.")
+            return
+        }
+        XCTAssertEqual(value, "1")
+        XCTAssertEqual(remainingInput.position, 3)
+    }
+
+    func testBetweenFailureOnEmptyInput() {
+        let betweenParser: Parser<StringInput, Character> = Combinators.between(
+            Combinators.symbol("("),
+            Combinators.digit(),
+            Combinators.symbol(")")
+        )
+        let input = StringInput("")
+
+        let result = betweenParser.parse(input)
+        guard case let .failureUnavailableInput(remainingInput, expectedSymbols) = result else {
+            XCTFail("Expected parse to fail.")
+            return
+        }
+        XCTAssertEqual(expectedSymbols, [Symbol.value("(")])
+        XCTAssertEqual(remainingInput.position, 0)
+    }
+
+    func testBetweenFailureOnMissingOpen() {
+        let betweenParser: Parser<StringInput, Character> = Combinators.between(
+            Combinators.symbol("("),
+            Combinators.digit(),
+            Combinators.symbol(")")
+        )
+        let input = StringInput("1)")
+
+        let result = betweenParser.parse(input)
+        guard case let .failure(remainingInput, expectedSymbols) = result else {
+            XCTFail("Expected parse to fail.")
+            return
+        }
+        XCTAssertEqual(expectedSymbols, [Symbol.value("(")])
+        XCTAssertEqual(remainingInput.position, 0)
+    }
+
+    func testBetweenFailureOnMissingClose() {
+        let betweenParser: Parser<StringInput, Character> = Combinators.between(
+            Combinators.symbol("("),
+            Combinators.digit(),
+            Combinators.symbol(")")
+        )
+        let input = StringInput("(1")
+
+        let result = betweenParser.parse(input)
+        guard case let .failureUnavailableInput(remainingInput, expectedSymbols) = result else {
+            XCTFail("Expected parse to fail.")
+            return
+        }
+        XCTAssertEqual(expectedSymbols, [Symbol.value(")")])
+        XCTAssertEqual(remainingInput.position, 2)
+    }
+
+    func testBetweenFailure() {
+        let betweenParser: Parser<StringInput, Character> = Combinators.between(
+            Combinators.symbol("("),
+            Combinators.digit(),
+            Combinators.symbol(")")
+        )
+        let input = StringInput("(A")
+
+        let result = betweenParser.parse(input)
+        guard case let .failure(remainingInput, expectedSymbols) = result else {
+            XCTFail("Expected parse to fail.")
+            return
+        }
+        XCTAssertEqual(expectedSymbols, [Symbol.predicate(name: "digit", { _ in true })])
+        XCTAssertEqual(remainingInput.position, 1)
+    }
+
+    func testCountSuccess() {
+        let countParser: Parser<StringInput, [Character]> = Combinators.count(
+            Combinators.digit(),
+            count: 3
+        )
+        let input = StringInput("123")
+
+        let result = countParser.parse(input)
+        guard case let .success(remainingInput, value) = result else {
+            XCTFail("Expected parse to be successful.")
+            return
+        }
+        XCTAssertEqual(value, ["1", "2", "3"])
+        XCTAssertEqual(remainingInput.position, 3)
+    }
+
+    func testCountFailureMissingCount() {
+        let countParser: Parser<StringInput, [Character]> = Combinators.count(
+            Combinators.digit(),
+            count: 3
+        )
+        let input = StringInput("12")
+
+        let result = countParser.parse(input)
+        guard case let .failureUnavailableInput(remainingInput, expectedSymbols) = result else {
+            XCTFail("Expected parse to fail.")
+            return
+        }
+        XCTAssertEqual(expectedSymbols, [Symbol.predicate(name: "digit", { _ in true })])
+        XCTAssertEqual(remainingInput.position, 2)
+    }
+
+    func testCountFailureWithParse() {
+        let countParser: Parser<StringInput, [Character]> = Combinators.count(
+            Combinators.digit(),
+            count: 3
+        )
+        let input = StringInput("A123")
+
+        let result = countParser.parse(input)
+        guard case let .failure(remainingInput, expectedSymbols) = result else {
+            XCTFail("Expected parse to fail.")
+            return
+        }
+        XCTAssertEqual(expectedSymbols, [Symbol.predicate(name: "digit", { _ in true })])
+        XCTAssertEqual(remainingInput.position, 0)
+    }
+
+    func testCountFailureWithMoreInput() {
+        let countParser: Parser<StringInput, [Character]> = Combinators.count(
+            Combinators.digit(),
+            count: 3
+        )
+        let input = StringInput("1234")
+
+        let result = countParser.parse(input)
+        guard case let .failure(remainingInput, expectedSymbols) = result else {
+            XCTFail("Expected parse to fail.")
+            return
+        }
+        XCTAssertEqual(expectedSymbols, [Symbol.empty])
+        XCTAssertEqual(remainingInput.position, 3)
+    }
+
+    func testEndBySuccess() {
+        let endByParser: Parser<StringInput, [Character]> = Combinators.endBy(
+            Combinators.digit(),
+            Combinators.symbol("A")
+        )
+        let input = StringInput("1A2A3A")
+
+        let result = endByParser.parse(input)
+        guard case let .success(remainingInput, value) = result else {
+            XCTFail("Expected parse to be successful.")
+            return
+        }
+        XCTAssertEqual(value, ["1", "2", "3"])
+        XCTAssertEqual(remainingInput.position, 6)
+    }
+
+    func testEndByFailureWithOnlyValue() {
+        let endByParser: Parser<StringInput, [Character]> = Combinators.endBy(
+            Combinators.digit(),
+            Combinators.symbol("A")
+        )
+        let input = StringInput("1")
+
+        let result = endByParser.parse(input)
+        guard case let .failureUnavailableInput(remainingInput, expectedSymbols) = result else {
+            XCTFail("Expected parse to be successful.")
+            return
+        }
+        XCTAssertEqual(expectedSymbols, [Symbol.value("A")])
+        XCTAssertEqual(remainingInput.position, 1)
+    }
+
+    func testEndBySuccessWithEmptyInput() {
+        let endByParser: Parser<StringInput, [Character]> = Combinators.endBy(
+            Combinators.digit(),
+            Combinators.symbol("A")
+        )
+        let input = StringInput("")
+
+        let result = endByParser.parse(input)
+        guard case let .success(remainingInput, value) = result else {
+            XCTFail("Expected parse to be successful.")
+            return
+        }
+        XCTAssertEqual(value, [])
+        XCTAssertEqual(remainingInput.position, 0)
+    }
+
+    func testEndByFailureWithValue() {
+        let endByParser: Parser<StringInput, [Character]> = Combinators.endBy(
+            Combinators.digit(),
+            Combinators.symbol("A")
+        )
+        let input = StringInput("1")
+
+        let result = endByParser.parse(input)
+        guard case let .failureUnavailableInput(remainingInput, expectedSymbols) = result else {
+            XCTFail("Expected parse to fail.")
+            return
+        }
+        XCTAssertEqual(expectedSymbols, [Symbol.value("A")])
+        XCTAssertEqual(remainingInput.position, 1)
+    }
+
+    func testEndByFailureWithSeparator() {
+        let endByParser: Parser<StringInput, [Character]> = Combinators.endBy(
+            Combinators.digit(),
+            Combinators.symbol("A")
+        )
+        let input = StringInput("A")
+
+        let result = endByParser.parse(input)
+        guard case let .failure(remainingInput, expectedSymbols) = result else {
+            XCTFail("Expected parse to fail.")
+            return
+        }
+        XCTAssertEqual(expectedSymbols, [Symbol.predicate(name: "digit", { _ in true })])
+        XCTAssertEqual(remainingInput.position, 0)
+    }
+
+    func testEndByFailure() {
+        let endByParser: Parser<StringInput, [Character]> = Combinators.endBy(
+            Combinators.digit(),
+            Combinators.symbol("A")
+        )
+        let input = StringInput("B")
+
+        let result = endByParser.parse(input)
+        guard case let .failure(remainingInput, expectedSymbols) = result else {
+            XCTFail("Expected parse to fail.")
+            return
+        }
+        XCTAssertEqual(expectedSymbols, [Symbol.predicate(name: "digit", { _ in true })])
+        XCTAssertEqual(remainingInput.position, 0)
+    }
+
+    func testEndBy1Success() {
+        let endBy1Parser: Parser<StringInput, [Character]> = Combinators.endBy1(
+            Combinators.digit(),
+            Combinators.symbol("A")
+        )
+        let input = StringInput("1A2A3A")
+
+        let result = endBy1Parser.parse(input)
+        guard case let .success(remainingInput, value) = result else {
+            XCTFail("Expected parse to be successful.")
+            return
+        }
+        XCTAssertEqual(value, ["1", "2", "3"])
+        XCTAssertEqual(remainingInput.position, 6)
+    }
+
+    func testEndBy1FailureWithOnlyValue() {
+        let endBy1Parser: Parser<StringInput, [Character]> = Combinators.endBy1(
+            Combinators.digit(),
+            Combinators.symbol("A")
+        )
+        let input = StringInput("1")
+
+        let result = endBy1Parser.parse(input)
+        guard case let .failureUnavailableInput(remainingInput, expectedSymbols) = result else {
+            XCTFail("Expected parse to be successful.")
+            return
+        }
+        XCTAssertEqual(expectedSymbols, [Symbol.value("A")])
+        XCTAssertEqual(remainingInput.position, 1)
+    }
+
+    func testEndBy1FailureWithEmptyInput() {
+        let endBy1Parser: Parser<StringInput, [Character]> = Combinators.endBy1(
+            Combinators.digit(),
+            Combinators.symbol("A")
+        )
+        let input = StringInput("")
+
+        let result = endBy1Parser.parse(input)
+        guard case let .failureUnavailableInput(remainingInput, expectedSymbols) = result else {
+            XCTFail("Expected parse to fail.")
+            return
+        }
+        XCTAssertEqual(expectedSymbols, [Symbol.predicate(name: "digit", { _ in true })])
+        XCTAssertEqual(remainingInput.position, 0)
+    }
+
+    func testEndBy1SuccessWithValueAndSeparator() {
+        let endBy1Parser: Parser<StringInput, [Character]> = Combinators.endBy1(
+            Combinators.digit(),
+            Combinators.symbol("A")
+        )
+        let input = StringInput("1A")
+
+        let result = endBy1Parser.parse(input)
+        guard case let .success(remainingInput, value) = result else {
+            XCTFail("Expected parse to fail.")
+            return
+        }
+        XCTAssertEqual(value, ["1"])
+        XCTAssertEqual(remainingInput.position, 2)
+    }
+
+    func testEndBy1FailureWithSeparator() {
+        let endBy1Parser: Parser<StringInput, [Character]> = Combinators.endBy1(
+            Combinators.digit(),
+            Combinators.symbol("A")
+        )
+        let input = StringInput("A")
+
+        let result = endBy1Parser.parse(input)
+        guard case let .failure(remainingInput, expectedSymbols) = result else {
+            XCTFail("Expected parse to fail.")
+            return
+        }
+        XCTAssertEqual(expectedSymbols, [Symbol.predicate(name: "digit", { _ in true })])
+        XCTAssertEqual(remainingInput.position, 0)
+    }
+
+    func testEndBy1Failure() {
+        let endBy1Parser: Parser<StringInput, [Character]> = Combinators.endBy1(
+            Combinators.digit(),
+            Combinators.symbol("A")
+        )
+        let input = StringInput("B")
+
+        let result = endBy1Parser.parse(input)
+        guard case let .failure(remainingInput, expectedSymbols) = result else {
+            XCTFail("Expected parse to fail.")
+            return
+        }
+        XCTAssertEqual(expectedSymbols, [Symbol.predicate(name: "digit", { _ in true })])
+        XCTAssertEqual(remainingInput.position, 0)
+    }
+
+    func testSepEndBySuccess() {
+        let sepEndByParser: Parser<StringInput, [Character]> = Combinators.sepEndBy(
+            Combinators.digit(),
+            Combinators.symbol("A")
+        )
+        let input = StringInput("1A2A3A")
+
+        let result = sepEndByParser.parse(input)
+        guard case let .success(remainingInput, value) = result else {
+            XCTFail("Expected parse to be successful.")
+            return
+        }
+        XCTAssertEqual(value, ["1", "2", "3"])
+        XCTAssertEqual(remainingInput.position, 6)
+    }
+
+    func testSepEndBySuccessWithOnlyValue() {
+        let sepEndByParser: Parser<StringInput, [Character]> = Combinators.sepEndBy(
+            Combinators.digit(),
+            Combinators.symbol("A")
+        )
+        let input = StringInput("1")
+
+        let result = sepEndByParser.parse(input)
+        guard case let .success(remainingInput, value) = result else {
+            XCTFail("Expected parse to be successful.")
+            return
+        }
+        XCTAssertEqual(value, ["1"])
+        XCTAssertEqual(remainingInput.position, 1)
+    }
+
+    func testSepEndBySuccessWithEmptyInput() {
+        let sepEndByParser: Parser<StringInput, [Character]> = Combinators.sepEndBy(
+            Combinators.digit(),
+            Combinators.symbol("A")
+        )
+        let input = StringInput("")
+
+        let result = sepEndByParser.parse(input)
+        guard case let .success(remainingInput, value) = result else {
+            XCTFail("Expected parse to be successful.")
+            return
+        }
+        XCTAssertEqual(value, [])
+        XCTAssertEqual(remainingInput.position, 0)
+    }
+
+    func testSepEndBySuccessWithValueAndSeparator() {
+        let sepEndByParser: Parser<StringInput, [Character]> = Combinators.sepEndBy(
+            Combinators.digit(),
+            Combinators.symbol("A")
+        )
+        let input = StringInput("1A")
+
+        let result = sepEndByParser.parse(input)
+        guard case let .success(remainingInput, value) = result else {
+            XCTFail("Expected parse to fail.")
+            return
+        }
+        XCTAssertEqual(value, ["1"])
+        XCTAssertEqual(remainingInput.position, 2)
+    }
+
+    func testSepEndByFailureWithSeparator() {
+        let sepEndByParser: Parser<StringInput, [Character]> = Combinators.sepEndBy(
+            Combinators.digit(),
+            Combinators.symbol("A")
+        )
+        let input = StringInput("A")
+
+        let result = sepEndByParser.parse(input)
+        guard case let .failure(remainingInput, expectedSymbols) = result else {
+            XCTFail("Expected parse to fail.")
+            return
+        }
+        XCTAssertEqual(expectedSymbols, [Symbol.predicate(name: "digit", { _ in true })])
+        XCTAssertEqual(remainingInput.position, 0)
+    }
+
+    func testSepEndByFailure() {
+        let sepEndByParser: Parser<StringInput, [Character]> = Combinators.sepEndBy(
+            Combinators.digit(),
+            Combinators.symbol("A")
+        )
+        let input = StringInput("B")
+
+        let result = sepEndByParser.parse(input)
+        guard case let .failure(remainingInput, expectedSymbols) = result else {
+            XCTFail("Expected parse to fail.")
+            return
+        }
+        XCTAssertEqual(expectedSymbols, [Symbol.predicate(name: "digit", { _ in true })])
+        XCTAssertEqual(remainingInput.position, 0)
+    }
+
+    func testSepEndBy1Success() {
+        let sepEndBy1Parser: Parser<StringInput, [Character]> = Combinators.sepEndBy1(
+            Combinators.digit(),
+            Combinators.symbol("A")
+        )
+        let input = StringInput("1A2A3A")
+
+        let result = sepEndBy1Parser.parse(input)
+        guard case let .success(remainingInput, value) = result else {
+            XCTFail("Expected parse to be successful.")
+            return
+        }
+        XCTAssertEqual(value, ["1", "2", "3"])
+        XCTAssertEqual(remainingInput.position, 6)
+    }
+
+    func testSepEndBy1SuccessWithOnlyValue() {
+        let sepEndBy1Parser: Parser<StringInput, [Character]> = Combinators.sepEndBy1(
+            Combinators.digit(),
+            Combinators.symbol("A")
+        )
+        let input = StringInput("1")
+
+        let result = sepEndBy1Parser.parse(input)
+        guard case let .success(remainingInput, value) = result else {
+            XCTFail("Expected parse to be successful.")
+            return
+        }
+        XCTAssertEqual(value, ["1"])
+        XCTAssertEqual(remainingInput.position, 1)
+    }
+
+    func testSepEndBy1FailureWithEmptyInput() {
+        let sepEndBy1Parser: Parser<StringInput, [Character]> = Combinators.sepEndBy1(
+            Combinators.digit(),
+            Combinators.symbol("A")
+        )
+        let input = StringInput("")
+
+        let result = sepEndBy1Parser.parse(input)
+        guard case let .failureUnavailableInput(remainingInput, expectedSymbols) = result else {
+            XCTFail("Expected parse to fail.")
+            return
+        }
+        XCTAssertEqual(expectedSymbols, [Symbol.predicate(name: "digit", { _ in true })])
+        XCTAssertEqual(remainingInput.position, 0)
+    }
+
+    func testSepEndBy1SuccessWithValueAndSeparator() {
+        let sepEndBy1Parser: Parser<StringInput, [Character]> = Combinators.sepEndBy1(
+            Combinators.digit(),
+            Combinators.symbol("A")
+        )
+        let input = StringInput("1A")
+
+        let result = sepEndBy1Parser.parse(input)
+        guard case let .success(remainingInput, value) = result else {
+            XCTFail("Expected parse to be successful.")
+            return
+        }
+        XCTAssertEqual(value, ["1"])
+        XCTAssertEqual(remainingInput.position, 2)
+    }
+
+    func testSepEndBy1FailureWithSeparator() {
+        let sepEndBy1Parser: Parser<StringInput, [Character]> = Combinators.sepEndBy1(
+            Combinators.digit(),
+            Combinators.symbol("A")
+        )
+        let input = StringInput("A")
+
+        let result = sepEndBy1Parser.parse(input)
+        guard case let .failure(remainingInput, expectedSymbols) = result else {
+            XCTFail("Expected parse to fail.")
+            return
+        }
+        XCTAssertEqual(expectedSymbols, [Symbol.predicate(name: "digit", { _ in true })])
+        XCTAssertEqual(remainingInput.position, 0)
+    }
+
+    func testSepEndBy1Failure() {
+        let sepEndBy1Parser: Parser<StringInput, [Character]> = Combinators.sepEndBy1(
+            Combinators.digit(),
+            Combinators.symbol("A")
+        )
+        let input = StringInput("B")
+
+        let result = sepEndBy1Parser.parse(input)
+        guard case let .failure(remainingInput, expectedSymbols) = result else {
+            XCTFail("Expected parse to fail.")
+            return
+        }
+        XCTAssertEqual(expectedSymbols, [Symbol.predicate(name: "digit", { _ in true })])
+        XCTAssertEqual(remainingInput.position, 0)
+    }
+
+    func testManyTillSuccess() {
+        let manyTillParser: Parser<StringInput, [Character]> = Combinators.manyTill(
+            Combinators.digit(),
+            Combinators.symbol("A")
+        )
+        let input = StringInput("123A")
+
+        let result = manyTillParser.parse(input)
+        guard case let .success(remainingInput, value) = result else {
+            XCTFail("Expected parse to be successful.")
+            return
+        }
+        XCTAssertEqual(value, ["1", "2", "3"])
+        XCTAssertEqual(remainingInput.position, 4)
+    }
+
+    func testManyTillSuccessWithNoValues() {
+        let manyTillParser: Parser<StringInput, [Character]> = Combinators.manyTill(
+            Combinators.digit(),
+            Combinators.symbol("A")
+        )
+        let input = StringInput("A")
+
+        let result = manyTillParser.parse(input)
+        guard case let .success(remainingInput, value) = result else {
+            XCTFail("Expected parse to be successful.")
+            return
+        }
+        XCTAssertEqual(value, [])
+        XCTAssertEqual(remainingInput.position, 1)
+    }
+
+    func testManyTillFailureWithNoEndValue() {
+        let manyTillParser: Parser<StringInput, [Character]> = Combinators.manyTill(
+            Combinators.digit(),
+            Combinators.symbol("A")
+        )
+        let input = StringInput("123")
+
+        let result = manyTillParser.parse(input)
+        guard case let .failureUnavailableInput(remainingInput, expectedSymbols) = result else {
+            XCTFail("Expected parse to be successful.")
+            return
+        }
+        XCTAssertEqual(expectedSymbols, [Symbol.value("A")])
+        XCTAssertEqual(remainingInput.position, 3)
+    }
+
+    func testManyTillFailureWithUnexpectedInput() {
+        let manyTillParser: Parser<StringInput, [Character]> = Combinators.manyTill(
+            Combinators.digit(),
+            Combinators.symbol("A")
+        )
+        let input = StringInput("B")
+
+        let result = manyTillParser.parse(input)
+        guard case let .failure(remainingInput, expectedSymbols) = result else {
+            XCTFail("Expected parse to be successful.")
+            return
+        }
+        XCTAssertEqual(expectedSymbols, [Symbol.value("A"), Symbol.predicate(name: "digit", { _ in true })])
+        XCTAssertEqual(remainingInput.position, 0)
+    }
+
     static var allTests = [
         ("testIsLetterSuccess", testIsLetterSuccess),
         ("testIsLetterFailure", testIsLetterFailure),
@@ -693,10 +1508,12 @@ internal final class ConvenienceCombinatorsTests: XCTestCase {
         ("testSkipMany1Success", testSkipMany1Success),
         ("testSkipMany1FailureWithEmptyInput", testSkipMany1FailureWithEmptyInput),
         ("testSkipMany1Failure", testSkipMany1Failure),
-        ("testOptWithParserSuccess", testOptWithParserSuccess),
-        ("testOptWithParserFailure", testOptWithParserFailure),
-        ("testOptAndValueWithParserSuccess", testOptAndValueWithParserSuccess),
-        ("testOptAndValueWithParserFailure", testOptAndValueWithParserFailure),
+        ("testOptionOptionalWithParserSuccess", testOptionOptionalWithParserSuccess),
+        ("testOptionOptionalWithParserFailure", testOptionOptionalWithParserFailure),
+        ("testOptionAndValueWithParserSuccess", testOptionAndValueWithParserSuccess),
+        ("testOptionAndValueWithParserFailure", testOptionAndValueWithParserFailure),
+        ("testOptionalAndEmptyWithParserSuccess", testOptionalAndEmptyWithParserSuccess),
+        ("testOptionalAndEmptyWithParserFailure", testOptionalAndEmptyWithParserFailure),
         ("testChainrSuccess", testChainrSuccess),
         ("testChainrSuccessWithOneOperand", testChainrSuccessWithOneOperand),
         ("testChainrSuccessWithEmptyInput", testChainrSuccessWithEmptyInput),
@@ -712,7 +1529,57 @@ internal final class ConvenienceCombinatorsTests: XCTestCase {
         ("testChainl1Success", testChainl1Success),
         ("testChainl1SuccessWithOnlyOperand", testChainl1SuccessWithOnlyOperand),
         ("testChainl1FailureWithEmptyInput", testChainl1FailureWithEmptyInput),
-        ("testChainl1Failure", testChainl1Failure)
+        ("testChainl1Failure", testChainl1Failure),
+        ("testSepBySuccess", testSepBySuccess),
+        ("testSepBySuccessWithOnlyValue", testSepBySuccessWithOnlyValue),
+        ("testSepBySuccessWithEmptyInput", testSepBySuccessWithEmptyInput),
+        ("testSepByFailureWithValueAndSeparator", testSepByFailureWithValueAndSeparator),
+        ("testSepByFailureWithSeparator", testSepByFailureWithSeparator),
+        ("testSepByFailure", testSepByFailure),
+        ("testSepBy1Success", testSepBy1Success),
+        ("testSepBy1SuccessWithOnlyValue", testSepBy1SuccessWithOnlyValue),
+        ("testSepBy1FailureWithEmptyInput", testSepBy1FailureWithEmptyInput),
+        ("testSepBy1FailureWithValueAndSeparator", testSepBy1FailureWithValueAndSeparator),
+        ("testSepBy1FailureWithSeparator", testSepBy1FailureWithSeparator),
+        ("testSepBy1Failure", testSepBy1Failure),
+        ("testBetweenSuccess", testBetweenSuccess),
+        ("testBetweenFailureOnEmptyInput", testBetweenFailureOnEmptyInput),
+        ("testBetweenFailureOnMissingOpen", testBetweenFailureOnMissingOpen),
+        ("testBetweenFailureOnMissingClose", testBetweenFailureOnMissingClose),
+        ("testBetweenFailure", testBetweenFailure),
+        ("testCountSuccess", testCountSuccess),
+        ("testCountFailureMissingCount", testCountFailureMissingCount),
+        ("testCountFailureWithParse", testCountFailureWithParse),
+        ("testCountFailureWithMoreInput", testCountFailureWithMoreInput),
+        ("testEndBySuccess", testEndBySuccess),
+        ("testEndByFailureWithOnlyValue", testEndByFailureWithOnlyValue),
+        ("testEndBySuccessWithEmptyInput", testEndBySuccessWithEmptyInput),
+        ("testEndByFailureWithValue", testEndByFailureWithValue),
+        ("testEndByFailureWithSeparator", testEndByFailureWithSeparator),
+        ("testEndByFailure", testEndByFailure),
+        ("testEndBy1Success", testEndBy1Success),
+        ("testEndBy1FailureWithOnlyValue", testEndBy1FailureWithOnlyValue),
+        ("testEndBy1FailureWithEmptyInput", testEndBy1FailureWithEmptyInput),
+        ("testEndBy1SuccessWithValueAndSeparator", testEndBy1SuccessWithValueAndSeparator),
+        ("testEndBy1FailureWithSeparator", testEndBy1FailureWithSeparator),
+        ("testEndBy1Failure", testEndBy1Failure),
+        ("testSepEndBySuccess", testSepEndBySuccess),
+        ("testSepEndBySuccessWithOnlyValue", testSepEndBySuccessWithOnlyValue),
+        ("testSepEndBySuccessWithEmptyInput", testSepEndBySuccessWithEmptyInput),
+        ("testSepEndBySuccessWithValueAndSeparator", testSepEndBySuccessWithValueAndSeparator),
+        ("testSepEndByFailureWithSeparator", testSepEndByFailureWithSeparator),
+        ("testSepEndByFailure", testSepEndByFailure),
+        ("testSepEndBy1Success", testSepEndBy1Success),
+        ("testSepEndBy1SuccessWithOnlyValue", testSepEndBy1SuccessWithOnlyValue),
+        ("testSepEndBy1FailureWithEmptyInput", testSepEndBy1FailureWithEmptyInput),
+        ("testSepEndBy1SuccessWithValueAndSeparator", testSepEndBy1SuccessWithValueAndSeparator),
+        ("testSepEndBy1FailureWithSeparator", testSepEndBy1FailureWithSeparator),
+        ("testSepEndBy1Failure", testSepEndBy1Failure),
+        ("testManyTillSuccess", testManyTillSuccess),
+        ("testManyTillSuccessWithNoValues", testManyTillSuccessWithNoValues),
+        ("testManyTillFailureWithNoEndValue", testManyTillFailureWithNoEndValue),
+        ("testManyTillFailureWithUnexpectedInput", testManyTillFailureWithUnexpectedInput)
+
     ]
 }
 // swiftlint:enable type_body_length file_length
