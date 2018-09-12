@@ -18,7 +18,7 @@ import XCTest
 internal final class CombinatorsTests: XCTestCase {
 
     func testPure() {
-        let result = Combinators.pure("Hello, World!").apply(StringInput("A"), [Symbol.empty])
+        let result = Combinators.pure("Hello, World!").computeParse(StringInput("A"), [Symbol.empty])
 
         guard case let .success(remainingInput, value) = result else {
             XCTFail("Expected parse to be successful.")

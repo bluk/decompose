@@ -977,7 +977,7 @@ internal final class ConvenienceCombinatorsTests: XCTestCase {
     func testCountSuccess() {
         let countParser: Parser<StringInput, [Character]> = Combinators.count(
             Combinators.digit(),
-            count: 3
+            3
         )
         let input = StringInput("123")
 
@@ -993,7 +993,7 @@ internal final class ConvenienceCombinatorsTests: XCTestCase {
     func testCountFailureMissingCount() {
         let countParser: Parser<StringInput, [Character]> = Combinators.count(
             Combinators.digit(),
-            count: 3
+            3
         )
         let input = StringInput("12")
 
@@ -1009,7 +1009,7 @@ internal final class ConvenienceCombinatorsTests: XCTestCase {
     func testCountFailureWithParse() {
         let countParser: Parser<StringInput, [Character]> = Combinators.count(
             Combinators.digit(),
-            count: 3
+            3
         )
         let input = StringInput("A123")
 
@@ -1025,7 +1025,7 @@ internal final class ConvenienceCombinatorsTests: XCTestCase {
     func testCountFailureWithMoreInput() {
         let countParser: Parser<StringInput, [Character]> = Combinators.count(
             Combinators.digit(),
-            count: 3
+            3
         )
         let input = StringInput("1234")
 

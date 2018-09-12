@@ -23,12 +23,266 @@ public enum Combinators {
     ///     - value: The value to return from the `Parser`.
     /// - Returns: A `Parser` which returns the value parameter and does not advanced the `Input`.
     public static func pure<I, V>(_ value: V) -> Parser<I, V> {
-        return Parser(
-            acceptsEmpty: true,
-            firstSetSymbols: [Symbol.empty]
-        ) { input, _ in
-            Result.success(input, value)
-        }
+        return Parser<I, V>.pure(value)
+    }
+
+    /// Returns a `Parser` which invokes the first `Parser`, and if it fails, invokes the second `Parser`.
+    ///
+    /// - Parameters:
+    ///     - parser1: The first `Parser` to invoke the input with.
+    ///     - parser2: The second `Parser` to invoke the input with if the first `Parser` fails.
+    /// - Returns: A `Parser` which invokes the first `Parser`, and if it fails, invokes the second `Parser`.
+    public static func or<I, V>(
+        _ parser1: Parser<I, V>,
+        _ parser2: Parser<I, V>) -> Parser<I, V> {
+        return parser1.or(parser2)
+    }
+
+    /// Maps a `Parser`'s value using the function parameter.
+    ///
+    /// - Parameters:
+    ///     - parser: The `Parser` to invoke the input with.
+    ///     - func1: A function which will transform the `parser`'s return value into a new value.
+    /// - Returns: A Parser which transforms the original value to a value using the function.
+    public static func map<I, V1, V2>(
+        _ parser: Parser<I, V1>,
+        _ func1: @escaping (V1) -> V2) -> Parser<I, V2> {
+        return parser.map(func1)
+    }
+
+    /// Sequentially invokes two Parsers while invoking the second parser's result into the first parser's function.
+    ///
+    /// - Parameters:
+    ///     - parser1: The first `Parser` to invoke
+    ///     - parser2: The second `Parser` to invoke
+    /// - Returns: A `Parser` which invokes the first `Parser` parameter, then the second `Parser` parameter and then
+    ///           invokes the first `Parser`'s returned function value with the second `Parser`'s returned value.
+    public static func apply<I, V1, V2>(
+        _ parser1: Parser<I, (V1) -> V2>,
+        _ parser2: Parser<I, V1>) -> Parser<I, V2> {
+        return parser1.apply(parser2)
+    }
+
+    /// Returns a `Parser` which invokes the `parser` parameter zero or more times.
+    ///
+    /// - Parameters:
+    ///     - parser: The Parser to invoke.
+    /// - Returns: A `Parser` which invokes the `parser` parameter zero or more times.
+    static func many<I, V>(_ parser: Parser<I, V>) -> Parser<I, [V]> {
+        return parser.many()
+    }
+
+    /// Returns a `Parser` which invokes the `parser` parameter one or more times.
+    ///
+    /// - Parameters:
+    ///     - parser: The Parser to invoke.
+    /// - Returns: A `Parser` which invokes the `parser` parameter one or more times.
+    static func many1<I, V>(_ parser: Parser<I, V>) -> Parser<I, [V]> {
+        return parser.many1()
+    }
+
+    /// Returns a `Parser` which discards the return value of the `parser` parameter zero or more times.
+    ///
+    /// - Parameters:
+    ///     - parser: The Parser to invoke.
+    /// - Returns: A `Parser` which discards the return value of the `parser` parameter zero or more times.
+    static func skipMany<I, V>(_ parser: Parser<I, V>) -> Parser<I, Empty> {
+        return parser.skipMany()
+    }
+
+    /// Returns a `Parser` which discards the return value of the `parser` parameter one or more times.
+    ///
+    /// - Parameters:
+    ///     - parser: The Parser to invoke.
+    /// - Returns: A `Parser` which discards the return value of the `parser` parameter one or more times.
+    static func skipMany1<I, V>(_ parser: Parser<I, V>) -> Parser<I, Empty> {
+        return parser.skipMany1()
+    }
+
+    /// Returns a `Parser` which attempts the parser parameter and if it succeeds, return the value, but if it fails,
+    /// return nil.
+    ///
+    /// - Parameters:
+    ///     - parser: The Parser to attempt.
+    /// - Returns: A `Parser` which attempts the parser parameter and if it succeeds, return the value, but if it fails,
+    ///            return nil
+    static func optionOptional<I, V>(_ parser: Parser<I, V>) -> Parser<I, V?> {
+        return parser.optionOptional()
+    }
+
+    /// Returns a `Parser` which attempts the parser parameter and if it succeeds or not, return an `Empty.empty`.
+    ///
+    /// - Parameters:
+    ///     - parser: The Parser to attempt.
+    /// - Returns: A `Parser` which attempts the parser parameter and if it succeeds or not, return an `Empty.empty`.
+    static func optional<I, V>(_ parser: Parser<I, V>) -> Parser<I, Empty> {
+        return parser.optional()
+    }
+
+    /// Returns a `Parser` which attempts the parser parameter and if it succeeds, return the value, but if it fails,
+    /// return the second paramater.
+    ///
+    /// - Parameters:
+    ///     - parser: The Parser to attempt.
+    /// - Returns: A `Parser` which attempts the parser parameter and if it succeeds, return the value, but if it fails,
+    ///            return nil
+    static func option<I, V>(_ parser: Parser<I, V>, _ value: V) -> Parser<I, V> {
+        return parser.option(value)
+    }
+
+    /// Parses an optional operand with an optional repeat of operator and operand where the final parsed value is the
+    /// calculation of the operands with the operators with right associativity.
+    ///
+    /// - Parameters:
+    ///     - parserV: The value operand Parser.
+    ///     - parserOp: The operator Parser.
+    ///     - value: The value to use if the `parserV` fails.
+    /// - Returns: A `Parser` which parses an optional operand and an optional repeat of operator and operand where the
+    ///            final parsed value is the calculation of the operands with the operators with right associativity.
+    static func chainr<I, V>(_ parserV: Parser<I, V>, _ parserOp: Parser<I, (V) -> (V) -> V>, _ value: V)
+        -> Parser<I, V> {
+            return parserV.chainr(parserOp, value)
+    }
+
+    /// Parses a value operand and zero or more operator and operand where the final parsed value is the
+    /// calculation of the operands with the operators with right associativity.
+    ///
+    /// - Parameters:
+    ///     - parserV: The value operand Parser.
+    ///     - parserOp: The operator Parser.
+    /// - Returns: A `Parser` which parses an operand and zero or more operator and operand where the
+    ///            final parsed value is the calculation of the operands with the operators with right associativity.
+    static func chainr1<I, V>(_ parserV: Parser<I, V>, _ parserOp: Parser<I, (V) -> (V) -> V>) -> Parser<I, V> {
+        return parserV.chainr1(parserOp)
+    }
+
+    /// Parses an optional operand with an optional repeat of operator and operand where the final parsed value is the
+    /// calculation of the operands with the operators with left associativity.
+    ///
+    /// - Parameters:
+    ///     - parserV: The value operand Parser.
+    ///     - parserOp: The operator Parser.
+    ///     - value: The value to use if the `parserV` fails.
+    /// - Returns: A `Parser` which parses an optional operand operand and an optional repeat of operator and operand
+    ///            where the final parsed value is the calculation of the operands with the operators with left
+    ///            associativity.
+    static func chainl<I, V>(_ parserV: Parser<I, V>, _ parserOp: Parser<I, (V) -> (V) -> V>, _ value: V)
+        -> Parser<I, V> {
+            return parserV.chainl(parserOp, value)
+    }
+
+    /// Parses a value operand and zero or more operator and operand where the final parsed value is the
+    /// calculation of the operands with the operators with left associativity.
+    ///
+    /// - Parameters:
+    ///     - parserV: The value operand Parser.
+    ///     - parserOp: The operator Parser.
+    /// - Returns: A `Parser` which parses an operand and zero more operator and operand where the
+    ///            final parsed value is the calculation of the operands with the operators with left associativity.
+    static func chainl1<I, V>(_ parserV: Parser<I, V>, _ parserOp: Parser<I, (V) -> (V) -> V>) -> Parser<I, V> {
+        return parserV.chainl1(parserOp)
+    }
+
+    /// Parses zero or more values separated by a separator and returns an array of the parsed values.
+    ///
+    /// - Parameters:
+    ///     - parserV: Parses a value.
+    ///     - parserSep: Parses a separator.
+    /// - Returns: A `Parser` which parses zero or more values separated by a separator and returns an array of the
+    ///            parsed values.
+    static func sepBy<I, V, S>(_ parserV: Parser<I, V>, _ parserSep: Parser<I, S>) -> Parser<I, [V]> {
+        return parserV.sepBy(parserSep)
+    }
+
+    /// Parses one or more values separated by a separator and returns an array of the parsed values.
+    ///
+    /// - Parameters:
+    ///     - parserV: Parses a value.
+    ///     - parserSep: Parses a separator.
+    /// - Returns: A `Parser` which parses one or more values separated by a separator and returns an array of the
+    ///            parsed values.
+    static func sepBy1<I, V, S>(_ parserV: Parser<I, V>, _ parserSep: Parser<I, S>) -> Parser<I, [V]> {
+        return parserV.sepBy1(parserSep)
+    }
+
+    /// Parses an open, value, and then a close, and returns the value.
+    ///
+    /// - Parameters:
+    ///     - parserV: Parses a value.
+    ///     - parserOpen: Parses an open value.
+    ///     - parserClose: Parses a close value.
+    /// - Returns: A `Parser` which parses an open, value, and then a close, and returns the value.
+    static func between<I, O, V, C>(_ parserOpen: Parser<I, O>, _ parserV: Parser<I, V>, _ parserClose: Parser<I, C>)
+        -> Parser<I, V> {
+            return parserV.between(parserOpen, parserClose)
+    }
+
+    /// Parses a value for `count` number of times and returns an array of the values.
+    ///
+    /// - Parameters:
+    ///     - parserV: Parses a value.
+    ///     - count: The number of times to parse.
+    /// - Returns: A `Parser` which parses a value for `count` number of times and returns an array of the values.
+    static func count<I, V>(_ parser: Parser<I, V>, _ count: Int) -> Parser<I, [V]> {
+        return parser.count(count)
+    }
+
+    /// Parses zero or more values separated by and ends with a separator and returns an array of the parsed values.
+    ///
+    /// - Parameters:
+    ///     - parserV: Parses a value.
+    ///     - parserSep: Parses a separator.
+    /// - Returns: A `Parser` which parses zero or more values separated by and ends with a separator and returns an
+    ///            array of the parsed values.
+    static func endBy<I, V, S>(_ parserV: Parser<I, V>, _ parserSep: Parser<I, S>) -> Parser<I, [V]> {
+        return parserV.endBy(parserSep)
+    }
+
+    /// Parses one or more values separated by and ends with a separator and returns an array of the parsed values.
+    ///
+    /// - Parameters:
+    ///     - parserV: Parses a value.
+    ///     - parserSep: Parses a separator.
+    /// - Returns: A `Parser` which parses one or more values separated by and ends with a separator and returns an
+    ///            array of the parsed values.
+    static func endBy1<I, V, S>(_ parserV: Parser<I, V>, _ parserSep: Parser<I, S>) -> Parser<I, [V]> {
+        return parserV.endBy1(parserSep)
+    }
+
+    /// Parses zero or more values separated by and optionally ends with a separator and returns an array of the parsed
+    /// values.
+    ///
+    /// - Parameters:
+    ///     - parserV: Parses a value.
+    ///     - parserSep: Parses a separator.
+    /// - Returns: A `Parser` which parses zero or more values separated by and optionally ends with a separator and
+    ///            returns an array of the parsed values.
+    static func sepEndBy<I, V, S>(_ parserV: Parser<I, V>, _ parserSep: Parser<I, S>) -> Parser<I, [V]> {
+        return parserV.sepEndBy(parserSep)
+    }
+
+    /// Parses one or more values separated by and optionally ends with a separator and returns an array of the parsed
+    /// values.
+    ///
+    /// - Parameters:
+    ///     - parserV: Parses a value.
+    ///     - parserSep: Parses a separator.
+    /// - Returns: A `Parser` which parses one or more values separated by and optionally ends with a separator and
+    ///            returns an array of the parsed values.
+    static func sepEndBy1<I, V, S>(_ parserV: Parser<I, V>, _ parserSep: Parser<I, S>) -> Parser<I, [V]> {
+        return parserV.sepEndBy1(parserSep)
+    }
+
+    /// Parses `parserV` zero or more times until `parserEnd` is encountered, and returns an array of the `parserV`
+    /// values.
+    ///
+    /// - Parameters:
+    ///     - parserV: Parses a value.
+    ///     - parserEnd: Parses an end value.
+    /// - Returns: A `Parser` which parses `parserV` values zero or more times until `parserEnd` is encountered, and
+    ///            returns an array of the `parserV` values.
+    static func manyTill<I, V, V2>(_ parser: Parser<I, V>, _ parserEnd: Parser<I, V2>) -> Parser<I, [V]> {
+        return parser.manyTill(parserEnd)
     }
 
     /// Instantiates a `Parser` which accepts the symbol parameter and advances the `Input`.
@@ -37,9 +291,7 @@ public enum Combinators {
     ///     - symbol: The value to expect.
     /// - Returns: A `Parser` which accepts the symbol parameter and and advances the `Input`.
     public static func symbol<I, S>(_ symbol: S) -> Parser<I, S> where S == I.Element {
-        return Parser(acceptsEmpty: false, firstSetSymbols: [Symbol.value(symbol)]) { input, _ in
-            Result.success(input.advanced(), symbol)
-        }
+        return Parser<I, S>.symbol(symbol)
     }
 
     // swiftlint:enable cyclomatic_complexity function_body_length
@@ -53,171 +305,20 @@ public enum Combinators {
     /// - Returns: A `Parser` which returns an element if it succeeds the condition.
     public static func satisfy<I, V>(conditionName: String, _ condition: @escaping (V) -> Bool)
         -> Parser<I, V> where I.Element == V {
-        return Parser(
-            acceptsEmpty: false,
-            firstSetSymbols: [Symbol.predicate(name: conditionName, condition)]
-        ) { input, _ in
-            Result.success(input.advanced(), input.current()!)
-        }
-    }
-
-    /// Returns a `Parser` which invokes the first `Parser`, and if it fails, invokes the second `Parser`.
-    ///
-    /// - Parameters:
-    ///     - parser1: The first `Parser` to invoke the input with.
-    ///     - parser2: The second `Parser` to invoke the input with if the first `Parser` fails.
-    /// - Returns: A `Parser` which invokes the first `Parser`, and if it fails, invokes the second `Parser`.
-    public static func or<I, V>(
-        _ parser1: Parser<I, V>,
-        _ parser2: Parser<I, V>) -> Parser<I, V> {
-        return Parser(
-            acceptsEmpty: parser1.computeAcceptsEmpty() || parser2.computeAcceptsEmpty(),
-            firstSetSymbols: parser1.computeFirstSetSymbols().union(parser2.computeFirstSetSymbols())
-        ) { input, followSetSymbols in
-            if input.isAvailable {
-                let currentValue = input.current()!
-                if parser1.computeFirstSetSymbols().contains(where: { $0.matches(currentValue) }) {
-                    return parser1.apply(input, followSetSymbols)
-                }
-
-                if parser2.computeFirstSetSymbols().contains(where: { $0.matches(currentValue) }) {
-                    return parser2.apply(input, followSetSymbols)
-                }
-
-                if followSetSymbols.contains(where: { $0.matches(currentValue) }) {
-                    if parser1.computeAcceptsEmpty() {
-                        return parser1.apply(input, followSetSymbols)
-                    }
-
-                    if parser2.computeAcceptsEmpty() {
-                        return parser2.apply(input, followSetSymbols)
-                    }
-                }
-
-                return Result.failure(input, parser1.computeFirstSetSymbols())
-            } else {
-                if parser1.computeAcceptsEmpty() {
-                    return parser1.apply(input, followSetSymbols)
-                } else if parser2.computeAcceptsEmpty() {
-                    return parser2.apply(input, followSetSymbols)
-                } else {
-                    return Result.failureUnavailableInput(input, parser1.computeFirstSetSymbols())
-                }
-            }
-        }
-    }
-
-    /// Maps a `Parser`'s value using the function parameter.
-    ///
-    /// - Parameters:
-    ///     - parser: The `Parser` to invoke the input with.
-    ///     - func1: A function which will transform the `parser`'s return value into a new value.
-    /// - Returns: A Parser which transforms the original value to a value using the function.
-    public static func map<I, V1, V2>(
-        _ parser: Parser<I, V1>,
-        _ func1: @escaping (V1) -> V2) -> Parser<I, V2> {
-        return Parser(
-            acceptsEmpty: parser.computeAcceptsEmpty(),
-            firstSetSymbols: parser.computeFirstSetSymbols(),
-            parse: { input, followSetSymbols in
-                parser.apply(input, followSetSymbols).map(func1)
-            }
-        )
-    }
-
-    /// Sequentially invokes two Parsers while invoking the second parser's result into the first parser's function.
-    ///
-    /// - Parameters:
-    ///     - parser1: The first `Parser` to invoke
-    ///     - parser2: The second `Parser` to invoke
-    /// - Returns: A `Parser` which invokes the first `Parser` parameter, then the second `Parser` parameter and then
-    ///           invokes the first `Parser`'s returned function value with the second `Parser`'s returned value.
-    public static func apply<I, V1, V2>(
-        _ parser1: Parser<I, (V1) -> V2>,
-        _ parser2: Parser<I, V1>) -> Parser<I, V2> {
-        return Parser(
-            acceptsEmpty: parser1.computeAcceptsEmpty() && parser2.computeAcceptsEmpty(),
-            firstSetSymbols: {
-                let symbols = parser1.computeFirstSetSymbols()
-                if parser1.computeAcceptsEmpty() {
-                    return symbols.union(parser2.computeFirstSetSymbols())
-                }
-                return symbols
-            }(),
-            parse: { input, followSetSymbols in
-                let followSetSymbolsForFunction: Set<Symbol<I.Element>> = {
-                    let symbols = parser2.computeFirstSetSymbols()
-                    if parser2.computeAcceptsEmpty() {
-                        return symbols.union(followSetSymbols)
-                    }
-                    return symbols
-                }()
-
-                let functionReply = parser1.apply(input, followSetSymbolsForFunction)
-                switch functionReply {
-                case let .failure(remainingInput, symbols):
-                    return Result<I, V2>.failure(remainingInput, symbols)
-                case let .failureUnavailableInput(remainingInput, symbols):
-                    return Result<I, V2>.failureUnavailableInput(remainingInput, symbols)
-                case let .success(remainingInput, value):
-                    if !parser2.computeAcceptsEmpty() {
-                        if !remainingInput.isAvailable {
-                            return Result.failureUnavailableInput(remainingInput, parser2.computeFirstSetSymbols())
-                        }
-
-                        #if swift(>=4.2)
-                        if parser2.computeFirstSetSymbols().allSatisfy({ !$0.matches(remainingInput.current()!) }) {
-                            return Result.failure(remainingInput, parser2.computeFirstSetSymbols())
-                        }
-                        #else
-                        // https://github.com/apple/swift-evolution/blob/master/proposals/0207-containsOnly.md
-                        if !(parser2.computeFirstSetSymbols().contains { $0.matches(remainingInput.current()!) }) {
-                            return Result.failure(remainingInput, parser2.computeFirstSetSymbols())
-                        }
-                        #endif
-                    }
-                    return parser2.apply(remainingInput, followSetSymbols).map(value)
-                }
-            })
+        return Parser<I, V>.satisfy(conditionName: conditionName, condition)
     }
 
     /// Instantiates a `Parser` which only fails.
     ///
     /// - Returns: A `Parser` which only fails.
     public static func fail<I, V>() -> Parser<I, V> {
-        return Parser(
-            acceptsEmpty: true,
-            firstSetSymbols: [Symbol.empty]
-        ) { input, _ in
-            Result.failure(input, [Symbol<I.Element>.empty])
-        }
+        return Parser<I, V>.fail()
     }
 
     /// Instantiates a `Parser` which succeeds if the end of the input is reached.
     ///
     /// - Returns: A `Parser` which succeeds if the end of the input is reached.
     public static func endOfInput<I>() -> Parser<I, Empty> {
-        return Parser(acceptsEmpty: true, firstSetSymbols: [Symbol.empty]) { input, _ in
-            if !input.isAvailable {
-                return Result.success(input, Empty.empty)
-            }
-            return Result.failure(input, [Symbol.empty])
-        }
-    }
-
-    /// Instantiates a `Parser` which constructs its real parser via a function.
-    ///
-    /// Useful in instances of recursion where the recursive call can be wrapped in a closure.
-    ///
-    /// - Parameters:
-    ///     - func1: A function which returns a parser.
-    /// - Returns: A `Parser` which calls the returned parser from `func1`.
-    public static func wrap<I, V>(_ func1: @escaping () -> Parser<I, V>) -> Parser<I, V> {
-        return Parser(
-            acceptsEmpty: func1().computeAcceptsEmpty(),
-            firstSetSymbols: func1().computeFirstSetSymbols()
-        ) {
-            func1().apply($0, $1)
-        }
+        return Parser<I, Empty>.endOfInput()
     }
 }

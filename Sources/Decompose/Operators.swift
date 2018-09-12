@@ -35,7 +35,7 @@ infix operator <|>: ChoiceLeftPrecedence
 public func <|><I, V1>(
     lhs: Parser<I, V1>,
     rhs: Parser<I, V1>) -> Parser<I, V1> {
-    return Combinators.or(lhs, rhs)
+    return lhs.or(rhs)
 }
 
 precedencegroup ApplicativeFunctorLeftPrecedence {
@@ -57,7 +57,7 @@ infix operator <*>: ApplicativeFunctorLeftPrecedence
 public func <*><I, V1, V2>(
     lhs: Parser<I, ((V1) -> V2)>,
     rhs: Parser<I, V1>) -> Parser<I, V2> {
-    return Combinators.apply(lhs, rhs)
+    return lhs.apply(rhs)
 }
 
 infix operator <^>: ApplicativeFunctorLeftPrecedence
@@ -71,7 +71,7 @@ infix operator <^>: ApplicativeFunctorLeftPrecedence
 public func <^><I, V1, V2>(
     lhs: @escaping (V1) -> V2,
     rhs: Parser<I, V1>) -> Parser<I, V2> {
-    return Combinators.map(rhs, lhs)
+    return rhs.map(lhs)
 }
 
 precedencegroup ApplicativeFunctorSequenceLeftPrecedence {
@@ -123,5 +123,5 @@ infix operator <??>: MonadLeftPrecedence
 public func <??><I, V1>(
     lhs: Parser<I, V1>,
     rhs: V1) -> Parser<I, V1> {
-    return Combinators.option(lhs, rhs)
+    return lhs.option(rhs)
 }
