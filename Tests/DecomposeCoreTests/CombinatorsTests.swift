@@ -1620,6 +1620,45 @@ internal final class CombinatorsTests: XCTestCase {
         XCTAssertEqual(remainingInput.position, 0)
     }
 
+    func testOneOfSuccess() {
+        let oneOfParser: Parser<StringInput, Character> = Combinators.oneOf(["A", "B"])
+        let input = StringInput("B")
+
+        let result = oneOfParser.parse(input)
+        guard case let .success(remainingInput, value) = result else {
+            XCTFail("Expected parse to be successful.")
+            return
+        }
+        XCTAssertEqual(value, "B")
+        XCTAssertEqual(remainingInput.position, 1)
+    }
+
+    func testOneOfFailure() {
+        let oneOfParser: Parser<StringInput, Character> = Combinators.oneOf(["A", "B"])
+        let input = StringInput("C")
+
+        let result = oneOfParser.parse(input)
+        guard case let .failure(remainingInput, expectedSymbols) = result else {
+            XCTFail("Expected parse to be successful.")
+            return
+        }
+        XCTAssertEqual(expectedSymbols, [Symbol.value("A"), Symbol.value("B")])
+        XCTAssertEqual(remainingInput.position, 0)
+    }
+
+    func testOneOfFailureWithUnavailableInput() {
+        let oneOfParser: Parser<StringInput, Character> = Combinators.oneOf(["A", "B"])
+        let input = StringInput("")
+
+        let result = oneOfParser.parse(input)
+        guard case let .failureUnavailableInput(remainingInput, expectedSymbols) = result else {
+            XCTFail("Expected parse to be successful.")
+            return
+        }
+        XCTAssertEqual(expectedSymbols, [Symbol.value("A"), Symbol.value("B")])
+        XCTAssertEqual(remainingInput.position, 0)
+    }
+
     static var allTests = [
         ("testPure", testPure),
         ("testSymbolSuccess", testSymbolSuccess),
@@ -1720,7 +1759,11 @@ internal final class CombinatorsTests: XCTestCase {
         ("testManyTillFailureWithNoEndValue", testManyTillFailureWithNoEndValue),
         ("testManyTillFailureWithUnexpectedInput", testManyTillFailureWithUnexpectedInput),
         ("testAnySuccess", testAnySuccess),
-        ("testAnyFailureWithUnavailableInput", testAnyFailureWithUnavailableInput)
+        ("testAnyFailureWithUnavailableInput", testAnyFailureWithUnavailableInput),
+        ("testOneOfSuccess", testOneOfSuccess),
+        ("testOneOfFailure", testOneOfFailure),
+        ("testOneOfFailureWithUnavailableInput", testOneOfFailureWithUnavailableInput)
+
     ]
 }
 // swiftlint:enable type_body_length file_length

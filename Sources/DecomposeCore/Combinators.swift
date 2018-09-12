@@ -333,4 +333,13 @@ public enum Combinators {
     public static func any<I, V>() -> Parser<I, V> where V == I.Element {
         return Parser<I, V>.any()
     }
+
+    /// Accepts any of the elements in the set and advances the `Input`.
+    ///
+    /// - Parameters:
+    ///     - symbol: The value to expect.
+    /// - Returns: A `Parser` which accepts any element and advances the `Input`.
+    public static func oneOf<I, V>(_ elementSet: Set<V>) -> Parser<I, V> where V == I.Element {
+        return Parser<I, V>.oneOf(elementSet)
+    }
 }

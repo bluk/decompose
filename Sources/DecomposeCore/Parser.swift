@@ -846,6 +846,27 @@ public extension Parser {
             }
         }
     }
+
+    /// Accepts any of the elements in the set and advances the `Input`.
+    ///
+    /// - Parameters:
+    ///     - symbol: The value to expect.
+    /// - Returns: A `Parser` which accepts any element and advances the `Input`.
+    public static func oneOf<I, V>(_ elementSet: Set<V>) -> Parser<I, V> where V == I.Element {
+        return Parser<I, V>(
+            acceptsEmpty: false,
+            firstSetSymbols: Set(elementSet.map { Symbol.value($0) })) { input, followSetSymbols in
+            if input.isAvailable {
+                if let currentValue = input.current(), elementSet.contains(currentValue) {
+                    return Result.success(input.advanced(), currentValue)
+                }
+
+                return Result.failure(input, followSetSymbols)
+            } else {
+                return Result<I, V>.failureUnavailableInput(input, followSetSymbols)
+            }
+        }
+    }
 }
 
 // swiftlint:enable file_length
