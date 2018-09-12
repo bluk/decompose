@@ -20,7 +20,7 @@ public func allTests() -> [XCTestCaseEntry] {
     return [
         testCase(StringInputTests.allTests),
         testCase(CombinatorsTests.allTests),
-        testCase(ConvenienceCombinatorsTests.allTests),
+        testCase(CombinatorsTextTests.allTests),
         testCase(OperatorsTests.allTests)
     ]
 }

@@ -73,6 +73,6 @@ file_header:
     //  limitations under the License.
 
 file_name:
-  excluded: ['ConvenienceCombinators.swift']
+  excluded: ['CombinatorsText.swift']
 excluded:
   - .build
