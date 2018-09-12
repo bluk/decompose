@@ -292,7 +292,7 @@ public enum Combinators {
     ///
     /// - Parameters:
     ///     - symbol: The value to expect.
-    /// - Returns: A `Parser` which accepts the symbol parameter and and advances the `Input`.
+    /// - Returns: A `Parser` which accepts the symbol parameter and advances the `Input`.
     public static func symbol<I, S>(_ symbol: S) -> Parser<I, S> where S == I.Element {
         return Parser<I, S>.symbol(symbol)
     }
@@ -323,5 +323,14 @@ public enum Combinators {
     /// - Returns: A `Parser` which succeeds if the end of the input is reached.
     public static func endOfInput<I>() -> Parser<I, Empty> {
         return Parser<I, Empty>.endOfInput()
+    }
+
+    /// Accepts any element and advances the `Input`.
+    ///
+    /// - Parameters:
+    ///     - symbol: The value to expect.
+    /// - Returns: A `Parser` which accepts any element and advances the `Input`.
+    public static func any<I, V>() -> Parser<I, V> where V == I.Element {
+        return Parser<I, V>.any()
     }
 }

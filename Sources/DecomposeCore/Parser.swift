@@ -782,7 +782,7 @@ public extension Parser {
     ///
     /// - Parameters:
     ///     - symbol: The value to expect.
-    /// - Returns: A `Parser` which accepts the symbol parameter and and advances the `Input`.
+    /// - Returns: A `Parser` which accepts the symbol parameter and advances the `Input`.
     public static func symbol<I, S>(_ symbol: S) -> Parser<I, S> where S == I.Element {
         return Parser<I, S>(acceptsEmpty: false, firstSetSymbols: [Symbol.value(symbol)]) { input, _ in
             Result.success(input.advanced(), symbol)
@@ -829,6 +829,21 @@ public extension Parser {
                 return Result.success(input, Empty.empty)
             }
             return Result.failure(input, [Symbol.empty])
+        }
+    }
+
+    /// Accepts any element and advances the `Input`.
+    ///
+    /// - Parameters:
+    ///     - symbol: The value to expect.
+    /// - Returns: A `Parser` which accepts any element and advances the `Input`.
+    public static func any<I, V>() -> Parser<I, V> where V == I.Element {
+        return Parser<I, V>(acceptsEmpty: false, firstSetSymbols: [Symbol.all]) { input, followSetSymbols in
+            if let currentValue = input.current(), input.isAvailable {
+                return Result.success(input.advanced(), currentValue)
+            } else {
+                return Result<I, V>.failureUnavailableInput(input, followSetSymbols)
+            }
         }
     }
 }

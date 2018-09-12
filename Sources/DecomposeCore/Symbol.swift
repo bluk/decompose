@@ -18,6 +18,8 @@ public enum Symbol<E>: Comparable, Hashable where E: Comparable, E: Hashable {
     #if swift(>=4.2)
     public func hash(into hasher: inout Hasher) {
         switch self {
+        case .all:
+            hasher.combine("")
         case .empty:
             hasher.combine("")
         case let .predicate(name: name, _):
@@ -29,6 +31,8 @@ public enum Symbol<E>: Comparable, Hashable where E: Comparable, E: Hashable {
     #else
     public var hashValue: Int {
         switch self {
+        case .all:
+            return "".hashValue
         case .empty:
             return "".hashValue
         case let .predicate(name: name, _):
@@ -39,13 +43,26 @@ public enum Symbol<E>: Comparable, Hashable where E: Comparable, E: Hashable {
     }
     #endif
 
-    // swiftlint:disable cyclomatic_complexity
+    // swiftlint:disable cyclomatic_complexity function_body_length
     public static func < (lhs: Symbol<E>, rhs: Symbol<E>) -> Bool {
-        // empty < value < predicate
+        // empty < all < value < predicate
         switch lhs {
         case .empty:
             switch rhs {
             case .empty:
+                return false
+            case .all:
+                return true
+            case .value:
+                return true
+            case .predicate:
+                return true
+            }
+        case .all:
+            switch rhs {
+            case .empty:
+                return false
+            case .all:
                 return false
             case .value:
                 return true
@@ -56,6 +73,8 @@ public enum Symbol<E>: Comparable, Hashable where E: Comparable, E: Hashable {
             switch rhs {
             case .empty:
                 return false
+            case .all:
+                return false
             case let .value(rhsValue):
                 return lhsValue < rhsValue
             case .predicate:
@@ -65,6 +84,8 @@ public enum Symbol<E>: Comparable, Hashable where E: Comparable, E: Hashable {
             switch rhs {
             case .empty:
                 return false
+            case .all:
+                return false
             case .value:
                 return false
             case let .predicate(rhsPredicate):
@@ -72,7 +93,7 @@ public enum Symbol<E>: Comparable, Hashable where E: Comparable, E: Hashable {
             }
         }
     }
-    // swiftlint:enable cyclomatic_complexity
+    // swiftlint:enable cyclomatic_complexity function_body_length
 
     public static func == (lhs: Symbol<E>, rhs: Symbol<E>) -> Bool {
         switch (lhs, rhs) {
@@ -82,6 +103,8 @@ public enum Symbol<E>: Comparable, Hashable where E: Comparable, E: Hashable {
             return lhsValue == rhsValue
         case let (.predicate(lhsPredicate), .predicate(rhsPredicate)):
             return lhsPredicate.name == rhsPredicate.name
+        case (.all, .all):
+            return true
         default:
             return false
         }
@@ -96,12 +119,17 @@ public enum Symbol<E>: Comparable, Hashable where E: Comparable, E: Hashable {
     /// A "no-op" value.
     case empty
 
+    /// All values are accepted.
+    case all
+
     public func matches(_ element: E) -> Bool {
         switch self {
         case let .value(currentValue):
             return currentValue == element
         case let .predicate(_, condition):
             return condition(element)
+        case .all:
+            return true
         case .empty:
             return false
         }

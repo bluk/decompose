@@ -1171,7 +1171,7 @@ internal final class CombinatorsTests: XCTestCase {
 
         let result = endByParser.parse(input)
         guard case let .failureUnavailableInput(remainingInput, expectedSymbols) = result else {
-            XCTFail("Expected parse to be successful.")
+            XCTFail("Expected parse to fail.")
             return
         }
         XCTAssertEqual(expectedSymbols, [Symbol.value("A")])
@@ -1267,7 +1267,7 @@ internal final class CombinatorsTests: XCTestCase {
 
         let result = endBy1Parser.parse(input)
         guard case let .failureUnavailableInput(remainingInput, expectedSymbols) = result else {
-            XCTFail("Expected parse to be successful.")
+            XCTFail("Expected parse to fail.")
             return
         }
         XCTAssertEqual(expectedSymbols, [Symbol.value("A")])
@@ -1395,7 +1395,7 @@ internal final class CombinatorsTests: XCTestCase {
 
         let result = sepEndByParser.parse(input)
         guard case let .success(remainingInput, value) = result else {
-            XCTFail("Expected parse to fail.")
+            XCTFail("Expected parse to be successful.")
             return
         }
         XCTAssertEqual(value, ["1"])
@@ -1571,7 +1571,7 @@ internal final class CombinatorsTests: XCTestCase {
 
         let result = manyTillParser.parse(input)
         guard case let .failureUnavailableInput(remainingInput, expectedSymbols) = result else {
-            XCTFail("Expected parse to be successful.")
+            XCTFail("Expected parse to fail.")
             return
         }
         XCTAssertEqual(expectedSymbols, [Symbol.value("A")])
@@ -1587,10 +1587,36 @@ internal final class CombinatorsTests: XCTestCase {
 
         let result = manyTillParser.parse(input)
         guard case let .failure(remainingInput, expectedSymbols) = result else {
-            XCTFail("Expected parse to be successful.")
+            XCTFail("Expected parse to fail.")
             return
         }
         XCTAssertEqual(expectedSymbols, [Symbol.value("A"), Symbol.predicate(name: "digit", { _ in true })])
+        XCTAssertEqual(remainingInput.position, 0)
+    }
+
+    func testAnySuccess() {
+        let anyParser: Parser<StringInput, Character> = Combinators.any()
+        let input = StringInput("1")
+
+        let result = anyParser.parse(input)
+        guard case let .success(remainingInput, value) = result else {
+            XCTFail("Expected parse to be successful.")
+            return
+        }
+        XCTAssertEqual(value, "1")
+        XCTAssertEqual(remainingInput.position, 1)
+    }
+
+    func testAnyFailureWithUnavailableInput() {
+        let anyParser: Parser<StringInput, Character> = Combinators.any()
+        let input = StringInput("")
+
+        let result = anyParser.parse(input)
+        guard case let .failureUnavailableInput(remainingInput, expectedSymbols) = result else {
+            XCTFail("Expected parse to fail.")
+            return
+        }
+        XCTAssertEqual(expectedSymbols, [Symbol.all])
         XCTAssertEqual(remainingInput.position, 0)
     }
 
@@ -1692,7 +1718,9 @@ internal final class CombinatorsTests: XCTestCase {
         ("testManyTillSuccess", testManyTillSuccess),
         ("testManyTillSuccessWithNoValues", testManyTillSuccessWithNoValues),
         ("testManyTillFailureWithNoEndValue", testManyTillFailureWithNoEndValue),
-        ("testManyTillFailureWithUnexpectedInput", testManyTillFailureWithUnexpectedInput)
+        ("testManyTillFailureWithUnexpectedInput", testManyTillFailureWithUnexpectedInput),
+        ("testAnySuccess", testAnySuccess),
+        ("testAnyFailureWithUnavailableInput", testAnyFailureWithUnavailableInput)
     ]
 }
 // swiftlint:enable type_body_length file_length
