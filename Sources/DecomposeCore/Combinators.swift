@@ -337,9 +337,18 @@ public enum Combinators {
     /// Accepts any of the elements in the set and advances the `Input`.
     ///
     /// - Parameters:
-    ///     - symbol: The value to expect.
+    ///     - elementSet: The elements to accept.
     /// - Returns: A `Parser` which accepts any element and advances the `Input`.
     public static func oneOf<I, V>(_ elementSet: Set<V>) -> Parser<I, V> where V == I.Element {
         return Parser<I, V>.oneOf(elementSet)
+    }
+
+    /// Accepts any element but the elements in the set and advances the `Input`.
+    ///
+    /// - Parameters:
+    ///     - elementSet: Elements to not accept.
+    /// - Returns: A `Parser` which accepts any element but elements in the set and advances the `Input`.
+    public static func noneOf<I, V>(_ elementSet: Set<V>) -> Parser<I, V> where V == I.Element {
+        return Parser<I, V>.noneOf(elementSet)
     }
 }

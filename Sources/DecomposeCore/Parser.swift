@@ -851,7 +851,7 @@ public extension Parser {
     ///
     /// - Parameters:
     ///     - symbol: The value to expect.
-    /// - Returns: A `Parser` which accepts any element and advances the `Input`.
+    /// - Returns: A `Parser` which accepts any element in the set and advances the `Input`.
     public static func oneOf<I, V>(_ elementSet: Set<V>) -> Parser<I, V> where V == I.Element {
         return Parser<I, V>(
             acceptsEmpty: false,
@@ -866,6 +866,31 @@ public extension Parser {
                 return Result<I, V>.failureUnavailableInput(input, followSetSymbols)
             }
         }
+    }
+
+    /// Accepts any element but the elements in the set and advances the `Input`.
+    ///
+    /// - Parameters:
+    ///     - symbol: The value to expect.
+    /// - Returns: A `Parser` which accepts any element but elements in the set and advances the `Input`.
+    public static func noneOf<I, V>(_ elementSet: Set<V>) -> Parser<I, V> where V == I.Element {
+        return Parser<I, V>(
+            acceptsEmpty: false,
+            firstSetSymbols: {
+                let noneOfString = elementSet.sorted().map { "\($0)" }.joined(separator: ", ")
+                return [Symbol.predicate(name: "none of \(noneOfString)", { !elementSet.contains($0) })]
+            }(),
+            parse: { input, followSetSymbols in
+                if input.isAvailable {
+                    if let currentValue = input.current(), !elementSet.contains(currentValue) {
+                        return Result.success(input.advanced(), currentValue)
+                    }
+
+                    return Result.failure(input, followSetSymbols)
+                } else {
+                    return Result<I, V>.failureUnavailableInput(input, followSetSymbols)
+                }
+            })
     }
 }
 

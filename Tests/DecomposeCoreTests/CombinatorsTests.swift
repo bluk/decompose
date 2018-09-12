@@ -1659,6 +1659,45 @@ internal final class CombinatorsTests: XCTestCase {
         XCTAssertEqual(remainingInput.position, 0)
     }
 
+    func testNoneOfSuccess() {
+        let noneOfParser: Parser<StringInput, Character> = Combinators.noneOf(["A", "B"])
+        let input = StringInput("1")
+
+        let result = noneOfParser.parse(input)
+        guard case let .success(remainingInput, value) = result else {
+            XCTFail("Expected parse to be successful.")
+            return
+        }
+        XCTAssertEqual(value, "1")
+        XCTAssertEqual(remainingInput.position, 1)
+    }
+
+    func testNoneOfFailure() {
+        let noneOfParser: Parser<StringInput, Character> = Combinators.noneOf(["A", "B"])
+        let input = StringInput("B")
+
+        let result = noneOfParser.parse(input)
+        guard case let .failure(remainingInput, expectedSymbols) = result else {
+            XCTFail("Expected parse to be successful.")
+            return
+        }
+        XCTAssertEqual(expectedSymbols, [Symbol.predicate(name: "none of A, B", { _ in true })])
+        XCTAssertEqual(remainingInput.position, 0)
+    }
+
+    func testNoneOfFailureWithUnavailableInput() {
+        let noneOfParser: Parser<StringInput, Character> = Combinators.noneOf(["A", "B"])
+        let input = StringInput("")
+
+        let result = noneOfParser.parse(input)
+        guard case let .failureUnavailableInput(remainingInput, expectedSymbols) = result else {
+            XCTFail("Expected parse to be successful.")
+            return
+        }
+        XCTAssertEqual(expectedSymbols, [Symbol.predicate(name: "none of A, B", { _ in true })])
+        XCTAssertEqual(remainingInput.position, 0)
+    }
+
     static var allTests = [
         ("testPure", testPure),
         ("testSymbolSuccess", testSymbolSuccess),
@@ -1762,7 +1801,10 @@ internal final class CombinatorsTests: XCTestCase {
         ("testAnyFailureWithUnavailableInput", testAnyFailureWithUnavailableInput),
         ("testOneOfSuccess", testOneOfSuccess),
         ("testOneOfFailure", testOneOfFailure),
-        ("testOneOfFailureWithUnavailableInput", testOneOfFailureWithUnavailableInput)
+        ("testOneOfFailureWithUnavailableInput", testOneOfFailureWithUnavailableInput),
+        ("testNoneOfSuccess", testNoneOfSuccess),
+        ("testNoneOfFailure", testNoneOfFailure),
+        ("testNoneOfFailureWithUnavailableInput", testNoneOfFailureWithUnavailableInput)
 
     ]
 }
