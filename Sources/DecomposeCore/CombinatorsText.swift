@@ -24,7 +24,7 @@ public extension Combinators {
         /// - Parameters:
         ///     - value: The `Character` to test with.
         /// - Returns: A `Parser` which tests if the current element is a specific `Character`.
-        static func char<I>(_ value: Character) -> Parser<I, Character>
+        public static func char<I>(_ value: Character) -> Parser<I, Character>
             where I.Element == Character {
             return satisfy(conditionName: "\"\(value)\"") { $0 == value }
         }
@@ -32,7 +32,7 @@ public extension Combinators {
         /// Returns a `Parser` which tests if the current element is a letter.
         ///
         /// - Returns: A `Parser` which tests if the current element is a letter.
-        static func letter<I>() -> Parser<I, Character>
+        public static func letter<I>() -> Parser<I, Character>
             where I.Element == Character {
             let characterSet = CharacterSet.letters
             #if swift(>=4.2)
@@ -46,7 +46,7 @@ public extension Combinators {
         /// Returns a `Parser` which tests if the current element is a digit.
         ///
         /// - Returns: A `Parser` which tests if the current element is a digit.
-        static func digit<I>() -> Parser<I, Character>
+        public static func digit<I>() -> Parser<I, Character>
             where I.Element == Character {
             let characterSet = CharacterSet.decimalDigits
             #if swift(>=4.2)
@@ -62,13 +62,13 @@ public extension Combinators {
         /// - Parameters:
         ///     - value: The `String` to test with.
         /// - Returns: A `Parser` which matches a given string.
-        static func string<I>(_ value: String) -> Parser<I, String> where I.Element == Character {
+        public static func string<I>(_ value: String) -> Parser<I, String> where I.Element == Character {
             guard !value.isEmpty else {
                 return Combinators.pure("")
             }
 
             let firstChar = value.first!
-            return symbol(firstChar) *> string(String(value.dropFirst())) *> pure(value)
+            return symbol(firstChar).andR(string(String(value.dropFirst()))).andR(pure(value))
         }
 
         /// Returns a `Parser` which matches a given string. If successful, the returned value is an empty array.
@@ -76,14 +76,14 @@ public extension Combinators {
         /// - Parameters:
         ///     - value: The `String` to test with.
         /// - Returns: A `Parser` which matches a given string. If successful, the returned value is an empty array.
-        static func stringEmptyReturnValue<I>(_ value: String)
+        public static func stringEmptyReturnValue<I>(_ value: String)
             -> Parser<I, Empty> where I.Element == Character {
             guard !value.isEmpty else {
                 return Combinators.pure(Empty.empty)
             }
 
             let firstChar = value.first!
-            return symbol(firstChar) *> string(String(value.dropFirst())) *> pure(Empty.empty)
+            return symbol(firstChar).andR(string(String(value.dropFirst()))).andR(pure(Empty.empty))
         }
     }
 }

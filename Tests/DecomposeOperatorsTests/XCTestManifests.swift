@@ -18,9 +18,6 @@ import XCTest
 /// Returns all the runnable tests
 public func allTests() -> [XCTestCaseEntry] {
     return [
-        testCase(StringInputTests.allTests),
-        testCase(CombinatorsTests.allTests),
-        testCase(CombinatorsTextTests.allTests),
         testCase(OperatorsTests.allTests)
     ]
 }

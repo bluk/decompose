@@ -12,7 +12,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 
-@testable import Decompose
+@testable import DecomposeCore
 import XCTest
 
 // swiftlint:disable type_body_length file_length
@@ -204,7 +204,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testEndOfInputSuccess() {
-        let endOfInput: Parser<StringInput, Decompose.Empty> = Combinators.endOfInput()
+        let endOfInput: Parser<StringInput, Empty> = Combinators.endOfInput()
         let input = StringInput("")
 
         let result = endOfInput.parse(input)
@@ -218,7 +218,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testEndOfInputFailure() {
-        let endOfInput: Parser<StringInput, Decompose.Empty> = Combinators.endOfInput()
+        let endOfInput: Parser<StringInput, Empty> = Combinators.endOfInput()
         let input = StringInput("A")
 
         let result = endOfInput.parse(input)
@@ -322,7 +322,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testSkipManySuccess() {
-        let skipManyParser: Parser<StringInput, Decompose.Empty> = Combinators.skipMany(Combinators.Text.letter())
+        let skipManyParser: Parser<StringInput, Empty> = Combinators.skipMany(Combinators.Text.letter())
         let input = StringInput("foobar")
 
         let result = skipManyParser.parse(input)
@@ -330,12 +330,12 @@ internal final class CombinatorsTests: XCTestCase {
             XCTFail("Expected parse to be successful.")
             return
         }
-        XCTAssertEqual(value, Decompose.Empty.empty)
+        XCTAssertEqual(value, Empty.empty)
         XCTAssertEqual(remainingInput.position, 6)
     }
 
     func testSkipManySuccessWithEmptyInput() {
-        let skipManyParser: Parser<StringInput, Decompose.Empty> = Combinators.skipMany(Combinators.Text.letter())
+        let skipManyParser: Parser<StringInput, Empty> = Combinators.skipMany(Combinators.Text.letter())
         let input = StringInput("")
 
         let result = skipManyParser.parse(input)
@@ -343,12 +343,12 @@ internal final class CombinatorsTests: XCTestCase {
             XCTFail("Expected parse to be successful.")
             return
         }
-        XCTAssertEqual(value, Decompose.Empty.empty)
+        XCTAssertEqual(value, Empty.empty)
         XCTAssertEqual(remainingInput.position, 0)
     }
 
     func testSkipManyFailure() {
-        let skipManyParser: Parser<StringInput, Decompose.Empty> = Combinators.skipMany(Combinators.Text.letter())
+        let skipManyParser: Parser<StringInput, Empty> = Combinators.skipMany(Combinators.Text.letter())
         let input = StringInput("123")
 
         let result = skipManyParser.parse(input)
@@ -361,7 +361,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testSkipMany1Success() {
-        let skipMany1Parser: Parser<StringInput, Decompose.Empty> = Combinators.skipMany1(Combinators.Text.letter())
+        let skipMany1Parser: Parser<StringInput, Empty> = Combinators.skipMany1(Combinators.Text.letter())
         let input = StringInput("foobar")
 
         let result = skipMany1Parser.parse(input)
@@ -369,12 +369,12 @@ internal final class CombinatorsTests: XCTestCase {
             XCTFail("Expected parse to be successful.")
             return
         }
-        XCTAssertEqual(value, Decompose.Empty.empty)
+        XCTAssertEqual(value, Empty.empty)
         XCTAssertEqual(remainingInput.position, 6)
     }
 
     func testSkipMany1FailureWithEmptyInput() {
-        let skipMany1Parser: Parser<StringInput, Decompose.Empty> = Combinators.skipMany1(Combinators.Text.letter())
+        let skipMany1Parser: Parser<StringInput, Empty> = Combinators.skipMany1(Combinators.Text.letter())
         let input = StringInput("")
 
         let result = skipMany1Parser.parse(input)
@@ -387,7 +387,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testSkipMany1Failure() {
-        let skipMany1Parser: Parser<StringInput, Decompose.Empty> = Combinators.skipMany1(Combinators.Text.letter())
+        let skipMany1Parser: Parser<StringInput, Empty> = Combinators.skipMany1(Combinators.Text.letter())
         let input = StringInput("123")
 
         let result = skipMany1Parser.parse(input)

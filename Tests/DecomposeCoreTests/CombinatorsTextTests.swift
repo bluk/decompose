@@ -12,7 +12,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 
-@testable import Decompose
+@testable import DecomposeCore
 import XCTest
 
 internal final class CombinatorsTextTests: XCTestCase {
@@ -95,7 +95,7 @@ internal final class CombinatorsTextTests: XCTestCase {
     }
 
     func testStringEmptyReturnValueSuccess() {
-        let stringParser: Parser<StringInput, Decompose.Empty> = Combinators.Text.stringEmptyReturnValue("foo")
+        let stringParser: Parser<StringInput, Empty> = Combinators.Text.stringEmptyReturnValue("foo")
         let input = StringInput("foo")
 
         let result = stringParser.parse(input)
@@ -108,7 +108,7 @@ internal final class CombinatorsTextTests: XCTestCase {
     }
 
     func testStringEmptyReturnValueFailure() {
-        let stringParser: Parser<StringInput, Decompose.Empty> = Combinators.Text.stringEmptyReturnValue("foo")
+        let stringParser: Parser<StringInput, Empty> = Combinators.Text.stringEmptyReturnValue("foo")
         let input = StringInput("barfoo")
 
         let result = stringParser.parse(input)

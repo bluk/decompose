@@ -14,12 +14,13 @@
 
 import XCTest
 
-import DecomposeCoreTests
-import DecomposeOperatorsTests
-
-private var tests = [XCTestCaseEntry]()
-
-tests += DecomposeCoreTests.allTests()
-tests += DecomposeOperatorsTests.allTests()
-
-XCTMain(tests)
+#if !os(macOS)
+/// Returns all the runnable tests
+public func allTests() -> [XCTestCaseEntry] {
+    return [
+        testCase(StringInputTests.allTests),
+        testCase(CombinatorsTests.allTests),
+        testCase(CombinatorsTextTests.allTests)
+    ]
+}
+#endif

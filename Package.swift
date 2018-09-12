@@ -22,16 +22,22 @@ internal let package = Package(
     products: [
         .library(
             name: "Decompose",
-            targets: ["Decompose"])
+            targets: ["DecomposeCore", "DecomposeOperators"])
     ],
     dependencies: [
     ],
     targets: [
         .target(
-            name: "Decompose",
+            name: "DecomposeCore",
             dependencies: []),
         .testTarget(
-            name: "DecomposeTests",
-            dependencies: ["Decompose"])
+            name: "DecomposeCoreTests",
+            dependencies: ["DecomposeCore"]),
+        .target(
+            name: "DecomposeOperators",
+            dependencies: ["DecomposeCore"]),
+        .testTarget(
+            name: "DecomposeOperatorsTests",
+            dependencies: ["DecomposeOperators"])
     ]
 )

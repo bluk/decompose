@@ -68,7 +68,7 @@ public enum Combinators {
     /// - Parameters:
     ///     - parser: The Parser to invoke.
     /// - Returns: A `Parser` which invokes the `parser` parameter zero or more times.
-    static func many<I, V>(_ parser: Parser<I, V>) -> Parser<I, [V]> {
+    public static func many<I, V>(_ parser: Parser<I, V>) -> Parser<I, [V]> {
         return parser.many()
     }
 
@@ -77,7 +77,7 @@ public enum Combinators {
     /// - Parameters:
     ///     - parser: The Parser to invoke.
     /// - Returns: A `Parser` which invokes the `parser` parameter one or more times.
-    static func many1<I, V>(_ parser: Parser<I, V>) -> Parser<I, [V]> {
+    public static func many1<I, V>(_ parser: Parser<I, V>) -> Parser<I, [V]> {
         return parser.many1()
     }
 
@@ -86,7 +86,7 @@ public enum Combinators {
     /// - Parameters:
     ///     - parser: The Parser to invoke.
     /// - Returns: A `Parser` which discards the return value of the `parser` parameter zero or more times.
-    static func skipMany<I, V>(_ parser: Parser<I, V>) -> Parser<I, Empty> {
+    public static func skipMany<I, V>(_ parser: Parser<I, V>) -> Parser<I, Empty> {
         return parser.skipMany()
     }
 
@@ -95,7 +95,7 @@ public enum Combinators {
     /// - Parameters:
     ///     - parser: The Parser to invoke.
     /// - Returns: A `Parser` which discards the return value of the `parser` parameter one or more times.
-    static func skipMany1<I, V>(_ parser: Parser<I, V>) -> Parser<I, Empty> {
+    public static func skipMany1<I, V>(_ parser: Parser<I, V>) -> Parser<I, Empty> {
         return parser.skipMany1()
     }
 
@@ -106,7 +106,7 @@ public enum Combinators {
     ///     - parser: The Parser to attempt.
     /// - Returns: A `Parser` which attempts the parser parameter and if it succeeds, return the value, but if it fails,
     ///            return nil
-    static func optionOptional<I, V>(_ parser: Parser<I, V>) -> Parser<I, V?> {
+    public static func optionOptional<I, V>(_ parser: Parser<I, V>) -> Parser<I, V?> {
         return parser.optionOptional()
     }
 
@@ -115,7 +115,7 @@ public enum Combinators {
     /// - Parameters:
     ///     - parser: The Parser to attempt.
     /// - Returns: A `Parser` which attempts the parser parameter and if it succeeds or not, return an `Empty.empty`.
-    static func optional<I, V>(_ parser: Parser<I, V>) -> Parser<I, Empty> {
+    public static func optional<I, V>(_ parser: Parser<I, V>) -> Parser<I, Empty> {
         return parser.optional()
     }
 
@@ -126,7 +126,7 @@ public enum Combinators {
     ///     - parser: The Parser to attempt.
     /// - Returns: A `Parser` which attempts the parser parameter and if it succeeds, return the value, but if it fails,
     ///            return nil
-    static func option<I, V>(_ parser: Parser<I, V>, _ value: V) -> Parser<I, V> {
+    public static func option<I, V>(_ parser: Parser<I, V>, _ value: V) -> Parser<I, V> {
         return parser.option(value)
     }
 
@@ -139,7 +139,7 @@ public enum Combinators {
     ///     - value: The value to use if the `parserV` fails.
     /// - Returns: A `Parser` which parses an optional operand and an optional repeat of operator and operand where the
     ///            final parsed value is the calculation of the operands with the operators with right associativity.
-    static func chainr<I, V>(_ parserV: Parser<I, V>, _ parserOp: Parser<I, (V) -> (V) -> V>, _ value: V)
+    public static func chainr<I, V>(_ parserV: Parser<I, V>, _ parserOp: Parser<I, (V) -> (V) -> V>, _ value: V)
         -> Parser<I, V> {
             return parserV.chainr(parserOp, value)
     }
@@ -152,7 +152,7 @@ public enum Combinators {
     ///     - parserOp: The operator Parser.
     /// - Returns: A `Parser` which parses an operand and zero or more operator and operand where the
     ///            final parsed value is the calculation of the operands with the operators with right associativity.
-    static func chainr1<I, V>(_ parserV: Parser<I, V>, _ parserOp: Parser<I, (V) -> (V) -> V>) -> Parser<I, V> {
+    public static func chainr1<I, V>(_ parserV: Parser<I, V>, _ parserOp: Parser<I, (V) -> (V) -> V>) -> Parser<I, V> {
         return parserV.chainr1(parserOp)
     }
 
@@ -166,7 +166,7 @@ public enum Combinators {
     /// - Returns: A `Parser` which parses an optional operand operand and an optional repeat of operator and operand
     ///            where the final parsed value is the calculation of the operands with the operators with left
     ///            associativity.
-    static func chainl<I, V>(_ parserV: Parser<I, V>, _ parserOp: Parser<I, (V) -> (V) -> V>, _ value: V)
+    public static func chainl<I, V>(_ parserV: Parser<I, V>, _ parserOp: Parser<I, (V) -> (V) -> V>, _ value: V)
         -> Parser<I, V> {
             return parserV.chainl(parserOp, value)
     }
@@ -179,7 +179,7 @@ public enum Combinators {
     ///     - parserOp: The operator Parser.
     /// - Returns: A `Parser` which parses an operand and zero more operator and operand where the
     ///            final parsed value is the calculation of the operands with the operators with left associativity.
-    static func chainl1<I, V>(_ parserV: Parser<I, V>, _ parserOp: Parser<I, (V) -> (V) -> V>) -> Parser<I, V> {
+    public static func chainl1<I, V>(_ parserV: Parser<I, V>, _ parserOp: Parser<I, (V) -> (V) -> V>) -> Parser<I, V> {
         return parserV.chainl1(parserOp)
     }
 
@@ -190,7 +190,7 @@ public enum Combinators {
     ///     - parserSep: Parses a separator.
     /// - Returns: A `Parser` which parses zero or more values separated by a separator and returns an array of the
     ///            parsed values.
-    static func sepBy<I, V, S>(_ parserV: Parser<I, V>, _ parserSep: Parser<I, S>) -> Parser<I, [V]> {
+    public static func sepBy<I, V, S>(_ parserV: Parser<I, V>, _ parserSep: Parser<I, S>) -> Parser<I, [V]> {
         return parserV.sepBy(parserSep)
     }
 
@@ -201,7 +201,7 @@ public enum Combinators {
     ///     - parserSep: Parses a separator.
     /// - Returns: A `Parser` which parses one or more values separated by a separator and returns an array of the
     ///            parsed values.
-    static func sepBy1<I, V, S>(_ parserV: Parser<I, V>, _ parserSep: Parser<I, S>) -> Parser<I, [V]> {
+    public static func sepBy1<I, V, S>(_ parserV: Parser<I, V>, _ parserSep: Parser<I, S>) -> Parser<I, [V]> {
         return parserV.sepBy1(parserSep)
     }
 
@@ -212,7 +212,10 @@ public enum Combinators {
     ///     - parserOpen: Parses an open value.
     ///     - parserClose: Parses a close value.
     /// - Returns: A `Parser` which parses an open, value, and then a close, and returns the value.
-    static func between<I, O, V, C>(_ parserOpen: Parser<I, O>, _ parserV: Parser<I, V>, _ parserClose: Parser<I, C>)
+    public static func between<I, O, V, C>(
+        _ parserOpen: Parser<I, O>,
+        _ parserV: Parser<I, V>,
+        _ parserClose: Parser<I, C>)
         -> Parser<I, V> {
             return parserV.between(parserOpen, parserClose)
     }
@@ -223,7 +226,7 @@ public enum Combinators {
     ///     - parserV: Parses a value.
     ///     - count: The number of times to parse.
     /// - Returns: A `Parser` which parses a value for `count` number of times and returns an array of the values.
-    static func count<I, V>(_ parser: Parser<I, V>, _ count: Int) -> Parser<I, [V]> {
+    public static func count<I, V>(_ parser: Parser<I, V>, _ count: Int) -> Parser<I, [V]> {
         return parser.count(count)
     }
 
@@ -234,7 +237,7 @@ public enum Combinators {
     ///     - parserSep: Parses a separator.
     /// - Returns: A `Parser` which parses zero or more values separated by and ends with a separator and returns an
     ///            array of the parsed values.
-    static func endBy<I, V, S>(_ parserV: Parser<I, V>, _ parserSep: Parser<I, S>) -> Parser<I, [V]> {
+    public static func endBy<I, V, S>(_ parserV: Parser<I, V>, _ parserSep: Parser<I, S>) -> Parser<I, [V]> {
         return parserV.endBy(parserSep)
     }
 
@@ -245,7 +248,7 @@ public enum Combinators {
     ///     - parserSep: Parses a separator.
     /// - Returns: A `Parser` which parses one or more values separated by and ends with a separator and returns an
     ///            array of the parsed values.
-    static func endBy1<I, V, S>(_ parserV: Parser<I, V>, _ parserSep: Parser<I, S>) -> Parser<I, [V]> {
+    public static func endBy1<I, V, S>(_ parserV: Parser<I, V>, _ parserSep: Parser<I, S>) -> Parser<I, [V]> {
         return parserV.endBy1(parserSep)
     }
 
@@ -257,7 +260,7 @@ public enum Combinators {
     ///     - parserSep: Parses a separator.
     /// - Returns: A `Parser` which parses zero or more values separated by and optionally ends with a separator and
     ///            returns an array of the parsed values.
-    static func sepEndBy<I, V, S>(_ parserV: Parser<I, V>, _ parserSep: Parser<I, S>) -> Parser<I, [V]> {
+    public static func sepEndBy<I, V, S>(_ parserV: Parser<I, V>, _ parserSep: Parser<I, S>) -> Parser<I, [V]> {
         return parserV.sepEndBy(parserSep)
     }
 
@@ -269,7 +272,7 @@ public enum Combinators {
     ///     - parserSep: Parses a separator.
     /// - Returns: A `Parser` which parses one or more values separated by and optionally ends with a separator and
     ///            returns an array of the parsed values.
-    static func sepEndBy1<I, V, S>(_ parserV: Parser<I, V>, _ parserSep: Parser<I, S>) -> Parser<I, [V]> {
+    public static func sepEndBy1<I, V, S>(_ parserV: Parser<I, V>, _ parserSep: Parser<I, S>) -> Parser<I, [V]> {
         return parserV.sepEndBy1(parserSep)
     }
 
@@ -281,7 +284,7 @@ public enum Combinators {
     ///     - parserEnd: Parses an end value.
     /// - Returns: A `Parser` which parses `parserV` values zero or more times until `parserEnd` is encountered, and
     ///            returns an array of the `parserV` values.
-    static func manyTill<I, V, V2>(_ parser: Parser<I, V>, _ parserEnd: Parser<I, V2>) -> Parser<I, [V]> {
+    public static func manyTill<I, V, V2>(_ parser: Parser<I, V>, _ parserEnd: Parser<I, V2>) -> Parser<I, [V]> {
         return parser.manyTill(parserEnd)
     }
 

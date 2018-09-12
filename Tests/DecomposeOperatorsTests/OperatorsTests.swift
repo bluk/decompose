@@ -12,7 +12,8 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 
-@testable import Decompose
+import DecomposeCore
+@testable import DecomposeOperators
 import XCTest
 
 internal final class OperatorsTests: XCTestCase {
