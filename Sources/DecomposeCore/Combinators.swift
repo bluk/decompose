@@ -351,4 +351,15 @@ public enum Combinators {
     public static func noneOf<I, V>(_ elementSet: Set<V>) -> Parser<I, V> where V == I.Element {
         return Parser<I, V>.noneOf(elementSet)
     }
+
+    /// Returns a `Parser` which iterates over the array parameter of `Parser`s and collects their results in
+    /// an array.
+    ///
+    /// - Parameters:
+    ///     - parsers: The parsers to invoke in order.
+    /// - Returns: A`Parser` which iterates over the array parameter of `Parser`s and collects their results in an
+    ///            array.
+    public static func sequence<I, V>(_ parsers: [Parser<I, V>]) -> Parser<I, [V]> {
+        return Parser<I, [V]>.sequence(parsers)
+    }
 }

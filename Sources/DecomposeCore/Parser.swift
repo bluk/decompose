@@ -911,6 +911,54 @@ public extension Parser {
                 }
             })
     }
+
+    /// Returns a `Parser` which iterates over the array parameter of `Parser`s and collects their results in
+    /// an array.
+    ///
+    /// - Parameters:
+    ///     - parsers: The parsers to invoke in order.
+    /// - Returns: A`Parser` which iterates over the array parameter of `Parser`s and collects their results in an
+    ///            array.
+    public static func sequence<I, V>(_ parsers: [Parser<I, V>]) -> Parser<I, [V]> {
+        return Parser<I, [V]>(
+            acceptsEmpty: {
+                if let firstParser = parsers.first {
+                    return firstParser.computeAcceptsEmpty()
+                }
+                return true
+            }(),
+            firstSetSymbols: {
+                if let firstParser = parsers.first {
+                    return firstParser.computeFirstSetSymbols()
+                }
+                return [Symbol.empty]
+            }(),
+            parse: { input, followSetSymbols in
+                var results: [V] = []
+                var remainingInput = input
+
+                for parser in parsers {
+                    if let currentValue = remainingInput.current(), remainingInput.isAvailable {
+                        if parser.computeFirstSetSymbols().contains(where: { $0.matches(currentValue) }) {
+                            switch parser.computeParse(remainingInput, followSetSymbols) {
+                            case let .success(remainingSuccessInput, value):
+                                remainingInput = remainingSuccessInput
+                                results.append(value)
+                            case let .failure(remainingInput, expectedSymbols):
+                                return Result.failure(remainingInput, expectedSymbols)
+                            case let .failureUnavailableInput(remainingInput, expectedSymbols):
+                                return Result.failureUnavailableInput(remainingInput, expectedSymbols)
+                            }
+                        } else {
+                            return Result.failure(remainingInput, parser.computeFirstSetSymbols())
+                        }
+                    } else {
+                        return Result.failureUnavailableInput(remainingInput, parser.computeFirstSetSymbols())
+                    }
+                }
+                return Result.success(remainingInput, results)
+            })
+    }
 }
 
 // swiftlint:enable file_length

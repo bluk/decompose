@@ -1714,6 +1714,70 @@ internal final class CombinatorsTests: XCTestCase {
         XCTAssertEqual(remainingInput.position, 0)
     }
 
+    func testSequenceSuccess() {
+        let sequenceParser: Parser<StringInput, [Character]> = Combinators.sequence([
+            Parser<StringInput, Character>.symbol("A"),
+            Parser<StringInput, Character>.symbol("B")
+        ])
+        let input = StringInput("AB")
+
+        let result = sequenceParser.parse(input)
+        guard case let .success(remainingInput, value) = result else {
+            XCTFail("Expected parse to be successful.")
+            return
+        }
+        XCTAssertEqual(value, ["A", "B"])
+        XCTAssertEqual(remainingInput.position, 2)
+    }
+
+    func testSequenceFailureWithParseFailure() {
+        let sequenceParser: Parser<StringInput, [Character]> = Combinators.sequence([
+            Parser<StringInput, Character>.symbol("A"),
+            Parser<StringInput, Character>.symbol("B")
+        ])
+        let input = StringInput("AC")
+
+        let result = sequenceParser.parse(input)
+        guard case let .failure(remainingInput, expectedSymbols) = result else {
+            XCTFail("Expected parse to fail.")
+            return
+        }
+        XCTAssertEqual(expectedSymbols, [Symbol.value("B")])
+        XCTAssertEqual(remainingInput.position, 1)
+    }
+
+    func testSequenceFailureWithUnavailableInput() {
+        let sequenceParser: Parser<StringInput, [Character]> = Combinators.sequence([
+            Parser<StringInput, Character>.symbol("A"),
+            Parser<StringInput, Character>.symbol("B")
+        ])
+        let input = StringInput("")
+
+        let result = sequenceParser.parse(input)
+        guard case let .failureUnavailableInput(remainingInput, expectedSymbols) = result else {
+            XCTFail("Expected parse to fail.")
+            return
+        }
+        XCTAssertEqual(expectedSymbols, [Symbol.value("A")])
+        XCTAssertEqual(remainingInput.position, 0)
+    }
+
+    func testSequenceFailureWithMissingSequence() {
+        let sequenceParser: Parser<StringInput, [Character]> = Combinators.sequence([
+            Parser<StringInput, Character>.symbol("A"),
+            Parser<StringInput, Character>.symbol("B")
+        ])
+        let input = StringInput("A")
+
+        let result = sequenceParser.parse(input)
+        guard case let .failureUnavailableInput(remainingInput, expectedSymbols) = result else {
+            XCTFail("Expected parse to fail.")
+            return
+        }
+        XCTAssertEqual(expectedSymbols, [Symbol.value("B")])
+        XCTAssertEqual(remainingInput.position, 1)
+    }
+
     static var allTests = [
         ("testPure", testPure),
         ("testSymbolSuccess", testSymbolSuccess),
@@ -1821,8 +1885,11 @@ internal final class CombinatorsTests: XCTestCase {
         ("testOneOfFailureWithUnavailableInput", testOneOfFailureWithUnavailableInput),
         ("testNoneOfSuccess", testNoneOfSuccess),
         ("testNoneOfFailure", testNoneOfFailure),
-        ("testNoneOfFailureWithUnavailableInput", testNoneOfFailureWithUnavailableInput)
-
+        ("testNoneOfFailureWithUnavailableInput", testNoneOfFailureWithUnavailableInput),
+        ("testSequenceSuccess", testSequenceSuccess),
+        ("testSequenceFailureWithParseFailure", testSequenceFailureWithParseFailure),
+        ("testSequenceFailureWithUnavailableInput", testSequenceFailureWithUnavailableInput),
+        ("testSequenceFailureWithMissingSequence", testSequenceFailureWithMissingSequence)
     ]
 }
 // swiftlint:enable type_body_length file_length
