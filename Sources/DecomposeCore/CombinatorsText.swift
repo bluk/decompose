@@ -93,5 +93,45 @@ public extension Combinators {
                 .andR(string(String(value.dropFirst())))
                 .andR(Parser<I, Empty>.pure(Empty.empty))
         }
+
+        /// Returns a `Parser` which tests if the current element is a whitespace character.
+        ///
+        /// - Returns: A `Parser` which tests if the current element is a whitespace character.
+        public static func whitespace<I>() -> Parser<I, Character>
+            where I.Element == Character {
+            let characterSet = CharacterSet.whitespaces
+            #if swift(>=4.2)
+            return Parser<I, Character>.satisfy { $0.unicodeScalars.allSatisfy(characterSet.contains) }
+            #else
+            // https://github.com/apple/swift-evolution/blob/master/proposals/0207-containsOnly.md
+            return Parser<I, Character>.satisfy(conditionName: "whitespace") {
+                !$0.unicodeScalars.contains { !characterSet.contains($0) }
+            }
+            #endif
+        }
+
+        /// Returns a `Parser` which tests if the current element is a newline character.
+        ///
+        /// - Returns: A `Parser` which tests if the current element is a newline character.
+        public static func newline<I>() -> Parser<I, Character>
+            where I.Element == Character {
+            let characterSet = CharacterSet.newlines
+            #if swift(>=4.2)
+            return Parser<I, Character>.satisfy { $0.unicodeScalars.allSatisfy(characterSet.contains) }
+            #else
+            // https://github.com/apple/swift-evolution/blob/master/proposals/0207-containsOnly.md
+            return Parser<I, Character>.satisfy(conditionName: "newline") {
+                !$0.unicodeScalars.contains { !characterSet.contains($0) }
+            }
+            #endif
+        }
+
+        /// Returns a `Parser` which tests if the current element is a tab character.
+        ///
+        /// - Returns: A `Parser` which tests if the current element is a tab character.
+        public static func tab<I>() -> Parser<I, Character>
+            where I.Element == Character {
+            return Parser<I, Character>.symbol("\t")
+        }
     }
 }

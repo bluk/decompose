@@ -120,6 +120,110 @@ internal final class CombinatorsTextTests: XCTestCase {
         XCTAssertEqual(expectedSymbols, Set([Symbol<Character>.value("f")]))
     }
 
+    func testWhitespaceSuccessWithSpace() {
+        let whitespaceParser: Parser<StringInput, Character> = Combinators.Text.whitespace()
+        let input = StringInput(" ")
+
+        let result = whitespaceParser.parse(input)
+        guard case let .success(remainingInput, value) = result else {
+            XCTFail("Expected parse to be successful.")
+            return
+        }
+        XCTAssertEqual(value, " ")
+        XCTAssertEqual(remainingInput.position, 1)
+    }
+
+    func testWhitespaceSuccessWithTab() {
+        let whitespaceParser: Parser<StringInput, Character> = Combinators.Text.whitespace()
+        let input = StringInput("\t")
+
+        let result = whitespaceParser.parse(input)
+        guard case let .success(remainingInput, value) = result else {
+            XCTFail("Expected parse to be successful.")
+            return
+        }
+        XCTAssertEqual(value, "\t")
+        XCTAssertEqual(remainingInput.position, 1)
+    }
+
+    func testWhitespaceFailure() {
+        let whitespaceParser: Parser<StringInput, Character> = Combinators.Text.whitespace()
+        let input = StringInput("\n")
+
+        let result = whitespaceParser.parse(input)
+        guard case let .failure(remainingInput, expectedSymbols) = result else {
+            XCTFail("Expected parse to fail.")
+            return
+        }
+        XCTAssertEqual(remainingInput.position, 0)
+        XCTAssertEqual(expectedSymbols, Set([Symbol<Character>.predicate(name: "whitespace", { _ in true })]))
+    }
+
+    func testNewlineSuccessWithCarriageReturn() {
+        let newlineParser: Parser<StringInput, Character> = Combinators.Text.newline()
+        let input = StringInput("\n")
+
+        let result = newlineParser.parse(input)
+        guard case let .success(remainingInput, value) = result else {
+            XCTFail("Expected parse to be successful.")
+            return
+        }
+        XCTAssertEqual(value, "\n")
+        XCTAssertEqual(remainingInput.position, 1)
+    }
+
+    func testNewlineSuccessWithLinefeed() {
+        let newlineParser: Parser<StringInput, Character> = Combinators.Text.newline()
+        let input = StringInput("\r")
+
+        let result = newlineParser.parse(input)
+        guard case let .success(remainingInput, value) = result else {
+            XCTFail("Expected parse to be successful.")
+            return
+        }
+        XCTAssertEqual(value, "\r")
+        XCTAssertEqual(remainingInput.position, 1)
+    }
+
+    func testNewlineFailure() {
+        let newlineParser: Parser<StringInput, Character> = Combinators.Text.newline()
+        let input = StringInput("\t")
+
+        let result = newlineParser.parse(input)
+        guard case let .failure(remainingInput, expectedSymbols) = result else {
+            XCTFail("Expected parse to fail.")
+            return
+        }
+        XCTAssertEqual(remainingInput.position, 0)
+        XCTAssertEqual(expectedSymbols, Set([Symbol<Character>.predicate(name: "newline", { _ in true })]))
+    }
+
+    func testTabSuccess() {
+        let tabParser: Parser<StringInput, Character> = Combinators.Text.tab()
+        let input = StringInput("\t")
+
+        let result = tabParser.parse(input)
+        guard case let .success(remainingInput, value) = result else {
+            XCTFail("Expected parse to be successful.")
+            return
+        }
+        XCTAssertEqual(value, "\t")
+        XCTAssertEqual(remainingInput.position, 1)
+    }
+
+    func testTabFailure() {
+        let tabParser: Parser<StringInput, Character> = Combinators.Text.tab()
+        let input = StringInput("    ")
+
+        let result = tabParser.parse(input)
+        guard case let .failure(remainingInput, expectedSymbols) = result else {
+            XCTFail("Expected parse to fail.")
+            return
+        }
+        XCTAssertEqual(remainingInput.position, 0)
+        XCTAssertEqual(expectedSymbols, Set([Symbol<Character>.value("\t")]))
+    }
+
     static var allTests = [
         ("testIsLetterSuccess", testIsLetterSuccess),
         ("testIsLetterFailure", testIsLetterFailure),
@@ -128,6 +232,14 @@ internal final class CombinatorsTextTests: XCTestCase {
         ("testStringSuccess", testStringSuccess),
         ("testStringFailure", testStringFailure),
         ("testStringEmptyReturnValueSuccess", testStringEmptyReturnValueSuccess),
-        ("testStringEmptyReturnValueFailure", testStringEmptyReturnValueFailure)
+        ("testStringEmptyReturnValueFailure", testStringEmptyReturnValueFailure),
+        ("testWhitespaceSuccessWithSpace", testWhitespaceSuccessWithSpace),
+        ("testWhitespaceSuccessWithTab", testWhitespaceSuccessWithTab),
+        ("testWhitespaceFailure", testWhitespaceFailure),
+        ("testNewlineSuccessWithCarriageReturn", testNewlineSuccessWithCarriageReturn),
+        ("testNewlineSuccessWithLinefeed", testNewlineSuccessWithLinefeed),
+        ("testNewlineFailure", testNewlineFailure),
+        ("testTabSuccess", testTabSuccess),
+        ("testTabFailure", testTabFailure)
     ]
 }
