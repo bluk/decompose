@@ -1778,6 +1778,86 @@ internal final class CombinatorsTests: XCTestCase {
         XCTAssertEqual(remainingInput.position, 1)
     }
 
+    func testTraverseSuccess() {
+        let traverseParser: Parser<StringInput, [Int]> = Combinators.traverse(
+            [
+                Parser<StringInput, Character>.symbol("1"),
+                Parser<StringInput, Character>.symbol("2")
+            ], { value in
+                Int(String(value))!
+            }
+        )
+        let input = StringInput("12")
+
+        let result = traverseParser.parse(input)
+        guard case let .success(remainingInput, value) = result else {
+            XCTFail("Expected parse to be successful.")
+            return
+        }
+        XCTAssertEqual(value, [1, 2])
+        XCTAssertEqual(remainingInput.position, 2)
+    }
+
+    func testTraverseFailureWithParseFailure() {
+        let traverseParser: Parser<StringInput, [Int]> = Combinators.traverse(
+            [
+                Parser<StringInput, Character>.symbol("1"),
+                Parser<StringInput, Character>.symbol("2")
+            ], { value in
+                Int(String(value))!
+            }
+        )
+        let input = StringInput("13")
+
+        let result = traverseParser.parse(input)
+        guard case let .failure(remainingInput, expectedSymbols) = result else {
+            XCTFail("Expected parse to fail.")
+            return
+        }
+        XCTAssertEqual(expectedSymbols, [Symbol.value("2")])
+        XCTAssertEqual(remainingInput.position, 1)
+    }
+
+    func testTraverseFailureWithUnavailableInput() {
+        let traverseParser: Parser<StringInput, [Int]> = Combinators.traverse(
+            [
+                Parser<StringInput, Character>.symbol("1"),
+                Parser<StringInput, Character>.symbol("2")
+            ], { value in
+                Int(String(value))!
+            }
+        )
+        let input = StringInput("")
+
+        let result = traverseParser.parse(input)
+        guard case let .failureUnavailableInput(remainingInput, expectedSymbols) = result else {
+            XCTFail("Expected parse to fail.")
+            return
+        }
+        XCTAssertEqual(expectedSymbols, [Symbol.value("1")])
+        XCTAssertEqual(remainingInput.position, 0)
+    }
+
+    func testTraverseFailureWithMissingSequence() {
+        let traverseParser: Parser<StringInput, [Int]> = Combinators.traverse(
+            [
+                Parser<StringInput, Character>.symbol("1"),
+                Parser<StringInput, Character>.symbol("2")
+            ], { value in
+                Int(String(value))!
+            }
+        )
+        let input = StringInput("1")
+
+        let result = traverseParser.parse(input)
+        guard case let .failureUnavailableInput(remainingInput, expectedSymbols) = result else {
+            XCTFail("Expected parse to fail.")
+            return
+        }
+        XCTAssertEqual(expectedSymbols, [Symbol.value("2")])
+        XCTAssertEqual(remainingInput.position, 1)
+    }
+
     static var allTests = [
         ("testPure", testPure),
         ("testSymbolSuccess", testSymbolSuccess),
@@ -1889,7 +1969,12 @@ internal final class CombinatorsTests: XCTestCase {
         ("testSequenceSuccess", testSequenceSuccess),
         ("testSequenceFailureWithParseFailure", testSequenceFailureWithParseFailure),
         ("testSequenceFailureWithUnavailableInput", testSequenceFailureWithUnavailableInput),
-        ("testSequenceFailureWithMissingSequence", testSequenceFailureWithMissingSequence)
+        ("testSequenceFailureWithMissingSequence", testSequenceFailureWithMissingSequence),
+        ("testTraverseSuccess", testTraverseSuccess),
+        ("testTraverseFailureWithParseFailure", testTraverseFailureWithParseFailure),
+        ("testTraverseFailureWithUnavailableInput", testTraverseFailureWithUnavailableInput),
+        ("testTraverseFailureWithMissingSequence", testTraverseFailureWithMissingSequence)
+
     ]
 }
 // swiftlint:enable type_body_length file_length

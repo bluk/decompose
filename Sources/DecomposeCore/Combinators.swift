@@ -362,4 +362,17 @@ public enum Combinators {
     public static func sequence<I, V>(_ parsers: [Parser<I, V>]) -> Parser<I, [V]> {
         return Parser<I, [V]>.sequence(parsers)
     }
+
+    /// Returns a `Parser` which iterates over the array parameter of `Parser`s, transforms the results, and collects
+    /// the results in an array.
+    ///
+    /// - Parameters:
+    ///     - parsers: The parsers to invoke in order.
+    ///     - func1: The function to transform the result into a new value.
+    /// - Returns: A`Parser` which iterates over the array parameter of `Parser`s, transforms the results, and collects
+    ///            the results in an array.
+    public static func traverse<I, V1, V2>(_ parsers: [Parser<I, V1>], _ func1: @escaping (V1) -> V2)
+        -> Parser<I, [V2]> {
+        return Parser<I, [V2]>.traverse(parsers, func1)
+    }
 }
