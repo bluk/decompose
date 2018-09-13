@@ -83,7 +83,7 @@ internal final class CombinatorsTests: XCTestCase {
         XCTAssertEqual(expectedSymbols, Set([Symbol<Character>.predicate(name: "f", { _ in true })]))
     }
 
-    func testChoiceSuccess() {
+    func testOrSuccess() {
         let matchesF: Parser<StringInput, Character> = Combinators.symbol("f")
         let matchesB: Parser<StringInput, Character> = Combinators.symbol("b")
         let choiceParser = Combinators.or(matchesF, matchesB)
@@ -107,7 +107,7 @@ internal final class CombinatorsTests: XCTestCase {
         XCTAssertEqual(remainingInput2.position, 1)
     }
 
-    func testChoiceFailure() {
+    func testOrFailure() {
         let matchesF: Parser<StringInput, Character> = Combinators.symbol("f")
         let matchesB: Parser<StringInput, Character> = Combinators.symbol("b")
         let choiceParser = Combinators.or(matchesF, matchesB)
@@ -120,6 +120,60 @@ internal final class CombinatorsTests: XCTestCase {
         }
         XCTAssertEqual(remainingInput.position, 0)
         XCTAssertEqual(expectedSymbols, Set([Symbol<Character>.value("f"), Symbol<Character>.value("b")]))
+    }
+
+    func testChoiceSuccess() {
+        let matchesF: Parser<StringInput, Character> = Combinators.symbol("f")
+        let matchesB: Parser<StringInput, Character> = Combinators.symbol("b")
+        let matchesO: Parser<StringInput, Character> = Combinators.symbol("o")
+        let choiceParser = Combinators.choice([matchesF, matchesB, matchesO])
+
+        let result1 = choiceParser.parse(StringInput("f"))
+        guard case let .success(remainingInput1, value1) = result1 else {
+            XCTFail("Expected parse to be successful.")
+            return
+        }
+        XCTAssertEqual(value1, "f")
+        XCTAssertNil(remainingInput1.current())
+        XCTAssertEqual(remainingInput1.position, 1)
+
+        let result2 = choiceParser.parse(StringInput("b"))
+        guard case let .success(remainingInput2, value2) = result2 else {
+            XCTFail("Expected parse to be successful.")
+            return
+        }
+        XCTAssertEqual(value2, "b")
+        XCTAssertNil(remainingInput2.current())
+        XCTAssertEqual(remainingInput2.position, 1)
+
+        let result3 = choiceParser.parse(StringInput("o"))
+        guard case let .success(remainingInput3, value3) = result3 else {
+            XCTFail("Expected parse to be successful.")
+            return
+        }
+        XCTAssertEqual(value3, "o")
+        XCTAssertNil(remainingInput3.current())
+        XCTAssertEqual(remainingInput3.position, 1)
+    }
+
+    func testChoiceFailure() {
+        let matchesF: Parser<StringInput, Character> = Combinators.symbol("f")
+        let matchesB: Parser<StringInput, Character> = Combinators.symbol("b")
+        let matchesO: Parser<StringInput, Character> = Combinators.symbol("o")
+        let choiceParser = Combinators.choice([matchesF, matchesB, matchesO])
+        let input = StringInput("xyz")
+
+        let result = choiceParser.parse(input)
+        guard case let .failure(remainingInput, expectedSymbols) = result else {
+            XCTFail("Expected parse to fail.")
+            return
+        }
+        XCTAssertEqual(remainingInput.position, 0)
+        XCTAssertEqual(expectedSymbols, Set([
+            Symbol<Character>.value("f"),
+            Symbol<Character>.value("b"),
+            Symbol<Character>.value("o")
+        ]))
     }
 
     func testMapSuccess() {
@@ -2012,6 +2066,8 @@ internal final class CombinatorsTests: XCTestCase {
         ("testSymbolFailure", testSymbolFailure),
         ("testSatisfySuccess", testSatisfySuccess),
         ("testSatisfyFailure", testSatisfyFailure),
+        ("testOrSuccess", testOrSuccess),
+        ("testOrFailure", testOrFailure),
         ("testChoiceSuccess", testChoiceSuccess),
         ("testChoiceFailure", testChoiceFailure),
         ("testMapSuccess", testMapSuccess),

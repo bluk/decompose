@@ -212,6 +212,77 @@ public extension Parser {
         }
     }
 
+    /// Sequentially invokes a `Parser` in the array until one of them succeeds or all of them fail.
+    ///
+    /// - Parameters:
+    ///     - parsers: The array of `Parser`s to attempt.
+    /// - Returns: A `Parser` which sequentially invokes a `Parser` in the array until one of them succeeds or all
+    ///            of them fail.
+    public static func choice(_ parsers: [Parser<I, V>]) -> Parser<I, V> {
+        guard let firstParser = parsers.first else {
+            return Parser.fail()
+        }
+
+        return firstParser.choice(Array(parsers.dropFirst()))
+    }
+
+    // swiftlint:disable cyclomatic_complexity
+
+    /// Returns a `Parser` which invokes this `Parser`, and if it fails, attempts the next `Parser` in the array.
+    ///
+    /// - Parameters:
+    ///     - parsers: The `Parser`s to attempt if this `Parser` fails.
+    /// - Returns: A `Parser` which invokes this `Parser`, and if it fails, attempts the next `Parser` in the array.
+    public func choice(_ parsers: [Parser<I, V>]) -> Parser<I, V> {
+        return Parser<I, V>(
+            acceptsEmpty: parsers.reduce(self.computeAcceptsEmpty(), { result, parser in
+                result || parser.computeAcceptsEmpty()
+            }),
+            firstSetSymbols: parsers.reduce(self.computeFirstSetSymbols(), { result, parser in
+                result.union(parser.computeFirstSetSymbols())
+            })
+        ) { input, followSetSymbols in
+            if let currentValue = input.current(), input.isAvailable {
+                if self.computeFirstSetSymbols().contains(where: { $0.matches(currentValue) }) {
+                    return self.computeParse(input, followSetSymbols)
+                }
+
+                for parser in parsers {
+                    if parser.computeFirstSetSymbols().contains(where: { $0.matches(currentValue) }) {
+                        return parser.computeParse(input, followSetSymbols)
+                    }
+                }
+
+                if followSetSymbols.contains(where: { $0.matches(currentValue) }) {
+                    if self.computeAcceptsEmpty() {
+                        return self.computeParse(input, followSetSymbols)
+                    }
+
+                    for parser in parsers {
+                        if parser.computeAcceptsEmpty() {
+                            return parser.computeParse(input, followSetSymbols)
+                        }
+                    }
+                }
+
+                return Result.failure(input, self.computeFirstSetSymbols())
+            } else {
+                if self.computeAcceptsEmpty() {
+                    return self.computeParse(input, followSetSymbols)
+                } else {
+                    for parser in parsers {
+                        if parser.computeAcceptsEmpty() {
+                            return parser.computeParse(input, followSetSymbols)
+                        }
+                    }
+                }
+                return Result.failureUnavailableInput(input, self.computeFirstSetSymbols())
+            }
+        }
+    }
+
+    // swiftlint:enable cyclomatic_complexity
+
     /// Sequentially invokes this `Parser` and then the `Parser` argument while ignoring the second value.
     ///
     /// - Parameters:
