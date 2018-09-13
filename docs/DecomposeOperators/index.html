@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>DecomposeOperators  Reference</title>
+    <link rel="stylesheet" type="text/css" href="css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="js/jquery.min.js" defer></script>
+    <script src="js/jazzy.js" defer></script>
+    
+  </head>
+  <body>
+    <a title="DecomposeOperators  Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="index.html">DecomposeOperators Docs</a> (100% documented)</p>
+        <p class="header-right"><a href="https://github.com/bluk/decompose"><img src="img/gh.png"/>View on GitHub</a></p>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="index.html">DecomposeOperators Reference</a>
+        <img id="carat" src="img/carat.png" />
+        DecomposeOperators  Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="Functions.html">Functions</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:18DecomposeOperators2mgoiy0A4Core6ParserVyxq0_GAEyxq_G_AFtAC5InputRzSL7ElementRpzSHAJRQr1_lF">*&gt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:18DecomposeOperators2lmoiy0A4Core6ParserVyxq_GAF_AEyxq0_GtAC5InputRzSL7ElementRpzSHAJRQr1_lF">&lt;*(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:18DecomposeOperators3lmgoiy0A4Core6ParserVyxq0_GAEyxq0_q_cG_AEyxq_GtAC5InputRzSL7ElementRpzSHAKRQr1_lF">&lt;*&gt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:18DecomposeOperators4lqqgoiy0A4Core6ParserVyxq_GAF_q_tAC5InputRzSL7ElementRpzSHAIRQr0_lF">&lt;??&gt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:18DecomposeOperators3lxgoiy0A4Core6ParserVyxq0_Gq0_q_c_AEyxq_GtAC5InputRzSL7ElementRpzSHAJRQr1_lF">&lt;^&gt;(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:18DecomposeOperators3logoiy0A4Core6ParserVyxq_GAF_AFtAC5InputRzSL7ElementRpzSHAIRQr0_lF">&lt;|&gt;(_:_:)</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            
+            <h1 id='decompose' class='heading'>➡️  Decompose</h1>
+
+<p><a href="https://github.com/bluk/decompose/blob/master/LICENSE"><img src="https://img.shields.io/github/license/bluk/decompose.svg" alt="Apache-2.0 License"></a> <a href="https://swift.org"><img src="https://img.shields.io/badge/swift-4.1-orange.svg" alt="Swift"></a> <a href="https://github.com/apple/swift-package-manager"><img src="https://img.shields.io/badge/SPM-compatible-orange.svg" alt="SPM Compatible"></a> <img src="https://img.shields.io/badge/Platforms-macOS%20%7C%20Linux%20%7C%20iOS%20%7C%20watchOS%20%7C%20tvOS-blue.svg" alt="Platforms"></p>
+
+<p><a href="https://travis-ci.com/bluk/decompose"><img src="https://travis-ci.com/bluk/decompose.svg?branch=master" alt="Build Status"></a></p>
+
+<p>A(nother) parser combinator library inspired mainly by <a href="https://hackage.haskell.org/package/parsec">Parsec</a> and
+a port of some of the functionality from
+<a href="https://github.com/typemeta/funcj/tree/master/parser">funcj.parser, Java parser combinator framework</a>.</p>
+<h2 id='getting-started' class='heading'>Getting Started</h2>
+
+<p>This package is intended for use with <a href="https://swift.org/package-manager/">Swift Package Manager</a>. To use in your
+own package, add the following dependency:</p>
+<pre class="highlight plaintext"><code>dependencies: [
+    .package(url: "https://github.com/bluk/decompose.git", from: "0.1.0")
+]
+</code></pre>
+<h2 id='documentation' class='heading'>Documentation</h2>
+
+<ul>
+<li><a href="https://bluk.github.io/decompose">API reference</a></li>
+</ul>
+<h2 id='development' class='heading'>Development</h2>
+
+<p>If you wish to modify this code, you can clone this repository and use
+Swift Package Manager to build and test this code.</p>
+<pre class="highlight plaintext"><code>swift build
+swift test
+</code></pre>
+
+<p>If you want to generate an Xcode project, you can run:</p>
+<pre class="highlight plaintext"><code>swift package generate-xcodeproj
+</code></pre>
+<h3 id='generate-docs' class='heading'>Generate Docs</h3>
+
+<p>To generate the documentation, you need Ruby installed, and then run:</p>
+<pre class="highlight plaintext"><code>bundle install
+swift package generate-xcodeproj
+jazzy -o docs/DecomposeCore --module "DecomposeCore" --module-version latest -g https://github.com/bluk/decompose
+jazzy -o docs/DecomposeOperators --module "DecomposeOperators" --module-version latest -g https://github.com/bluk/decompose
+</code></pre>
+<h2 id='related-links' class='heading'>Related Links</h2>
+
+<ul>
+<li><a href="https://hackage.haskell.org/package/parsec">Parsec</a></li>
+<li><a href="https://www.microsoft.com/en-us/research/people/daan/#!publications">Parsec: Direct Style Monadic Parser Combinators for the Real World</a></li>
+<li><a href="https://en.wikibooks.org/wiki/Haskell/do_notation">Haskell/do notation</a></li>
+<li><a href="https://github.com/Geal/nom/">Nom, Rust parser combinator framework</a></li>
+<li><a href="https://github.com/jon-hanson/parsecj/">ParsecJ: Java monadic parser combinator framework for constructing LL(1) parsers</a></li>
+<li><a href="https://github.com/typemeta/funcj/tree/master/parser">funcj.parser, Java parser combinator framework</a></li>
+<li><a href="https://www.objc.io/books/functional-swift/">Functional Swift</a></li>
+</ul>
+<h2 id='license' class='heading'>License</h2>
+
+<p><a href="https://github.com/bluk/decompose/blob/master/LICENSE">Apache-2.0 License</a></p>
+
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2018 <a class="link" href="" target="_blank" rel="external"></a>. All rights reserved. (Last updated: 2018-09-13)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</div>
+</html>

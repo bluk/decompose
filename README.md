@@ -46,7 +46,8 @@ To generate the documentation, you need Ruby installed, and then run:
 ```
 bundle install
 swift package generate-xcodeproj
-jazzy -o docs --module "Decompose" --module-version <version> -g https://github.com/bluk/decompose
+jazzy -o docs/DecomposeCore --module "DecomposeCore" --module-version latest -g https://github.com/bluk/decompose
+jazzy -o docs/DecomposeOperators --module "DecomposeOperators" --module-version latest -g https://github.com/bluk/decompose
 ```
 
 ## Related Links

@@ -3,5 +3,5 @@
 /Packages
 /*.xcodeproj
 /build
-/docs/undocumented.json
-/docs/docsets/
+/docs/**/undocumented.json
+/docs/**/docsets/
