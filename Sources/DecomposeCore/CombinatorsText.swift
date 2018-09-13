@@ -26,7 +26,7 @@ public extension Combinators {
         /// - Returns: A `Parser` which tests if the current element is a specific `Character`.
         public static func char<I>(_ value: Character) -> Parser<I, Character>
             where I.Element == Character {
-            return satisfy(conditionName: "\"\(value)\"") { $0 == value }
+            return Parser<I, Character>.satisfy(conditionName: "\"\(value)\"") { $0 == value }
         }
 
         /// Returns a `Parser` which tests if the current element is a letter.
@@ -36,10 +36,12 @@ public extension Combinators {
             where I.Element == Character {
             let characterSet = CharacterSet.letters
             #if swift(>=4.2)
-            return satisfy { $0.unicodeScalars.allSatisfy(characterSet.contains) }
+            return Parser<I, Character>.satisfy { $0.unicodeScalars.allSatisfy(characterSet.contains) }
             #else
             // https://github.com/apple/swift-evolution/blob/master/proposals/0207-containsOnly.md
-            return satisfy(conditionName: "letter") { !$0.unicodeScalars.contains { !characterSet.contains($0) } }
+            return Parser<I, Character>.satisfy(conditionName: "letter") {
+                !$0.unicodeScalars.contains { !characterSet.contains($0) }
+            }
             #endif
         }
 
@@ -50,10 +52,12 @@ public extension Combinators {
             where I.Element == Character {
             let characterSet = CharacterSet.decimalDigits
             #if swift(>=4.2)
-            return satisfy { $0.unicodeScalars.allSatisfy(characterSet.contains) }
+            return Parser<I, Character>.satisfy { $0.unicodeScalars.allSatisfy(characterSet.contains) }
             #else
             // https://github.com/apple/swift-evolution/blob/master/proposals/0207-containsOnly.md
-            return satisfy(conditionName: "digit") { !$0.unicodeScalars.contains { !characterSet.contains($0) } }
+            return Parser<I, Character>.satisfy(conditionName: "digit") {
+                !$0.unicodeScalars.contains { !characterSet.contains($0) }
+            }
             #endif
         }
 
@@ -64,11 +68,13 @@ public extension Combinators {
         /// - Returns: A `Parser` which matches a given string.
         public static func string<I>(_ value: String) -> Parser<I, String> where I.Element == Character {
             guard !value.isEmpty else {
-                return Combinators.pure("")
+                return Parser<I, String>.pure("")
             }
 
             let firstChar = value.first!
-            return symbol(firstChar).andR(string(String(value.dropFirst()))).andR(pure(value))
+            return Parser<I, String>.symbol(firstChar)
+                .andR(string(String(value.dropFirst())))
+                .andR(Parser<I, String>.pure(value))
         }
 
         /// Returns a `Parser` which matches a given string. If successful, the returned value is an empty array.
@@ -79,11 +85,13 @@ public extension Combinators {
         public static func stringEmptyReturnValue<I>(_ value: String)
             -> Parser<I, Empty> where I.Element == Character {
             guard !value.isEmpty else {
-                return Combinators.pure(Empty.empty)
+                return Parser<I, Empty>.pure(Empty.empty)
             }
 
             let firstChar = value.first!
-            return symbol(firstChar).andR(string(String(value.dropFirst()))).andR(pure(Empty.empty))
+            return Parser<I, Character>.symbol(firstChar)
+                .andR(string(String(value.dropFirst())))
+                .andR(Parser<I, Empty>.pure(Empty.empty))
         }
     }
 }

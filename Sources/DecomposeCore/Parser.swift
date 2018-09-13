@@ -43,7 +43,7 @@ public struct Parser<I, V> where I: Input, I.Element: Comparable, I.Element: Has
 
     /// A method to run the parser with an `Input`.
     public func parse(_ input: I) -> Result<I, V> {
-        let parserAndEndOfInput = self.andL(Combinators.endOfInput())
+        let parserAndEndOfInput = self.andL(Parser.endOfInput())
         if computeAcceptsEmpty() {
             return parserAndEndOfInput.computeParse(input, [Symbol.empty])
         } else if !input.isAvailable {
