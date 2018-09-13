@@ -574,6 +574,8 @@ public extension Parser {
         return parser.count(count)
     }
 
+    // swiftlint:disable cyclomatic_complexity function_body_length
+
     /// Parses a value for `count` number of times and returns an array of the values.
     ///
     /// - Parameters:
@@ -599,8 +601,30 @@ public extension Parser {
                             results.append(value)
                             remainingInput = remainingInput2
                         }
+                    } else if self.computeAcceptsEmpty() {
+                        let result = self.computeParse(remainingInput, followSetSymbols)
+                        switch result {
+                        case let .failure(remainingInput, symbols):
+                            return Result<I, [V]>.failure(remainingInput, symbols)
+                        case let .failureUnavailableInput(remainingInput, symbols):
+                            return Result<I, [V]>.failureUnavailableInput(remainingInput, symbols)
+                        case let .success(remainingInput2, value):
+                            results.append(value)
+                            remainingInput = remainingInput2
+                        }
                     } else {
                         return Result.failure(remainingInput, self.computeFirstSetSymbols())
+                    }
+                } else if self.computeAcceptsEmpty() {
+                    let result = self.computeParse(remainingInput, followSetSymbols)
+                    switch result {
+                    case let .failure(remainingInput, symbols):
+                        return Result<I, [V]>.failure(remainingInput, symbols)
+                    case let .failureUnavailableInput(remainingInput, symbols):
+                        return Result<I, [V]>.failureUnavailableInput(remainingInput, symbols)
+                    case let .success(remainingInput2, value):
+                        results.append(value)
+                        remainingInput = remainingInput2
                     }
                 } else {
                     return Result<I, [V]>.failureUnavailableInput(remainingInput, self.computeFirstSetSymbols())
@@ -610,6 +634,7 @@ public extension Parser {
             return Result.success(remainingInput, results)
         }
     }
+    // swiftlint:enable cyclomatic_complexity function_body_length
 
     /// Parses zero or more values separated by and ends with a separator and returns an array of the parsed values.
     ///
@@ -712,6 +737,8 @@ public extension Parser {
         return parser.manyTill(parserEnd)
     }
 
+    // swiftlint:disable cyclomatic_complexity function_body_length
+
     /// Parses `parserV` zero or more times until `parserEnd` is encountered, and returns an array of the `parserV`
     /// values.
     ///
@@ -732,7 +759,8 @@ public extension Parser {
 
             repeat {
                 if let currentValue = remainingInput.current(), remainingInput.isAvailable {
-                    if parserEnd.computeFirstSetSymbols().contains(where: { $0.matches(currentValue) }) {
+                    if parserEnd.computeFirstSetSymbols().contains(where: { $0.matches(currentValue) }) ||
+                        parserEnd.computeAcceptsEmpty() {
                         let result = parserEnd.computeParse(remainingInput, followSetSymbolsManyTill)
                         switch result {
                         case let .failure(remainingInput, symbols):
@@ -753,15 +781,34 @@ public extension Parser {
                             results.append(value)
                             remainingInput = remainingInput2
                         }
+                    } else if self.computeAcceptsEmpty() {
+                        // Should not occur
+                        assert(false, "Parser should not accept empty in manyTill.")
+                        return Result<I, [V]>.failure(remainingInput, followSetSymbolsManyTill)
                     } else {
                         return Result<I, [V]>.failure(remainingInput, followSetSymbolsManyTill)
                     }
+                } else if parserEnd.computeAcceptsEmpty() {
+                    let result = parserEnd.computeParse(remainingInput, followSetSymbolsManyTill)
+                    switch result {
+                    case let .failure(remainingInput, symbols):
+                        return Result<I, [V]>.failure(remainingInput, symbols)
+                    case let .failureUnavailableInput(remainingInput, symbols):
+                        return Result<I, [V]>.failureUnavailableInput(remainingInput, symbols)
+                    case let .success(remainingInput2, _):
+                        return Result.success(remainingInput2, results)
+                    }
+                } else if self.computeAcceptsEmpty() {
+                    // Should not occur
+                    assert(false, "Parser should not accept empty in manyTill.")
+                    return Result<I, [V]>.failure(remainingInput, followSetSymbolsManyTill)
                 } else {
                     return Result<I, [V]>.failureUnavailableInput(remainingInput, parserEnd.computeFirstSetSymbols())
                 }
             } while true
         }
     }
+    // swiftlint:enable cyclomatic_complexity function_body_length
 
     /// Instantiates a `Parser` which constructs its real parser via a function.
     ///
@@ -912,6 +959,8 @@ public extension Parser {
             })
     }
 
+    // swiftlint:disable cyclomatic_complexity function_body_length
+
     /// Returns a `Parser` which iterates over the array parameter of `Parser`s and collects their results in
     /// an array.
     ///
@@ -949,8 +998,30 @@ public extension Parser {
                             case let .failureUnavailableInput(remainingInput, expectedSymbols):
                                 return Result.failureUnavailableInput(remainingInput, expectedSymbols)
                             }
+                        } else if parser.computeAcceptsEmpty() {
+                            let result = parser.computeParse(remainingInput, followSetSymbols)
+                            switch result {
+                            case let .failure(remainingInput, symbols):
+                                return Result<I, [V]>.failure(remainingInput, symbols)
+                            case let .failureUnavailableInput(remainingInput, symbols):
+                                return Result<I, [V]>.failureUnavailableInput(remainingInput, symbols)
+                            case let .success(remainingInput2, value):
+                                remainingInput = remainingInput2
+                                results.append(value)
+                            }
                         } else {
                             return Result.failure(remainingInput, parser.computeFirstSetSymbols())
+                        }
+                    } else if parser.computeAcceptsEmpty() {
+                        let result = parser.computeParse(remainingInput, followSetSymbols)
+                        switch result {
+                        case let .failure(remainingInput, symbols):
+                            return Result<I, [V]>.failure(remainingInput, symbols)
+                        case let .failureUnavailableInput(remainingInput, symbols):
+                            return Result<I, [V]>.failureUnavailableInput(remainingInput, symbols)
+                        case let .success(remainingInput2, value):
+                            remainingInput = remainingInput2
+                            results.append(value)
                         }
                     } else {
                         return Result.failureUnavailableInput(remainingInput, parser.computeFirstSetSymbols())
@@ -959,6 +1030,9 @@ public extension Parser {
                 return Result.success(remainingInput, results)
             })
     }
+    // swiftlint:enable cyclomatic_complexity function_body_length
+
+    // swiftlint:disable cyclomatic_complexity function_body_length
 
     /// Returns a `Parser` which iterates over the array parameter of `Parser`s, transforms the results, and collects
     /// the results in an array.
@@ -999,8 +1073,30 @@ public extension Parser {
                             case let .failureUnavailableInput(remainingInput, expectedSymbols):
                                 return Result.failureUnavailableInput(remainingInput, expectedSymbols)
                             }
+                        } else if parser.computeAcceptsEmpty() {
+                            let result = parser.computeParse(remainingInput, followSetSymbols)
+                            switch result {
+                            case let .failure(remainingInput, symbols):
+                                return Result<I, [V2]>.failure(remainingInput, symbols)
+                            case let .failureUnavailableInput(remainingInput, symbols):
+                                return Result<I, [V2]>.failureUnavailableInput(remainingInput, symbols)
+                            case let .success(remainingInput2, value):
+                                remainingInput = remainingInput2
+                                results.append(func1(value))
+                            }
                         } else {
                             return Result.failure(remainingInput, parser.computeFirstSetSymbols())
+                        }
+                    } else if parser.computeAcceptsEmpty() {
+                        let result = parser.computeParse(remainingInput, followSetSymbols)
+                        switch result {
+                        case let .failure(remainingInput, symbols):
+                            return Result<I, [V2]>.failure(remainingInput, symbols)
+                        case let .failureUnavailableInput(remainingInput, symbols):
+                            return Result<I, [V2]>.failureUnavailableInput(remainingInput, symbols)
+                        case let .success(remainingInput2, value):
+                            remainingInput = remainingInput2
+                            results.append(func1(value))
                         }
                     } else {
                         return Result.failureUnavailableInput(remainingInput, parser.computeFirstSetSymbols())
@@ -1009,6 +1105,8 @@ public extension Parser {
                 return Result.success(remainingInput, results)
             })
     }
+    // swiftlint:enable cyclomatic_complexity function_body_length
+
 }
 
 // swiftlint:enable file_length

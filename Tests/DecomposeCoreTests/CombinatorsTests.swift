@@ -243,6 +243,34 @@ internal final class CombinatorsTests: XCTestCase {
         XCTAssertEqual(remainingInput.position, 3)
     }
 
+    func testManySuccessWithAcceptEmptyParser() {
+        let manyParser: Parser<StringInput, [Character]> = Combinators.many(Combinators.pure("o"))
+        let input = StringInput("")
+
+        let result = manyParser.parse(input)
+        guard case let .success(remainingInput, value) = result else {
+            XCTFail("Expected parse to be successful.")
+            return
+        }
+        XCTAssertEqual(value, [])
+        XCTAssertEqual(remainingInput.position, 0)
+    }
+
+    func testManySuccessWithAcceptEmptyParserFollowedByParser() {
+        let manyParser: Parser<StringInput, [[Character]]> = Combinators.sequence(
+            [Combinators.pure("o").many(), Combinators.symbol("b").many()]
+        )
+        let input = StringInput("b")
+
+        let result = manyParser.parse(input)
+        guard case let .success(remainingInput, value) = result else {
+            XCTFail("Expected parse to be successful.")
+            return
+        }
+        XCTAssertEqual(value, [[], ["b"]])
+        XCTAssertEqual(remainingInput.position, 1)
+    }
+
     func testManySuccessWithEmptyInput() {
         let manyParser: Parser<StringInput, [Character]> = Combinators.many(Combinators.symbol("o"))
         let input = StringInput("")
@@ -1098,6 +1126,38 @@ internal final class CombinatorsTests: XCTestCase {
         XCTAssertEqual(remainingInput.position, 3)
     }
 
+    func testCountSuccessWithAcceptEmptyParser() {
+        let countParser: Parser<StringInput, [Character]> = Combinators.count(
+            Combinators.pure("A"),
+            3
+        )
+        let input = StringInput("")
+
+        let result = countParser.parse(input)
+        guard case let .success(remainingInput, value) = result else {
+            XCTFail("Expected parse to be successful.")
+            return
+        }
+        XCTAssertEqual(value, ["A", "A", "A"])
+        XCTAssertEqual(remainingInput.position, 0)
+    }
+
+    func testCountSuccessWithAcceptEmptyParserInSequence() {
+        let countParser: Parser<StringInput, [[Character]]> = Combinators.sequence([
+            Combinators.count(Combinators.pure("A"), 3),
+            Combinators.count(Combinators.symbol("B"), 1)
+        ])
+        let input = StringInput("B")
+
+        let result = countParser.parse(input)
+        guard case let .success(remainingInput, value) = result else {
+            XCTFail("Expected parse to be successful.")
+            return
+        }
+        XCTAssertEqual(value, [["A", "A", "A"], ["B"]])
+        XCTAssertEqual(remainingInput.position, 1)
+    }
+
     func testCountFailureMissingCount() {
         let countParser: Parser<StringInput, [Character]> = Combinators.count(
             Combinators.Text.digit(),
@@ -1562,6 +1622,54 @@ internal final class CombinatorsTests: XCTestCase {
         XCTAssertEqual(remainingInput.position, 4)
     }
 
+    func testManyTillSuccessWithAcceptEmptyEndParser() {
+        let manyTillParser: Parser<StringInput, [Character]> = Combinators.manyTill(
+            Combinators.Text.digit(),
+            Combinators.pure("A")
+        )
+        let input = StringInput("")
+
+        let result = manyTillParser.parse(input)
+        guard case let .success(remainingInput, value) = result else {
+            XCTFail("Expected parse to be successful.")
+            return
+        }
+        XCTAssertEqual(value, [])
+        XCTAssertEqual(remainingInput.position, 0)
+    }
+
+    func testManyTillSuccessWithAcceptEmptyManyParser() {
+        let manyTillParser: Parser<StringInput, [Character]> = Combinators.manyTill(
+            Combinators.pure("A"),
+            Combinators.symbol("B")
+        )
+        let input = StringInput("B")
+
+        let result = manyTillParser.parse(input)
+        guard case let .success(remainingInput, value) = result else {
+            XCTFail("Expected parse to be successful.")
+            return
+        }
+        XCTAssertEqual(value, [])
+        XCTAssertEqual(remainingInput.position, 1)
+    }
+
+    func testManyTillSuccessWithAcceptEmptyManyAndParsers() {
+        let manyTillParser: Parser<StringInput, [Character]> = Combinators.manyTill(
+            Combinators.pure("A"),
+            Combinators.pure("B")
+        )
+        let input = StringInput("")
+
+        let result = manyTillParser.parse(input)
+        guard case let .success(remainingInput, value) = result else {
+            XCTFail("Expected parse to be successful.")
+            return
+        }
+        XCTAssertEqual(value, [])
+        XCTAssertEqual(remainingInput.position, 0)
+    }
+
     func testManyTillSuccessWithNoValues() {
         let manyTillParser: Parser<StringInput, [Character]> = Combinators.manyTill(
             Combinators.Text.digit(),
@@ -1730,6 +1838,24 @@ internal final class CombinatorsTests: XCTestCase {
         XCTAssertEqual(remainingInput.position, 2)
     }
 
+    func testSequenceSuccessWithEmptyAccept() {
+        let sequenceParser: Parser<StringInput, [Character]> = Combinators.sequence([
+            Parser<StringInput, Character>.symbol("A"),
+            Parser<StringInput, Character>.pure("B"),
+            Parser<StringInput, Character>.symbol("C"),
+            Parser<StringInput, Character>.pure("D")
+        ])
+        let input = StringInput("AC")
+
+        let result = sequenceParser.parse(input)
+        guard case let .success(remainingInput, value) = result else {
+            XCTFail("Expected parse to be successful.")
+            return
+        }
+        XCTAssertEqual(value, ["A", "B", "C", "D"])
+        XCTAssertEqual(remainingInput.position, 2)
+    }
+
     func testSequenceFailureWithParseFailure() {
         let sequenceParser: Parser<StringInput, [Character]> = Combinators.sequence([
             Parser<StringInput, Character>.symbol("A"),
@@ -1795,6 +1921,28 @@ internal final class CombinatorsTests: XCTestCase {
             return
         }
         XCTAssertEqual(value, [1, 2])
+        XCTAssertEqual(remainingInput.position, 2)
+    }
+
+    func testTraverseSuccessWithEmptyAccept() {
+        let traverseParser: Parser<StringInput, [Int]> = Combinators.traverse(
+            [
+                Parser<StringInput, Character>.symbol("1"),
+                Parser<StringInput, Character>.pure("2"),
+                Parser<StringInput, Character>.symbol("3"),
+                Parser<StringInput, Character>.pure("4")
+            ], { value in
+                Int(String(value))!
+            }
+        )
+        let input = StringInput("13")
+
+        let result = traverseParser.parse(input)
+        guard case let .success(remainingInput, value) = result else {
+            XCTFail("Expected parse to be successful.")
+            return
+        }
+        XCTAssertEqual(value, [1, 2, 3, 4])
         XCTAssertEqual(remainingInput.position, 2)
     }
 
@@ -1874,6 +2022,8 @@ internal final class CombinatorsTests: XCTestCase {
         ("testEndOfInputSuccess", testEndOfInputSuccess),
         ("testEndOfInputFailure", testEndOfInputFailure),
         ("testManySuccess", testManySuccess),
+        ("testManySuccessWithAcceptEmptyParser", testManySuccessWithAcceptEmptyParser),
+        ("testManySuccessWithAcceptEmptyParserFollowedByParser", testManySuccessWithAcceptEmptyParserFollowedByParser),
         ("testManySuccessWithEmptyInput", testManySuccessWithEmptyInput),
         ("testManyFailure", testManyFailure),
         ("testMany1Success", testMany1Success),
@@ -1926,6 +2076,8 @@ internal final class CombinatorsTests: XCTestCase {
         ("testBetweenFailureOnMissingClose", testBetweenFailureOnMissingClose),
         ("testBetweenFailure", testBetweenFailure),
         ("testCountSuccess", testCountSuccess),
+        ("testCountSuccessWithAcceptEmptyParser", testCountSuccessWithAcceptEmptyParser),
+        ("testCountSuccessWithAcceptEmptyParserInSequence", testCountSuccessWithAcceptEmptyParserInSequence),
         ("testCountFailureMissingCount", testCountFailureMissingCount),
         ("testCountFailureWithParse", testCountFailureWithParse),
         ("testCountFailureWithParseButSameCount", testCountFailureWithParseButSameCount),
@@ -1955,6 +2107,9 @@ internal final class CombinatorsTests: XCTestCase {
         ("testSepEndBy1FailureWithSeparator", testSepEndBy1FailureWithSeparator),
         ("testSepEndBy1Failure", testSepEndBy1Failure),
         ("testManyTillSuccess", testManyTillSuccess),
+        ("testManyTillSuccessWithAcceptEmptyEndParser", testManyTillSuccessWithAcceptEmptyEndParser),
+        ("testManyTillSuccessWithAcceptEmptyManyParser", testManyTillSuccessWithAcceptEmptyManyParser),
+        ("testManyTillSuccessWithAcceptEmptyManyAndParsers", testManyTillSuccessWithAcceptEmptyManyAndParsers),
         ("testManyTillSuccessWithNoValues", testManyTillSuccessWithNoValues),
         ("testManyTillFailureWithNoEndValue", testManyTillFailureWithNoEndValue),
         ("testManyTillFailureWithUnexpectedInput", testManyTillFailureWithUnexpectedInput),
@@ -1967,14 +2122,15 @@ internal final class CombinatorsTests: XCTestCase {
         ("testNoneOfFailure", testNoneOfFailure),
         ("testNoneOfFailureWithUnavailableInput", testNoneOfFailureWithUnavailableInput),
         ("testSequenceSuccess", testSequenceSuccess),
+        ("testSequenceSuccessWithEmptyAccept", testSequenceSuccessWithEmptyAccept),
         ("testSequenceFailureWithParseFailure", testSequenceFailureWithParseFailure),
         ("testSequenceFailureWithUnavailableInput", testSequenceFailureWithUnavailableInput),
         ("testSequenceFailureWithMissingSequence", testSequenceFailureWithMissingSequence),
         ("testTraverseSuccess", testTraverseSuccess),
+        ("testTraverseSuccessWithEmptyAccept", testTraverseSuccessWithEmptyAccept),
         ("testTraverseFailureWithParseFailure", testTraverseFailureWithParseFailure),
         ("testTraverseFailureWithUnavailableInput", testTraverseFailureWithUnavailableInput),
         ("testTraverseFailureWithMissingSequence", testTraverseFailureWithMissingSequence)
-
     ]
 }
 // swiftlint:enable type_body_length file_length
