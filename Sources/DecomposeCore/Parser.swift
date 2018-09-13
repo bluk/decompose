@@ -199,14 +199,20 @@ public extension Parser {
                     }
                 }
 
-                return Result.failure(input, self.computeFirstSetSymbols())
+                return Result.failure(
+                    input,
+                    self.computeFirstSetSymbols().union(parser2.computeFirstSetSymbols()).union(followSetSymbols)
+                )
             } else {
                 if self.computeAcceptsEmpty() {
                     return self.computeParse(input, followSetSymbols)
                 } else if parser2.computeAcceptsEmpty() {
                     return parser2.computeParse(input, followSetSymbols)
                 } else {
-                    return Result.failureUnavailableInput(input, self.computeFirstSetSymbols())
+                    return Result.failureUnavailableInput(
+                        input,
+                        self.computeFirstSetSymbols().union(parser2.computeFirstSetSymbols()).union(followSetSymbols)
+                    )
                 }
             }
         }
@@ -265,7 +271,10 @@ public extension Parser {
                     }
                 }
 
-                return Result.failure(input, self.computeFirstSetSymbols())
+                let possibleSymbols = parsers.reduce(self.computeFirstSetSymbols(), { result, parser in
+                    result.union(parser.computeFirstSetSymbols())
+                })
+                return Result.failure(input, possibleSymbols.union(followSetSymbols))
             } else {
                 if self.computeAcceptsEmpty() {
                     return self.computeParse(input, followSetSymbols)
@@ -276,7 +285,11 @@ public extension Parser {
                         }
                     }
                 }
-                return Result.failureUnavailableInput(input, self.computeFirstSetSymbols())
+
+                let possibleSymbols = parsers.reduce(self.computeFirstSetSymbols(), { result, parser in
+                    result.union(parser.computeFirstSetSymbols())
+                })
+                return Result.failureUnavailableInput(input, possibleSymbols.union(followSetSymbols))
             }
         }
     }

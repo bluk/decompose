@@ -13,7 +13,8 @@
 //  limitations under the License.
 
 /// Possible next symbols that can be accepted from the `Input`.
-public enum Symbol<E>: Comparable, Hashable where E: Comparable, E: Hashable {
+public enum Symbol<E>: Comparable, Hashable, CustomDebugStringConvertible
+    where E: Comparable, E: Hashable {
 
     #if swift(>=4.2)
     public func hash(into hasher: inout Hasher) {
@@ -132,6 +133,19 @@ public enum Symbol<E>: Comparable, Hashable where E: Comparable, E: Hashable {
             return true
         case .empty:
             return false
+        }
+    }
+
+    public var debugDescription: String {
+        switch self {
+        case .all:
+            return "all"
+        case .empty:
+            return "empty"
+        case let .value(value):
+            return "value(\(value))"
+        case let .predicate(name, _):
+            return "predicate(id: \(name))"
         }
     }
 }

@@ -963,7 +963,7 @@ internal final class CombinatorsTests: XCTestCase {
             XCTFail("Expected parse to fail.")
             return
         }
-        XCTAssertEqual(expectedSymbols, [Symbol.predicate(name: "digit", { _ in true })])
+        XCTAssertEqual(expectedSymbols, [Symbol.predicate(name: "digit", { _ in true }), Symbol.empty])
         XCTAssertEqual(remainingInput.position, 0)
     }
 
@@ -979,7 +979,7 @@ internal final class CombinatorsTests: XCTestCase {
             XCTFail("Expected parse to fail.")
             return
         }
-        XCTAssertEqual(expectedSymbols, [Symbol.predicate(name: "digit", { _ in true })])
+        XCTAssertEqual(expectedSymbols, [Symbol.predicate(name: "digit", { _ in true }), Symbol.empty])
         XCTAssertEqual(remainingInput.position, 0)
     }
 
@@ -1352,7 +1352,7 @@ internal final class CombinatorsTests: XCTestCase {
             XCTFail("Expected parse to fail.")
             return
         }
-        XCTAssertEqual(expectedSymbols, [Symbol.predicate(name: "digit", { _ in true })])
+        XCTAssertEqual(expectedSymbols, [Symbol.predicate(name: "digit", { _ in true }), Symbol.empty])
         XCTAssertEqual(remainingInput.position, 0)
     }
 
@@ -1368,7 +1368,7 @@ internal final class CombinatorsTests: XCTestCase {
             XCTFail("Expected parse to fail.")
             return
         }
-        XCTAssertEqual(expectedSymbols, [Symbol.predicate(name: "digit", { _ in true })])
+        XCTAssertEqual(expectedSymbols, [Symbol.predicate(name: "digit", { _ in true }), Symbol.empty])
         XCTAssertEqual(remainingInput.position, 0)
     }
 
@@ -1544,7 +1544,7 @@ internal final class CombinatorsTests: XCTestCase {
             XCTFail("Expected parse to fail.")
             return
         }
-        XCTAssertEqual(expectedSymbols, [Symbol.predicate(name: "digit", { _ in true })])
+        XCTAssertEqual(expectedSymbols, [Symbol.predicate(name: "digit", { _ in true }), Symbol.empty])
         XCTAssertEqual(remainingInput.position, 0)
     }
 
@@ -1560,7 +1560,7 @@ internal final class CombinatorsTests: XCTestCase {
             XCTFail("Expected parse to fail.")
             return
         }
-        XCTAssertEqual(expectedSymbols, [Symbol.predicate(name: "digit", { _ in true })])
+        XCTAssertEqual(expectedSymbols, [Symbol.predicate(name: "digit", { _ in true }), Symbol.empty])
         XCTAssertEqual(remainingInput.position, 0)
     }
 
