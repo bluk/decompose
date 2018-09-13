@@ -180,8 +180,7 @@ public extension Parser {
             acceptsEmpty: self.computeAcceptsEmpty() || parser2.computeAcceptsEmpty(),
             firstSetSymbols: self.computeFirstSetSymbols().union(parser2.computeFirstSetSymbols())
         ) { input, followSetSymbols in
-            if input.isAvailable {
-                let currentValue = input.current()!
+            if let currentValue = input.current(), input.isAvailable {
                 if self.computeFirstSetSymbols().contains(where: { $0.matches(currentValue) }) {
                     return self.computeParse(input, followSetSymbols)
                 }
@@ -600,6 +599,8 @@ public extension Parser {
                             results.append(value)
                             remainingInput = remainingInput2
                         }
+                    } else {
+                        return Result.failure(remainingInput, self.computeFirstSetSymbols())
                     }
                 } else {
                     return Result<I, [V]>.failureUnavailableInput(remainingInput, self.computeFirstSetSymbols())

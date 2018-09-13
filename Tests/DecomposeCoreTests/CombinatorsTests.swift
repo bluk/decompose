@@ -1130,6 +1130,22 @@ internal final class CombinatorsTests: XCTestCase {
         XCTAssertEqual(remainingInput.position, 0)
     }
 
+    func testCountFailureWithParseButSameCount() {
+        let countParser: Parser<StringInput, [Character]> = Combinators.count(
+            Combinators.symbol("1"),
+            3
+        )
+        let input = StringInput("11C")
+
+        let result = countParser.parse(input)
+        guard case let .failure(remainingInput, expectedSymbols) = result else {
+            XCTFail("Expected parse to fail.")
+            return
+        }
+        XCTAssertEqual(expectedSymbols, [Symbol.value("1")])
+        XCTAssertEqual(remainingInput.position, 2)
+    }
+
     func testCountFailureWithMoreInput() {
         let countParser: Parser<StringInput, [Character]> = Combinators.count(
             Combinators.Text.digit(),
@@ -1678,7 +1694,7 @@ internal final class CombinatorsTests: XCTestCase {
 
         let result = noneOfParser.parse(input)
         guard case let .failure(remainingInput, expectedSymbols) = result else {
-            XCTFail("Expected parse to be successful.")
+            XCTFail("Expected parse to fail.")
             return
         }
         XCTAssertEqual(expectedSymbols, [Symbol.predicate(name: "none of A, B", { _ in true })])
@@ -1691,7 +1707,7 @@ internal final class CombinatorsTests: XCTestCase {
 
         let result = noneOfParser.parse(input)
         guard case let .failureUnavailableInput(remainingInput, expectedSymbols) = result else {
-            XCTFail("Expected parse to be successful.")
+            XCTFail("Expected parse to fail.")
             return
         }
         XCTAssertEqual(expectedSymbols, [Symbol.predicate(name: "none of A, B", { _ in true })])
@@ -1768,6 +1784,7 @@ internal final class CombinatorsTests: XCTestCase {
         ("testCountSuccess", testCountSuccess),
         ("testCountFailureMissingCount", testCountFailureMissingCount),
         ("testCountFailureWithParse", testCountFailureWithParse),
+        ("testCountFailureWithParseButSameCount", testCountFailureWithParseButSameCount),
         ("testCountFailureWithMoreInput", testCountFailureWithMoreInput),
         ("testEndBySuccess", testEndBySuccess),
         ("testEndByFailureWithOnlyValue", testEndByFailureWithOnlyValue),
