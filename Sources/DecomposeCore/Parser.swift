@@ -64,7 +64,7 @@ public extension Parser {
     /// - Parameters:
     ///     - value: The value to return from the `Parser`.
     /// - Returns: A `Parser` which returns the value parameter and does not advanced the `Input`.
-    public static func pure<I, V>(_ value: V) -> Parser<I, V> {
+    public static func pure(_ value: V) -> Parser<I, V> {
         return Parser<I, V>(acceptsEmpty: true, firstSetSymbols: [Symbol.empty]) { input, _ in
             Result.success(input, value)
         }
@@ -321,7 +321,7 @@ public extension Parser {
     /// - Parameters:
     ///     - parser: The Parser to invoke.
     /// - Returns: A `Parser` which invokes the `parser` parameter zero or more times.
-    public static func many<I, V>(_ parser: Parser<I, V>) -> Parser<I, [V]> {
+    public static func many(_ parser: Parser<I, V>) -> Parser<I, [V]> {
         return parser.many()
     }
 
@@ -421,7 +421,7 @@ public extension Parser {
     ///
     /// - Returns: A `Parser` which if it succeeds, return the value, but if it fails, return nil.
     public func optionOptional() -> Parser<I, V?> {
-        return map({ Optional($0) }).or(Parser.pure(nil))
+        return map({ Optional($0) }).or(Parser<I, V?>.pure(nil))
     }
 
     /// Returns a `Parser` which attempts the parser parameter and if it succeeds or not, return an `Empty.empty`.
@@ -437,7 +437,7 @@ public extension Parser {
     ///
     /// - Returns: A `Parser` which if it succeeds or not, return an `Empty.empty`.
     public func optional() -> Parser<I, Empty> {
-        return self.map({ _ in Empty.empty }).or(Parser.pure(Empty.empty))
+        return self.map({ _ in Empty.empty }).or(Parser<I, Empty>.pure(Empty.empty))
     }
 
     /// Returns a `Parser` which attempts the parser parameter and if it succeeds, return the value, but if it fails,
@@ -598,7 +598,7 @@ public extension Parser {
     /// - Returns: A `Parser` which parses zero or more values separated by a separator and returns an array of the
     ///            parsed values.
     public func sepBy<S>(_ parserSep: Parser<I, S>) -> Parser<I, [V]> {
-        return self.sepBy1(parserSep).or(Parser.pure([]))
+        return self.sepBy1(parserSep).or(Parser<I, [V]>.pure([]))
     }
 
     /// Parses one or more values separated by a separator and returns an array of the parsed values.
@@ -738,7 +738,7 @@ public extension Parser {
     /// - Returns: A `Parser` which parses zero or more values separated by and ends with a separator and returns an
     ///            array of the parsed values.
     public func endBy<S>(_ parserSep: Parser<I, S>) -> Parser<I, [V]> {
-        return self.endBy1(parserSep).or(Parser.pure([]))
+        return self.endBy1(parserSep).or(Parser<I, [V]>.pure([]))
     }
 
     /// Parses one or more values separated by and ends with a separator and returns an array of the parsed values.
@@ -782,7 +782,7 @@ public extension Parser {
     /// - Returns: A `Parser` which parses zero or more values separated by and optionally ends with a separator and
     ///            returns an array of the parsed values.
     public func sepEndBy<S>(_ parserSep: Parser<I, S>) -> Parser<I, [V]> {
-        return self.sepEndBy1(parserSep).or(Parser.pure([]))
+        return self.sepEndBy1(parserSep).or(Parser<I, [V]>.pure([]))
     }
 
     /// Parses one or more values separated by and optionally ends with a separator and returns an array of the parsed

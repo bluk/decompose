@@ -20,7 +20,7 @@ import XCTest
 internal final class CombinatorsTests: XCTestCase {
 
     func testPure() {
-        let result = Parser<StringInput, Character>.pure("Hello, World!").computeParse(StringInput("A"), [Symbol.empty])
+        let result = Parser.pure("Hello, World!").computeParse(StringInput("A"), [Symbol.empty])
 
         guard case let .success(remainingInput, value) = result else {
             XCTFail("Expected parse to be successful.")
@@ -285,7 +285,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testManySuccess() {
-        let manyParser: Parser<StringInput, [Character]> = Combinators.many(Parser<StringInput, Character>.symbol("o"))
+        let manyParser = Parser.many(Parser<StringInput, Character>.symbol("o"))
         let input = StringInput("ooo")
 
         let result = manyParser.parse(input)
@@ -298,7 +298,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testManySuccessWithAcceptEmptyParser() {
-        let manyParser: Parser<StringInput, [Character]> = Combinators.many(Parser<StringInput, Character>.pure("o"))
+        let manyParser = Parser.many(Parser<StringInput, Character>.pure("o"))
         let input = StringInput("")
 
         let result = manyParser.parse(input)
@@ -326,7 +326,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testManySuccessWithEmptyInput() {
-        let manyParser: Parser<StringInput, [Character]> = Combinators.many(Parser<StringInput, Character>.symbol("o"))
+        let manyParser: Parser<StringInput, [Character]> = Parser.many(Parser<StringInput, Character>.symbol("o"))
         let input = StringInput("")
 
         let result = manyParser.parse(input)
@@ -339,7 +339,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testManyFailure() {
-        let manyParser: Parser<StringInput, [Character]> = Combinators.many(Parser<StringInput, Character>.symbol("o"))
+        let manyParser: Parser<StringInput, [Character]> = Parser.many(Parser<StringInput, Character>.symbol("o"))
         let input = StringInput("ooh")
 
         let result = manyParser.parse(input)
@@ -565,8 +565,8 @@ internal final class CombinatorsTests: XCTestCase {
             _ in { value1 in { value2 in value2 - value1 } }
         }
         let chainrParser: Parser<StringInput, Int> = Combinators.chainr(
-            Combinators.apply(Parser<StringInput, Character>.pure(intFunc), Combinators.Text.digit()),
-            Combinators.apply(Parser<StringInput, Character>.pure(subtractFunc), Parser<StringInput, Character>.symbol("-")),
+            Combinators.apply(Parser.pure(intFunc), Combinators.Text.digit()),
+            Combinators.apply(Parser.pure(subtractFunc), Parser<StringInput, Character>.symbol("-")),
             Int.min
         )
         let input = StringInput("4-2-1")
@@ -586,8 +586,8 @@ internal final class CombinatorsTests: XCTestCase {
             _ in { value1 in { value2 in value2 - value1 } }
         }
         let chainrParser: Parser<StringInput, Int> = Combinators.chainr(
-            Combinators.apply(Parser<StringInput, Character>.pure(intFunc), Combinators.Text.digit()),
-            Combinators.apply(Parser<StringInput, Character>.pure(subtractFunc), Parser<StringInput, Character>.symbol("-")),
+            Combinators.apply(Parser.pure(intFunc), Combinators.Text.digit()),
+            Combinators.apply(Parser.pure(subtractFunc), Parser<StringInput, Character>.symbol("-")),
             Int.min
         )
         let input = StringInput("4")
@@ -607,8 +607,8 @@ internal final class CombinatorsTests: XCTestCase {
             _ in { value1 in { value2 in value2 - value1 } }
         }
         let chainrParser: Parser<StringInput, Int> = Combinators.chainr(
-            Combinators.apply(Parser<StringInput, Character>.pure(intFunc), Combinators.Text.digit()),
-            Combinators.apply(Parser<StringInput, Character>.pure(subtractFunc), Parser<StringInput, Character>.symbol("-")),
+            Combinators.apply(Parser.pure(intFunc), Combinators.Text.digit()),
+            Combinators.apply(Parser.pure(subtractFunc), Parser<StringInput, Character>.symbol("-")),
             Int.min
         )
         let input = StringInput("")
@@ -628,8 +628,8 @@ internal final class CombinatorsTests: XCTestCase {
             _ in { value1 in { value2 in value2 - value1 } }
         }
         let chainrParser: Parser<StringInput, Int> = Combinators.chainr(
-            Combinators.apply(Parser<StringInput, Character>.pure(intFunc), Combinators.Text.digit()),
-            Combinators.apply(Parser<StringInput, Character>.pure(subtractFunc), Parser<StringInput, Character>.symbol("-")),
+            Combinators.apply(Parser.pure(intFunc), Combinators.Text.digit()),
+            Combinators.apply(Parser.pure(subtractFunc), Parser<StringInput, Character>.symbol("-")),
             Int.min
         )
         let input = StringInput("-4")
@@ -649,8 +649,8 @@ internal final class CombinatorsTests: XCTestCase {
             _ in { value1 in { value2 in value2 - value1 } }
         }
         let chainr1Parser: Parser<StringInput, Int> = Combinators.chainr1(
-            Combinators.apply(Parser<StringInput, Character>.pure(intFunc), Combinators.Text.digit()),
-            Combinators.apply(Parser<StringInput, Character>.pure(subtractFunc), Parser<StringInput, Character>.symbol("-"))
+            Combinators.apply(Parser.pure(intFunc), Combinators.Text.digit()),
+            Combinators.apply(Parser.pure(subtractFunc), Parser<StringInput, Character>.symbol("-"))
         )
         let input = StringInput("4-2-1")
 
@@ -669,8 +669,8 @@ internal final class CombinatorsTests: XCTestCase {
             _ in { value1 in { value2 in value2 - value1 } }
         }
         let chainr1Parser: Parser<StringInput, Int> = Combinators.chainr1(
-            Combinators.apply(Parser<StringInput, Character>.pure(intFunc), Combinators.Text.digit()),
-            Combinators.apply(Parser<StringInput, Character>.pure(subtractFunc), Parser<StringInput, Character>.symbol("-"))
+            Combinators.apply(Parser.pure(intFunc), Combinators.Text.digit()),
+            Combinators.apply(Parser.pure(subtractFunc), Parser<StringInput, Character>.symbol("-"))
         )
         let input = StringInput("4")
 
@@ -689,8 +689,8 @@ internal final class CombinatorsTests: XCTestCase {
             _ in { value1 in { value2 in value2 - value1 } }
         }
         let chainr1Parser: Parser<StringInput, Int> = Combinators.chainr1(
-            Combinators.apply(Parser<StringInput, Character>.pure(intFunc), Combinators.Text.digit()),
-            Combinators.apply(Parser<StringInput, Character>.pure(subtractFunc), Parser<StringInput, Character>.symbol("-"))
+            Combinators.apply(Parser.pure(intFunc), Combinators.Text.digit()),
+            Combinators.apply(Parser.pure(subtractFunc), Parser<StringInput, Character>.symbol("-"))
         )
         let input = StringInput("")
 
@@ -709,8 +709,8 @@ internal final class CombinatorsTests: XCTestCase {
             _ in { value1 in { value2 in value2 - value1 } }
         }
         let chainr1Parser: Parser<StringInput, Int> = Combinators.chainr1(
-            Combinators.apply(Parser<StringInput, Character>.pure(intFunc), Combinators.Text.digit()),
-            Combinators.apply(Parser<StringInput, Character>.pure(subtractFunc), Parser<StringInput, Character>.symbol("-"))
+            Combinators.apply(Parser.pure(intFunc), Combinators.Text.digit()),
+            Combinators.apply(Parser.pure(subtractFunc), Parser<StringInput, Character>.symbol("-"))
         )
         let input = StringInput("-2")
 
@@ -729,8 +729,8 @@ internal final class CombinatorsTests: XCTestCase {
             _ in { value in { value2 in value2 - value } }
         }
         let chainlParser: Parser<StringInput, Int> = Combinators.chainl(
-            Combinators.apply(Parser<StringInput, Character>.pure(intFunc), Combinators.Text.digit()),
-            Combinators.apply(Parser<StringInput, Character>.pure(subtractFunc), Parser<StringInput, Character>.symbol("-")),
+            Combinators.apply(Parser.pure(intFunc), Combinators.Text.digit()),
+            Combinators.apply(Parser.pure(subtractFunc), Parser<StringInput, Character>.symbol("-")),
             Int.min
         )
         let input = StringInput("4-2-1")
@@ -750,8 +750,8 @@ internal final class CombinatorsTests: XCTestCase {
             _ in { value1 in { value2 in value2 - value1 } }
         }
         let chainlParser: Parser<StringInput, Int> = Combinators.chainl(
-            Combinators.apply(Parser<StringInput, Character>.pure(intFunc), Combinators.Text.digit()),
-            Combinators.apply(Parser<StringInput, Character>.pure(subtractFunc), Parser<StringInput, Character>.symbol("-")),
+            Combinators.apply(Parser.pure(intFunc), Combinators.Text.digit()),
+            Combinators.apply(Parser.pure(subtractFunc), Parser<StringInput, Character>.symbol("-")),
             Int.min
         )
         let input = StringInput("4")
@@ -771,8 +771,8 @@ internal final class CombinatorsTests: XCTestCase {
             _ in { value1 in { value2 in value2 - value1 } }
         }
         let chainlParser: Parser<StringInput, Int> = Combinators.chainl(
-            Combinators.apply(Parser<StringInput, Character>.pure(intFunc), Combinators.Text.digit()),
-            Combinators.apply(Parser<StringInput, Character>.pure(subtractFunc), Parser<StringInput, Character>.symbol("-")),
+            Combinators.apply(Parser.pure(intFunc), Combinators.Text.digit()),
+            Combinators.apply(Parser.pure(subtractFunc), Parser<StringInput, Character>.symbol("-")),
             Int.min
         )
         let input = StringInput("")
@@ -792,8 +792,8 @@ internal final class CombinatorsTests: XCTestCase {
             _ in { value1 in { value2 in value2 - value1 } }
         }
         let chainlParser: Parser<StringInput, Int> = Combinators.chainl(
-            Combinators.apply(Parser<StringInput, Character>.pure(intFunc), Combinators.Text.digit()),
-            Combinators.apply(Parser<StringInput, Character>.pure(subtractFunc), Parser<StringInput, Character>.symbol("-")),
+            Combinators.apply(Parser.pure(intFunc), Combinators.Text.digit()),
+            Combinators.apply(Parser.pure(subtractFunc), Parser<StringInput, Character>.symbol("-")),
             Int.min
         )
         let input = StringInput("-4")
@@ -813,8 +813,8 @@ internal final class CombinatorsTests: XCTestCase {
             _ in { value1 in { value2 in value2 - value1 } }
         }
         let chainl1Parser: Parser<StringInput, Int> = Combinators.chainl1(
-            Combinators.apply(Parser<StringInput, Character>.pure(intFunc), Combinators.Text.digit()),
-            Combinators.apply(Parser<StringInput, Character>.pure(subtractFunc), Parser<StringInput, Character>.symbol("-"))
+            Combinators.apply(Parser.pure(intFunc), Combinators.Text.digit()),
+            Combinators.apply(Parser.pure(subtractFunc), Parser<StringInput, Character>.symbol("-"))
         )
         let input = StringInput("4-2-1")
 
@@ -833,8 +833,8 @@ internal final class CombinatorsTests: XCTestCase {
             _ in { value1 in { value2 in value2 - value1 } }
         }
         let chainl1Parser: Parser<StringInput, Int> = Combinators.chainl1(
-            Combinators.apply(Parser<StringInput, Character>.pure(intFunc), Combinators.Text.digit()),
-            Combinators.apply(Parser<StringInput, Character>.pure(subtractFunc), Parser<StringInput, Character>.symbol("-"))
+            Combinators.apply(Parser.pure(intFunc), Combinators.Text.digit()),
+            Combinators.apply(Parser.pure(subtractFunc), Parser<StringInput, Character>.symbol("-"))
         )
         let input = StringInput("4")
 
@@ -853,8 +853,8 @@ internal final class CombinatorsTests: XCTestCase {
             _ in { value1 in { value2 in value2 - value1 } }
         }
         let chainl1Parser: Parser<StringInput, Int> = Combinators.chainl1(
-            Combinators.apply(Parser<StringInput, Character>.pure(intFunc), Combinators.Text.digit()),
-            Combinators.apply(Parser<StringInput, Character>.pure(subtractFunc), Parser<StringInput, Character>.symbol("-"))
+            Combinators.apply(Parser.pure(intFunc), Combinators.Text.digit()),
+            Combinators.apply(Parser.pure(subtractFunc), Parser<StringInput, Character>.symbol("-"))
         )
         let input = StringInput("")
 
@@ -873,8 +873,8 @@ internal final class CombinatorsTests: XCTestCase {
             _ in { value1 in { value2 in value2 - value1 } }
         }
         let chainl1Parser: Parser<StringInput, Int> = Combinators.chainl1(
-            Combinators.apply(Parser<StringInput, Character>.pure(intFunc), Combinators.Text.digit()),
-            Combinators.apply(Parser<StringInput, Character>.pure(subtractFunc), Parser<StringInput, Character>.symbol("-"))
+            Combinators.apply(Parser.pure(intFunc), Combinators.Text.digit()),
+            Combinators.apply(Parser.pure(subtractFunc), Parser<StringInput, Character>.symbol("-"))
         )
         let input = StringInput("-2")
 

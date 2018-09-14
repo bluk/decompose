@@ -30,15 +30,6 @@ public enum Combinators {
         return parser1.apply(parser2)
     }
 
-    /// Returns a `Parser` which invokes the `parser` parameter zero or more times.
-    ///
-    /// - Parameters:
-    ///     - parser: The Parser to invoke.
-    /// - Returns: A `Parser` which invokes the `parser` parameter zero or more times.
-    public static func many<I, V>(_ parser: Parser<I, V>) -> Parser<I, [V]> {
-        return parser.many()
-    }
-
     /// Returns a `Parser` which invokes the `parser` parameter one or more times.
     ///
     /// - Parameters:
