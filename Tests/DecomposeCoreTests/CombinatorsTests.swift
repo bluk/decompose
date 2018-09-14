@@ -57,7 +57,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testSatisfySuccess() {
-        let matchesF: Parser<StringInput, Character> = Combinators.satisfy(conditionName: "f") { $0 == "f" }
+        let matchesF = Parser<StringInput, Character>.satisfy(conditionName: "f") { $0 == "f" }
         let input = StringInput("f")
 
         let result = matchesF.parse(input)
@@ -71,7 +71,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testSatisfyFailure() {
-        let matchesF: Parser<StringInput, Character> = Combinators.satisfy(conditionName: "f") { $0 == "f" }
+        let matchesF = Parser<StringInput, Character>.satisfy(conditionName: "f") { $0 == "f" }
         let input = StringInput("bar")
 
         let result = matchesF.parse(input)
@@ -245,7 +245,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testFailSuccess() {
-        let fail: Parser<StringInput, Character> = Combinators.fail()
+        let fail: Parser<StringInput, Character> = Parser.fail()
         let input = StringInput("A")
 
         let result = fail.parse(input)
@@ -258,7 +258,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testEndOfInputSuccess() {
-        let endOfInput: Parser<StringInput, Empty> = Combinators.endOfInput()
+        let endOfInput = Parser<StringInput, Empty>.endOfInput()
         let input = StringInput("")
 
         let result = endOfInput.parse(input)
@@ -272,7 +272,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testEndOfInputFailure() {
-        let endOfInput: Parser<StringInput, Empty> = Combinators.endOfInput()
+        let endOfInput = Parser<StringInput, Empty>.endOfInput()
         let input = StringInput("A")
 
         let result = endOfInput.parse(input)
@@ -311,7 +311,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testManySuccessWithAcceptEmptyParserFollowedByParser() {
-        let manyParser = Combinators.sequence(
+        let manyParser = Parser.sequence(
             [Parser<StringInput, Character>.pure("o").many(), Parser<StringInput, Character>.symbol("b").many()]
         )
         let input = StringInput("b")
@@ -1197,7 +1197,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testCountSuccessWithAcceptEmptyParserInSequence() {
-        let countParser: Parser<StringInput, [[Character]]> = Combinators.sequence([
+        let countParser: Parser<StringInput, [[Character]]> = Parser.sequence([
             Parser.count(Parser<StringInput, Character>.pure("A"), 3),
             Parser.count(Parser<StringInput, Character>.symbol("B"), 1)
         ])
@@ -1773,7 +1773,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testAnySuccess() {
-        let anyParser: Parser<StringInput, Character> = Combinators.any()
+        let anyParser = Parser<StringInput, Character>.any()
         let input = StringInput("1")
 
         let result = anyParser.parse(input)
@@ -1786,7 +1786,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testAnyFailureWithUnavailableInput() {
-        let anyParser: Parser<StringInput, Character> = Combinators.any()
+        let anyParser = Parser<StringInput, Character>.any()
         let input = StringInput("")
 
         let result = anyParser.parse(input)
@@ -1799,7 +1799,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testOneOfSuccess() {
-        let oneOfParser: Parser<StringInput, Character> = Combinators.oneOf(["A", "B"])
+        let oneOfParser = Parser<StringInput, Character>.oneOf(["A", "B"])
         let input = StringInput("B")
 
         let result = oneOfParser.parse(input)
@@ -1812,7 +1812,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testOneOfFailure() {
-        let oneOfParser: Parser<StringInput, Character> = Combinators.oneOf(["A", "B"])
+        let oneOfParser = Parser<StringInput, Character>.oneOf(["A", "B"])
         let input = StringInput("C")
 
         let result = oneOfParser.parse(input)
@@ -1825,7 +1825,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testOneOfFailureWithUnavailableInput() {
-        let oneOfParser: Parser<StringInput, Character> = Combinators.oneOf(["A", "B"])
+        let oneOfParser = Parser<StringInput, Character>.oneOf(["A", "B"])
         let input = StringInput("")
 
         let result = oneOfParser.parse(input)
@@ -1838,7 +1838,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testNoneOfSuccess() {
-        let noneOfParser: Parser<StringInput, Character> = Combinators.noneOf(["A", "B"])
+        let noneOfParser = Parser<StringInput, Character>.noneOf(["A", "B"])
         let input = StringInput("1")
 
         let result = noneOfParser.parse(input)
@@ -1851,7 +1851,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testNoneOfFailure() {
-        let noneOfParser: Parser<StringInput, Character> = Combinators.noneOf(["A", "B"])
+        let noneOfParser = Parser<StringInput, Character>.noneOf(["A", "B"])
         let input = StringInput("B")
 
         let result = noneOfParser.parse(input)
@@ -1864,7 +1864,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testNoneOfFailureWithUnavailableInput() {
-        let noneOfParser: Parser<StringInput, Character> = Combinators.noneOf(["A", "B"])
+        let noneOfParser = Parser<StringInput, Character>.noneOf(["A", "B"])
         let input = StringInput("")
 
         let result = noneOfParser.parse(input)
@@ -1877,7 +1877,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testSequenceSuccess() {
-        let sequenceParser: Parser<StringInput, [Character]> = Combinators.sequence([
+        let sequenceParser: Parser<StringInput, [Character]> = Parser.sequence([
             Parser<StringInput, Character>.symbol("A"),
             Parser<StringInput, Character>.symbol("B")
         ])
@@ -1893,7 +1893,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testSequenceSuccessWithEmptyAccept() {
-        let sequenceParser: Parser<StringInput, [Character]> = Combinators.sequence([
+        let sequenceParser: Parser<StringInput, [Character]> = Parser.sequence([
             Parser<StringInput, Character>.symbol("A"),
             Parser<StringInput, Character>.pure("B"),
             Parser<StringInput, Character>.symbol("C"),
@@ -1911,7 +1911,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testSequenceFailureWithParseFailure() {
-        let sequenceParser: Parser<StringInput, [Character]> = Combinators.sequence([
+        let sequenceParser: Parser<StringInput, [Character]> = Parser.sequence([
             Parser<StringInput, Character>.symbol("A"),
             Parser<StringInput, Character>.symbol("B")
         ])
@@ -1927,7 +1927,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testSequenceFailureWithUnavailableInput() {
-        let sequenceParser: Parser<StringInput, [Character]> = Combinators.sequence([
+        let sequenceParser: Parser<StringInput, [Character]> = Parser.sequence([
             Parser<StringInput, Character>.symbol("A"),
             Parser<StringInput, Character>.symbol("B")
         ])
@@ -1943,7 +1943,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testSequenceFailureWithMissingSequence() {
-        let sequenceParser: Parser<StringInput, [Character]> = Combinators.sequence([
+        let sequenceParser: Parser<StringInput, [Character]> = Parser.sequence([
             Parser<StringInput, Character>.symbol("A"),
             Parser<StringInput, Character>.symbol("B")
         ])
@@ -1959,7 +1959,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testTraverseSuccess() {
-        let traverseParser: Parser<StringInput, [Int]> = Combinators.traverse(
+        let traverseParser: Parser<StringInput, [Int]> = Parser.traverse(
             [
                 Parser<StringInput, Character>.symbol("1"),
                 Parser<StringInput, Character>.symbol("2")
@@ -1979,7 +1979,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testTraverseSuccessWithEmptyAccept() {
-        let traverseParser: Parser<StringInput, [Int]> = Combinators.traverse(
+        let traverseParser: Parser<StringInput, [Int]> = Parser.traverse(
             [
                 Parser<StringInput, Character>.symbol("1"),
                 Parser<StringInput, Character>.pure("2"),
@@ -2001,7 +2001,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testTraverseFailureWithParseFailure() {
-        let traverseParser: Parser<StringInput, [Int]> = Combinators.traverse(
+        let traverseParser: Parser<StringInput, [Int]> = Parser.traverse(
             [
                 Parser<StringInput, Character>.symbol("1"),
                 Parser<StringInput, Character>.symbol("2")
@@ -2021,7 +2021,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testTraverseFailureWithUnavailableInput() {
-        let traverseParser: Parser<StringInput, [Int]> = Combinators.traverse(
+        let traverseParser: Parser<StringInput, [Int]> = Parser.traverse(
             [
                 Parser<StringInput, Character>.symbol("1"),
                 Parser<StringInput, Character>.symbol("2")
@@ -2041,7 +2041,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testTraverseFailureWithMissingSequence() {
-        let traverseParser: Parser<StringInput, [Int]> = Combinators.traverse(
+        let traverseParser: Parser<StringInput, [Int]> = Parser.traverse(
             [
                 Parser<StringInput, Character>.symbol("1"),
                 Parser<StringInput, Character>.symbol("2")

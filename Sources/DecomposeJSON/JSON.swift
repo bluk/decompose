@@ -142,7 +142,7 @@ internal let character: Parser<StringInput, Character> = notControlCharactersOrQ
         } <^> Combinators.Text.char("u") *> Combinators.Text.hexadecimalAsInt().count(4)
 )
 
-internal let notControlCharactersOrQuoteOrSlash: Parser<StringInput, Character> = Combinators.satisfy(
+internal let notControlCharactersOrQuoteOrSlash = Parser<StringInput, Character>.satisfy(
 conditionName: "not control character or quote or escape character") { char in
     let characterSet = CharacterSet.controlCharacters
     return char != "\"" && char != "\\" && !char.unicodeScalars.contains { characterSet.contains($0) }
@@ -155,17 +155,17 @@ internal let number: Parser<StringInput, JSONValue> = { int in { frac in { exp i
 } <^> int <*> frac <*> exp
 
 internal let int: Parser<StringInput, String> = Combinators.Text.char("0").map { value in String(value) }
-    <|> Combinators
+    <|> Parser
         .sequence([
             Parser<StringInput, JSONValue>.symbol("-").map { [[$0]] },
             Combinators.Text.char("0").map { [[$0]] }
-                <|> Combinators.sequence([
+                <|> Parser.sequence([
                     Combinators.Text.nonzeroDigit().map { [$0] },
                     Combinators.Text.digit().many()
                 ])
         ])
         .map { String($0.flatMap { $0.flatMap { $0 } }) }
-    <|> Combinators
+    <|> Parser
         .sequence([
             Combinators.Text.nonzeroDigit().map { [$0] },
             Combinators.Text.digit().many()

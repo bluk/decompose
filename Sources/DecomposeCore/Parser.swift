@@ -948,9 +948,9 @@ public extension Parser {
     ///     - conditionName: The name of the condition.
     ///     - condition: A function which is passed in an element, and determines if the element meets some criteria.
     /// - Returns: A `Parser` which returns an element if it succeeds the condition.
-    public static func satisfy<I, V>(conditionName: String, _ condition: @escaping (V) -> Bool)
-        -> Parser<I, V> where I.Element == V {
-            return Parser<I, V>(
+    public static func satisfy(conditionName: String, _ condition: @escaping (I.Element) -> Bool)
+        -> Parser<I, I.Element> {
+            return Parser<I, I.Element>(
                 acceptsEmpty: false,
                 firstSetSymbols: [Symbol.predicate(name: conditionName, condition)]
             ) { input, _ in
@@ -961,7 +961,7 @@ public extension Parser {
     /// Instantiates a `Parser` which only fails.
     ///
     /// - Returns: A `Parser` which only fails.
-    public static func fail<I, V>() -> Parser<I, V> {
+    public static func fail() -> Parser<I, V> {
         return Parser<I, V>(
             acceptsEmpty: true,
             firstSetSymbols: [Symbol.empty]
@@ -973,7 +973,7 @@ public extension Parser {
     /// Instantiates a `Parser` which succeeds if the end of the input is reached.
     ///
     /// - Returns: A `Parser` which succeeds if the end of the input is reached.
-    public static func endOfInput<I>() -> Parser<I, Empty> {
+    public static func endOfInput() -> Parser<I, Empty> {
         return Parser<I, Empty>(acceptsEmpty: true, firstSetSymbols: [Symbol.empty]) { input, _ in
             if !input.isAvailable {
                 return Result.success(input, Empty.empty)
@@ -987,12 +987,12 @@ public extension Parser {
     /// - Parameters:
     ///     - symbol: The value to expect.
     /// - Returns: A `Parser` which accepts any element and advances the `Input`.
-    public static func any<I, V>() -> Parser<I, V> where V == I.Element {
-        return Parser<I, V>(acceptsEmpty: false, firstSetSymbols: [Symbol.all]) { input, followSetSymbols in
+    public static func any<E>() -> Parser<I, E> where E == I.Element {
+        return Parser<I, E>(acceptsEmpty: false, firstSetSymbols: [Symbol.all]) { input, followSetSymbols in
             if let currentValue = input.current(), input.isAvailable {
                 return Result.success(input.advanced(), currentValue)
             } else {
-                return Result<I, V>.failureUnavailableInput(input, followSetSymbols)
+                return Result<I, E>.failureUnavailableInput(input, followSetSymbols)
             }
         }
     }
@@ -1002,8 +1002,8 @@ public extension Parser {
     /// - Parameters:
     ///     - symbol: The value to expect.
     /// - Returns: A `Parser` which accepts any element in the set and advances the `Input`.
-    public static func oneOf<I, V>(_ elementSet: Set<V>) -> Parser<I, V> where V == I.Element {
-        return Parser<I, V>(
+    public static func oneOf(_ elementSet: Set<I.Element>) -> Parser<I, I.Element> {
+        return Parser<I, I.Element>(
             acceptsEmpty: false,
             firstSetSymbols: Set(elementSet.map { Symbol.value($0) })) { input, followSetSymbols in
             if input.isAvailable {
@@ -1013,7 +1013,7 @@ public extension Parser {
 
                 return Result.failure(input, followSetSymbols)
             } else {
-                return Result<I, V>.failureUnavailableInput(input, followSetSymbols)
+                return Result<I, I.Element>.failureUnavailableInput(input, followSetSymbols)
             }
         }
     }
@@ -1023,8 +1023,8 @@ public extension Parser {
     /// - Parameters:
     ///     - symbol: The value to expect.
     /// - Returns: A `Parser` which accepts any element but elements in the set and advances the `Input`.
-    public static func noneOf<I, V>(_ elementSet: Set<V>) -> Parser<I, V> where V == I.Element {
-        return Parser<I, V>(
+    public static func noneOf(_ elementSet: Set<I.Element>) -> Parser<I, I.Element> {
+        return Parser<I, I.Element>(
             acceptsEmpty: false,
             firstSetSymbols: {
                 let noneOfString = elementSet.sorted().map { "\($0)" }.joined(separator: ", ")
@@ -1038,7 +1038,7 @@ public extension Parser {
 
                     return Result.failure(input, followSetSymbols)
                 } else {
-                    return Result<I, V>.failureUnavailableInput(input, followSetSymbols)
+                    return Result<I, I.Element>.failureUnavailableInput(input, followSetSymbols)
                 }
             })
     }
@@ -1052,7 +1052,7 @@ public extension Parser {
     ///     - parsers: The parsers to invoke in order.
     /// - Returns: A`Parser` which iterates over the array parameter of `Parser`s and collects their results in an
     ///            array.
-    public static func sequence<I, V>(_ parsers: [Parser<I, V>]) -> Parser<I, [V]> {
+    public static func sequence(_ parsers: [Parser<I, V>]) -> Parser<I, [V]> {
         return Parser<I, [V]>(
             acceptsEmpty: {
                 if let firstParser = parsers.first {
@@ -1126,7 +1126,7 @@ public extension Parser {
     ///     - func1: The function to transform the result into a new value.
     /// - Returns: A`Parser` which iterates over the array parameter of `Parser`s, transforms the results, and collects
     ///            the results in an array.
-    public static func traverse<I, V1, V2>(_ parsers: [Parser<I, V1>], _ func1: @escaping (V1) -> V2)
+    public static func traverse<V2>(_ parsers: [Parser<I, V>], _ func1: @escaping (V) -> V2)
         -> Parser<I, [V2]> {
         return Parser<I, [V2]>(
             acceptsEmpty: {
