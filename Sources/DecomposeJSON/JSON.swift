@@ -66,7 +66,7 @@ internal let value: Parser<StringInput, JSONValue> = Parser.choice([
     Combinators.Text.string("null").map { _ in JSONValue.literalNull }
 ])
 
-internal let object: Parser<StringInput, JSONValue> = Combinators
+internal let object: Parser<StringInput, JSONValue> = Parser
     .between(
         Combinators.Text.char("{"),
         Combinators.Text.whitespace().many() *> members <* Combinators.Text.whitespace().many(),
@@ -90,7 +90,7 @@ internal let member: Parser<StringInput, [String: JSONValue]> = { key in { value
     Combinators.Text.whitespace().many() *> string <*> Combinators.Text.whitespace().many()
     *> Combinators.Text.char(":") *> Combinators.Text.whitespace().many() *> element
 
-internal let array: Parser<StringInput, JSONValue> = Combinators
+internal let array: Parser<StringInput, JSONValue> = Parser
     .between(
         Combinators.Text.char("["),
         Combinators.Text.whitespace().many() *> elements <* Combinators.Text.whitespace().many(),
@@ -105,7 +105,7 @@ internal let elements: Parser<StringInput, [JSONValue]> = element.sepBy(
 internal let element: Parser<StringInput, JSONValue> = Combinators.Text.whitespace().many()
     *> Parser<StringInput, JSONValue>.wrap { value } <* Combinators.Text.whitespace().many()
 
-internal let string: Parser<StringInput, JSONValue> = Combinators
+internal let string: Parser<StringInput, JSONValue> = Parser
     .between(
         Parser<StringInput, JSONValue>.symbol("\""),
         characters,

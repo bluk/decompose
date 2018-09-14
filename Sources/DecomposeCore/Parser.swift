@@ -587,7 +587,7 @@ public extension Parser {
     ///     - parserSep: Parses a separator.
     /// - Returns: A `Parser` which parses zero or more values separated by a separator and returns an array of the
     ///            parsed values.
-    public static func sepBy<I, V, S>(_ parserV: Parser<I, V>, _ parserSep: Parser<I, S>) -> Parser<I, [V]> {
+    public static func sepBy<S>(_ parserV: Parser<I, V>, _ parserSep: Parser<I, S>) -> Parser<I, [V]> {
         return parserV.sepBy(parserSep)
     }
 
@@ -608,7 +608,7 @@ public extension Parser {
     ///     - parserSep: Parses a separator.
     /// - Returns: A `Parser` which parses one or more values separated by a separator and returns an array of the
     ///            parsed values.
-    public static func sepBy1<I, V, S>(_ parserV: Parser<I, V>, _ parserSep: Parser<I, S>) -> Parser<I, [V]> {
+    public static func sepBy1<S>(_ parserV: Parser<I, V>, _ parserSep: Parser<I, S>) -> Parser<I, [V]> {
         return parserV.sepBy1(parserSep)
     }
 
@@ -630,7 +630,7 @@ public extension Parser {
     ///     - parserOpen: Parses an open value.
     ///     - parserClose: Parses a close value.
     /// - Returns: A `Parser` which parses an open, value, and then a close, and returns the value.
-    public static func between<I, O, V, C>(
+    public static func between<O, C>(
         _ parserOpen: Parser<I, O>,
         _ parserV: Parser<I, V>,
         _ parserClose: Parser<I, C>)
@@ -654,7 +654,7 @@ public extension Parser {
     ///     - parserV: Parses a value.
     ///     - count: The number of times to parse.
     /// - Returns: A `Parser` which parses a value for `count` number of times and returns an array of the values.
-    public static func count<I, V>(_ parser: Parser<I, V>, _ count: Int) -> Parser<I, [V]> {
+    public static func count(_ parser: Parser<I, V>, _ count: Int) -> Parser<I, [V]> {
         return parser.count(count)
     }
 
@@ -727,7 +727,7 @@ public extension Parser {
     ///     - parserSep: Parses a separator.
     /// - Returns: A `Parser` which parses zero or more values separated by and ends with a separator and returns an
     ///            array of the parsed values.
-    public static func endBy<I, V, S>(_ parserV: Parser<I, V>, _ parserSep: Parser<I, S>) -> Parser<I, [V]> {
+    public static func endBy<S>(_ parserV: Parser<I, V>, _ parserSep: Parser<I, S>) -> Parser<I, [V]> {
         return parserV.endBy(parserSep)
     }
 
@@ -748,7 +748,7 @@ public extension Parser {
     ///     - parserSep: Parses a separator.
     /// - Returns: A `Parser` which parses one or more values separated by and ends with a separator and returns an
     ///            array of the parsed values.
-    public static func endBy1<I, V, S>(_ parserV: Parser<I, V>, _ parserSep: Parser<I, S>) -> Parser<I, [V]> {
+    public static func endBy1<S>(_ parserV: Parser<I, V>, _ parserSep: Parser<I, S>) -> Parser<I, [V]> {
         return parserV.endBy1(parserSep)
     }
 
@@ -770,8 +770,8 @@ public extension Parser {
     ///     - parserSep: Parses a separator.
     /// - Returns: A `Parser` which parses zero or more values separated by and optionally ends with a separator and
     ///            returns an array of the parsed values.
-    public static func sepEndBy<I, V, S>(_ parserV: Parser<I, V>, _ parserSep: Parser<I, S>) -> Parser<I, [V]> {
-        return parserV.sepEndBy1(parserSep)
+    public static func sepEndBy<S>(_ parserV: Parser<I, V>, _ parserSep: Parser<I, S>) -> Parser<I, [V]> {
+        return parserV.sepEndBy(parserSep)
     }
 
     /// Parses zero or more values separated by and optionally ends with a separator and returns an array of the parsed
@@ -793,7 +793,7 @@ public extension Parser {
     ///     - parserSep: Parses a separator.
     /// - Returns: A `Parser` which parses one or more values separated by and optionally ends with a separator and
     ///            returns an array of the parsed values.
-    public static func sepEndBy1<I, V, S>(_ parserV: Parser<I, V>, _ parserSep: Parser<I, S>) -> Parser<I, [V]> {
+    public static func sepEndBy1<S>(_ parserV: Parser<I, V>, _ parserSep: Parser<I, S>) -> Parser<I, [V]> {
         return parserV.sepEndBy1(parserSep)
     }
 

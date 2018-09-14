@@ -888,7 +888,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testSepBySuccess() {
-        let sepByParser: Parser<StringInput, [Character]> = Combinators.sepBy(
+        let sepByParser: Parser<StringInput, [Character]> = Parser.sepBy(
             Combinators.Text.digit(),
             Parser<StringInput, Character>.symbol("A")
         )
@@ -904,7 +904,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testSepBySuccessWithOnlyValue() {
-        let sepByParser: Parser<StringInput, [Character]> = Combinators.sepBy(
+        let sepByParser: Parser<StringInput, [Character]> = Parser.sepBy(
             Combinators.Text.digit(),
             Parser<StringInput, Character>.symbol("A")
         )
@@ -920,7 +920,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testSepBySuccessWithEmptyInput() {
-        let sepByParser: Parser<StringInput, [Character]> = Combinators.sepBy(
+        let sepByParser: Parser<StringInput, [Character]> = Parser.sepBy(
             Combinators.Text.digit(),
             Parser<StringInput, Character>.symbol("A")
         )
@@ -936,7 +936,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testSepByFailureWithValueAndSeparator() {
-        let sepByParser: Parser<StringInput, [Character]> = Combinators.sepBy(
+        let sepByParser: Parser<StringInput, [Character]> = Parser.sepBy(
             Combinators.Text.digit(),
             Parser<StringInput, Character>.symbol("A")
         )
@@ -952,7 +952,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testSepByFailureWithSeparator() {
-        let sepByParser: Parser<StringInput, [Character]> = Combinators.sepBy(
+        let sepByParser: Parser<StringInput, [Character]> = Parser.sepBy(
             Combinators.Text.digit(),
             Parser<StringInput, Character>.symbol("A")
         )
@@ -968,7 +968,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testSepByFailure() {
-        let sepByParser: Parser<StringInput, [Character]> = Combinators.sepBy(
+        let sepByParser: Parser<StringInput, [Character]> = Parser.sepBy(
             Combinators.Text.digit(),
             Parser<StringInput, Character>.symbol("A")
         )
@@ -984,7 +984,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testSepBy1Success() {
-        let sepBy1Parser: Parser<StringInput, [Character]> = Combinators.sepBy1(
+        let sepBy1Parser: Parser<StringInput, [Character]> = Parser.sepBy1(
             Combinators.Text.digit(),
             Parser<StringInput, Character>.symbol("A")
         )
@@ -1000,7 +1000,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testSepBy1SuccessWithOnlyValue() {
-        let sepBy1Parser: Parser<StringInput, [Character]> = Combinators.sepBy1(
+        let sepBy1Parser: Parser<StringInput, [Character]> = Parser.sepBy1(
             Combinators.Text.digit(),
             Parser<StringInput, Character>.symbol("A")
         )
@@ -1016,7 +1016,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testSepBy1FailureWithEmptyInput() {
-        let sepBy1Parser: Parser<StringInput, [Character]> = Combinators.sepBy1(
+        let sepBy1Parser: Parser<StringInput, [Character]> = Parser.sepBy1(
             Combinators.Text.digit(),
             Parser<StringInput, Character>.symbol("A")
         )
@@ -1032,7 +1032,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testSepBy1FailureWithValueAndSeparator() {
-        let sepBy1Parser: Parser<StringInput, [Character]> = Combinators.sepBy1(
+        let sepBy1Parser: Parser<StringInput, [Character]> = Parser.sepBy1(
             Combinators.Text.digit(),
             Parser<StringInput, Character>.symbol("A")
         )
@@ -1048,7 +1048,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testSepBy1FailureWithSeparator() {
-        let sepBy1Parser: Parser<StringInput, [Character]> = Combinators.sepBy1(
+        let sepBy1Parser: Parser<StringInput, [Character]> = Parser.sepBy1(
             Combinators.Text.digit(),
             Parser<StringInput, Character>.symbol("A")
         )
@@ -1064,7 +1064,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testSepBy1Failure() {
-        let sepBy1Parser: Parser<StringInput, [Character]> = Combinators.sepBy1(
+        let sepBy1Parser: Parser<StringInput, [Character]> = Parser.sepBy1(
             Combinators.Text.digit(),
             Parser<StringInput, Character>.symbol("A")
         )
@@ -1080,7 +1080,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testBetweenSuccess() {
-        let betweenParser: Parser<StringInput, Character> = Combinators.between(
+        let betweenParser: Parser<StringInput, Character> = Parser.between(
             Parser<StringInput, Character>.symbol("("),
             Combinators.Text.digit(),
             Parser<StringInput, Character>.symbol(")")
@@ -1097,7 +1097,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testBetweenFailureOnEmptyInput() {
-        let betweenParser: Parser<StringInput, Character> = Combinators.between(
+        let betweenParser: Parser<StringInput, Character> = Parser.between(
             Parser<StringInput, Character>.symbol("("),
             Combinators.Text.digit(),
             Parser<StringInput, Character>.symbol(")")
@@ -1114,7 +1114,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testBetweenFailureOnMissingOpen() {
-        let betweenParser: Parser<StringInput, Character> = Combinators.between(
+        let betweenParser: Parser<StringInput, Character> = Parser.between(
             Parser<StringInput, Character>.symbol("("),
             Combinators.Text.digit(),
             Parser<StringInput, Character>.symbol(")")
@@ -1131,7 +1131,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testBetweenFailureOnMissingClose() {
-        let betweenParser: Parser<StringInput, Character> = Combinators.between(
+        let betweenParser: Parser<StringInput, Character> = Parser.between(
             Parser<StringInput, Character>.symbol("("),
             Combinators.Text.digit(),
             Parser<StringInput, Character>.symbol(")")
@@ -1148,7 +1148,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testBetweenFailure() {
-        let betweenParser: Parser<StringInput, Character> = Combinators.between(
+        let betweenParser: Parser<StringInput, Character> = Parser.between(
             Parser<StringInput, Character>.symbol("("),
             Combinators.Text.digit(),
             Parser<StringInput, Character>.symbol(")")
@@ -1165,7 +1165,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testCountSuccess() {
-        let countParser: Parser<StringInput, [Character]> = Combinators.count(
+        let countParser: Parser<StringInput, [Character]> = Parser.count(
             Combinators.Text.digit(),
             3
         )
@@ -1181,7 +1181,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testCountSuccessWithAcceptEmptyParser() {
-        let countParser: Parser<StringInput, [Character]> = Combinators.count(
+        let countParser: Parser<StringInput, [Character]> = Parser.count(
             Parser<StringInput, Character>.pure("A"),
             3
         )
@@ -1198,8 +1198,8 @@ internal final class CombinatorsTests: XCTestCase {
 
     func testCountSuccessWithAcceptEmptyParserInSequence() {
         let countParser: Parser<StringInput, [[Character]]> = Combinators.sequence([
-            Combinators.count(Parser<StringInput, Character>.pure("A"), 3),
-            Combinators.count(Parser<StringInput, Character>.symbol("B"), 1)
+            Parser.count(Parser<StringInput, Character>.pure("A"), 3),
+            Parser.count(Parser<StringInput, Character>.symbol("B"), 1)
         ])
         let input = StringInput("B")
 
@@ -1213,7 +1213,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testCountFailureMissingCount() {
-        let countParser: Parser<StringInput, [Character]> = Combinators.count(
+        let countParser: Parser<StringInput, [Character]> = Parser.count(
             Combinators.Text.digit(),
             3
         )
@@ -1229,7 +1229,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testCountFailureWithParse() {
-        let countParser: Parser<StringInput, [Character]> = Combinators.count(
+        let countParser: Parser<StringInput, [Character]> = Parser.count(
             Combinators.Text.digit(),
             3
         )
@@ -1245,7 +1245,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testCountFailureWithParseButSameCount() {
-        let countParser: Parser<StringInput, [Character]> = Combinators.count(
+        let countParser: Parser<StringInput, [Character]> = Parser.count(
             Parser<StringInput, Character>.symbol("1"),
             3
         )
@@ -1261,7 +1261,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testCountFailureWithMoreInput() {
-        let countParser: Parser<StringInput, [Character]> = Combinators.count(
+        let countParser: Parser<StringInput, [Character]> = Parser.count(
             Combinators.Text.digit(),
             3
         )
@@ -1277,7 +1277,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testEndBySuccess() {
-        let endByParser: Parser<StringInput, [Character]> = Combinators.endBy(
+        let endByParser: Parser<StringInput, [Character]> = Parser.endBy(
             Combinators.Text.digit(),
             Parser<StringInput, Character>.symbol("A")
         )
@@ -1293,7 +1293,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testEndByFailureWithOnlyValue() {
-        let endByParser: Parser<StringInput, [Character]> = Combinators.endBy(
+        let endByParser: Parser<StringInput, [Character]> = Parser.endBy(
             Combinators.Text.digit(),
             Parser<StringInput, Character>.symbol("A")
         )
@@ -1309,7 +1309,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testEndBySuccessWithEmptyInput() {
-        let endByParser: Parser<StringInput, [Character]> = Combinators.endBy(
+        let endByParser: Parser<StringInput, [Character]> = Parser.endBy(
             Combinators.Text.digit(),
             Parser<StringInput, Character>.symbol("A")
         )
@@ -1325,7 +1325,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testEndByFailureWithValue() {
-        let endByParser: Parser<StringInput, [Character]> = Combinators.endBy(
+        let endByParser: Parser<StringInput, [Character]> = Parser.endBy(
             Combinators.Text.digit(),
             Parser<StringInput, Character>.symbol("A")
         )
@@ -1341,7 +1341,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testEndByFailureWithSeparator() {
-        let endByParser: Parser<StringInput, [Character]> = Combinators.endBy(
+        let endByParser: Parser<StringInput, [Character]> = Parser.endBy(
             Combinators.Text.digit(),
             Parser<StringInput, Character>.symbol("A")
         )
@@ -1357,7 +1357,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testEndByFailure() {
-        let endByParser: Parser<StringInput, [Character]> = Combinators.endBy(
+        let endByParser: Parser<StringInput, [Character]> = Parser.endBy(
             Combinators.Text.digit(),
             Parser<StringInput, Character>.symbol("A")
         )
@@ -1373,7 +1373,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testEndBy1Success() {
-        let endBy1Parser: Parser<StringInput, [Character]> = Combinators.endBy1(
+        let endBy1Parser: Parser<StringInput, [Character]> = Parser.endBy1(
             Combinators.Text.digit(),
             Parser<StringInput, Character>.symbol("A")
         )
@@ -1389,7 +1389,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testEndBy1FailureWithOnlyValue() {
-        let endBy1Parser: Parser<StringInput, [Character]> = Combinators.endBy1(
+        let endBy1Parser: Parser<StringInput, [Character]> = Parser.endBy1(
             Combinators.Text.digit(),
             Parser<StringInput, Character>.symbol("A")
         )
@@ -1405,7 +1405,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testEndBy1FailureWithEmptyInput() {
-        let endBy1Parser: Parser<StringInput, [Character]> = Combinators.endBy1(
+        let endBy1Parser: Parser<StringInput, [Character]> = Parser.endBy1(
             Combinators.Text.digit(),
             Parser<StringInput, Character>.symbol("A")
         )
@@ -1421,7 +1421,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testEndBy1SuccessWithValueAndSeparator() {
-        let endBy1Parser: Parser<StringInput, [Character]> = Combinators.endBy1(
+        let endBy1Parser: Parser<StringInput, [Character]> = Parser.endBy1(
             Combinators.Text.digit(),
             Parser<StringInput, Character>.symbol("A")
         )
@@ -1437,7 +1437,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testEndBy1FailureWithSeparator() {
-        let endBy1Parser: Parser<StringInput, [Character]> = Combinators.endBy1(
+        let endBy1Parser: Parser<StringInput, [Character]> = Parser.endBy1(
             Combinators.Text.digit(),
             Parser<StringInput, Character>.symbol("A")
         )
@@ -1453,7 +1453,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testEndBy1Failure() {
-        let endBy1Parser: Parser<StringInput, [Character]> = Combinators.endBy1(
+        let endBy1Parser: Parser<StringInput, [Character]> = Parser.endBy1(
             Combinators.Text.digit(),
             Parser<StringInput, Character>.symbol("A")
         )
@@ -1469,7 +1469,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testSepEndBySuccess() {
-        let sepEndByParser: Parser<StringInput, [Character]> = Combinators.sepEndBy(
+        let sepEndByParser: Parser<StringInput, [Character]> = Parser.sepEndBy(
             Combinators.Text.digit(),
             Parser<StringInput, Character>.symbol("A")
         )
@@ -1485,7 +1485,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testSepEndBySuccessWithOnlyValue() {
-        let sepEndByParser: Parser<StringInput, [Character]> = Combinators.sepEndBy(
+        let sepEndByParser: Parser<StringInput, [Character]> = Parser.sepEndBy(
             Combinators.Text.digit(),
             Parser<StringInput, Character>.symbol("A")
         )
@@ -1501,7 +1501,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testSepEndBySuccessWithEmptyInput() {
-        let sepEndByParser: Parser<StringInput, [Character]> = Combinators.sepEndBy(
+        let sepEndByParser: Parser<StringInput, [Character]> = Parser.sepEndBy(
             Combinators.Text.digit(),
             Parser<StringInput, Character>.symbol("A")
         )
@@ -1517,7 +1517,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testSepEndBySuccessWithValueAndSeparator() {
-        let sepEndByParser: Parser<StringInput, [Character]> = Combinators.sepEndBy(
+        let sepEndByParser: Parser<StringInput, [Character]> = Parser.sepEndBy(
             Combinators.Text.digit(),
             Parser<StringInput, Character>.symbol("A")
         )
@@ -1533,7 +1533,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testSepEndByFailureWithSeparator() {
-        let sepEndByParser: Parser<StringInput, [Character]> = Combinators.sepEndBy(
+        let sepEndByParser: Parser<StringInput, [Character]> = Parser.sepEndBy(
             Combinators.Text.digit(),
             Parser<StringInput, Character>.symbol("A")
         )
@@ -1549,7 +1549,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testSepEndByFailure() {
-        let sepEndByParser: Parser<StringInput, [Character]> = Combinators.sepEndBy(
+        let sepEndByParser: Parser<StringInput, [Character]> = Parser.sepEndBy(
             Combinators.Text.digit(),
             Parser<StringInput, Character>.symbol("A")
         )
@@ -1565,7 +1565,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testSepEndBy1Success() {
-        let sepEndBy1Parser: Parser<StringInput, [Character]> = Combinators.sepEndBy1(
+        let sepEndBy1Parser: Parser<StringInput, [Character]> = Parser.sepEndBy1(
             Combinators.Text.digit(),
             Parser<StringInput, Character>.symbol("A")
         )
@@ -1581,7 +1581,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testSepEndBy1SuccessWithOnlyValue() {
-        let sepEndBy1Parser: Parser<StringInput, [Character]> = Combinators.sepEndBy1(
+        let sepEndBy1Parser: Parser<StringInput, [Character]> = Parser.sepEndBy1(
             Combinators.Text.digit(),
             Parser<StringInput, Character>.symbol("A")
         )
@@ -1597,7 +1597,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testSepEndBy1FailureWithEmptyInput() {
-        let sepEndBy1Parser: Parser<StringInput, [Character]> = Combinators.sepEndBy1(
+        let sepEndBy1Parser: Parser<StringInput, [Character]> = Parser.sepEndBy1(
             Combinators.Text.digit(),
             Parser<StringInput, Character>.symbol("A")
         )
@@ -1613,7 +1613,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testSepEndBy1SuccessWithValueAndSeparator() {
-        let sepEndBy1Parser: Parser<StringInput, [Character]> = Combinators.sepEndBy1(
+        let sepEndBy1Parser: Parser<StringInput, [Character]> = Parser.sepEndBy1(
             Combinators.Text.digit(),
             Parser<StringInput, Character>.symbol("A")
         )
@@ -1629,7 +1629,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testSepEndBy1FailureWithSeparator() {
-        let sepEndBy1Parser: Parser<StringInput, [Character]> = Combinators.sepEndBy1(
+        let sepEndBy1Parser: Parser<StringInput, [Character]> = Parser.sepEndBy1(
             Combinators.Text.digit(),
             Parser<StringInput, Character>.symbol("A")
         )
@@ -1645,7 +1645,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testSepEndBy1Failure() {
-        let sepEndBy1Parser: Parser<StringInput, [Character]> = Combinators.sepEndBy1(
+        let sepEndBy1Parser: Parser<StringInput, [Character]> = Parser.sepEndBy1(
             Combinators.Text.digit(),
             Parser<StringInput, Character>.symbol("A")
         )
