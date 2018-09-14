@@ -56,7 +56,7 @@ public enum JSONResult {
 
 internal let json: Parser<StringInput, JSONValue> = element
 
-internal let value: Parser<StringInput, JSONValue> = Combinators.choice([
+internal let value: Parser<StringInput, JSONValue> = Parser.choice([
     object,
     array,
     string,

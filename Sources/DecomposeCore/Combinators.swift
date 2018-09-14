@@ -17,16 +17,6 @@ import Foundation
 /// Convenience methods to create and compose `Parser`s.
 public enum Combinators {
 
-    /// Sequentially invokes a `Parser` in the array until one of them succeeds or all of them fail.
-    ///
-    /// - Parameters:
-    ///     - parsers: The array of `Parser`s to attempt.
-    /// - Returns: A `Parser` which sequentially invokes a `Parser` in the array until one of them succeeds or all
-    ///            of them fail.
-    public static func choice<I, V>(_ parsers: [Parser<I, V>]) -> Parser<I, V> {
-        return Parser.choice(parsers)
-    }
-
     /// Maps a `Parser`'s value using the function parameter.
     ///
     /// - Parameters:

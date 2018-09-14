@@ -126,7 +126,7 @@ internal final class CombinatorsTests: XCTestCase {
         let matchesF = Parser<StringInput, Character>.symbol("f")
         let matchesB = Parser<StringInput, Character>.symbol("b")
         let matchesO = Parser<StringInput, Character>.symbol("o")
-        let choiceParser = Combinators.choice([matchesF, matchesB, matchesO])
+        let choiceParser = Parser.choice([matchesF, matchesB, matchesO])
 
         let result1 = choiceParser.parse(StringInput("f"))
         guard case let .success(remainingInput1, value1) = result1 else {
@@ -160,7 +160,7 @@ internal final class CombinatorsTests: XCTestCase {
         let matchesF = Parser<StringInput, Character>.symbol("f")
         let matchesB = Parser<StringInput, Character>.symbol("b")
         let matchesO = Parser<StringInput, Character>.symbol("o")
-        let choiceParser = Combinators.choice([matchesF, matchesB, matchesO])
+        let choiceParser = Parser.choice([matchesF, matchesB, matchesO])
         let input = StringInput("xyz")
 
         let result = choiceParser.parse(input)
