@@ -111,10 +111,8 @@ public extension Parser {
 
                 let functionReply = self.computeParse(input, followSetSymbolsForFunction)
                 switch functionReply {
-                case let .failure(remainingInput, symbols):
-                    return Result<I, V3>.failure(remainingInput, symbols)
-                case let .failureUnavailableInput(remainingInput, symbols):
-                    return Result<I, V3>.failureUnavailableInput(remainingInput, symbols)
+                case .failure, .failureUnavailableInput:
+                    return functionReply.cast()
                 case let .success(remainingInput, value):
                     if !parser2.computeAcceptsEmpty() {
                         if !remainingInput.isAvailable {
@@ -341,10 +339,8 @@ public extension Parser {
                     if self.computeFirstSetSymbols().contains(where: { $0.matches(currentValue) }) {
                         let result = self.computeParse(remainingInput, followSetSymbolsMany)
                         switch result {
-                        case let .failure(remainingInput, symbols):
-                            return Result<I, [V]>.failure(remainingInput, symbols)
-                        case let .failureUnavailableInput(remainingInput, symbols):
-                            return Result<I, [V]>.failureUnavailableInput(remainingInput, symbols)
+                        case .failure, .failureUnavailableInput:
+                            return result.cast()
                         case let .success(remainingInput2, value):
                             results.append(value)
                             remainingInput = remainingInput2
@@ -658,7 +654,7 @@ public extension Parser {
         return parser.count(count)
     }
 
-    // swiftlint:disable cyclomatic_complexity function_body_length
+    // swiftlint:disable cyclomatic_complexity
 
     /// Parses a value for `count` number of times and returns an array of the values.
     ///
@@ -677,10 +673,8 @@ public extension Parser {
                     if self.computeFirstSetSymbols().contains(where: { $0.matches(currentValue) }) {
                         let result = self.computeParse(remainingInput, followSetSymbols)
                         switch result {
-                        case let .failure(remainingInput, symbols):
-                            return Result<I, [V]>.failure(remainingInput, symbols)
-                        case let .failureUnavailableInput(remainingInput, symbols):
-                            return Result<I, [V]>.failureUnavailableInput(remainingInput, symbols)
+                        case .failure, .failureUnavailableInput:
+                            return result.cast()
                         case let .success(remainingInput2, value):
                             results.append(value)
                             remainingInput = remainingInput2
@@ -688,10 +682,8 @@ public extension Parser {
                     } else if self.computeAcceptsEmpty() {
                         let result = self.computeParse(remainingInput, followSetSymbols)
                         switch result {
-                        case let .failure(remainingInput, symbols):
-                            return Result<I, [V]>.failure(remainingInput, symbols)
-                        case let .failureUnavailableInput(remainingInput, symbols):
-                            return Result<I, [V]>.failureUnavailableInput(remainingInput, symbols)
+                        case .failure, .failureUnavailableInput:
+                            return result.cast()
                         case let .success(remainingInput2, value):
                             results.append(value)
                             remainingInput = remainingInput2
@@ -702,10 +694,8 @@ public extension Parser {
                 } else if self.computeAcceptsEmpty() {
                     let result = self.computeParse(remainingInput, followSetSymbols)
                     switch result {
-                    case let .failure(remainingInput, symbols):
-                        return Result<I, [V]>.failure(remainingInput, symbols)
-                    case let .failureUnavailableInput(remainingInput, symbols):
-                        return Result<I, [V]>.failureUnavailableInput(remainingInput, symbols)
+                    case .failure, .failureUnavailableInput:
+                        return result.cast()
                     case let .success(remainingInput2, value):
                         results.append(value)
                         remainingInput = remainingInput2
@@ -718,7 +708,7 @@ public extension Parser {
             return Result.success(remainingInput, results)
         }
     }
-    // swiftlint:enable cyclomatic_complexity function_body_length
+    // swiftlint:enable cyclomatic_complexity
 
     /// Parses zero or more values separated by and ends with a separator and returns an array of the parsed values.
     ///
@@ -847,20 +837,16 @@ public extension Parser {
                         parserEnd.computeAcceptsEmpty() {
                         let result = parserEnd.computeParse(remainingInput, followSetSymbolsManyTill)
                         switch result {
-                        case let .failure(remainingInput, symbols):
-                            return Result<I, [V]>.failure(remainingInput, symbols)
-                        case let .failureUnavailableInput(remainingInput, symbols):
-                            return Result<I, [V]>.failureUnavailableInput(remainingInput, symbols)
+                        case .failure, .failureUnavailableInput:
+                            return result.cast()
                         case let .success(remainingInput2, _):
                             return Result.success(remainingInput2, results)
                         }
                     } else if self.computeFirstSetSymbols().contains(where: { $0.matches(currentValue) }) {
                         let result = self.computeParse(remainingInput, followSetSymbolsManyTill)
                         switch result {
-                        case let .failure(remainingInput, symbols):
-                            return Result<I, [V]>.failure(remainingInput, symbols)
-                        case let .failureUnavailableInput(remainingInput, symbols):
-                            return Result<I, [V]>.failureUnavailableInput(remainingInput, symbols)
+                        case .failure, .failureUnavailableInput:
+                            return result.cast()
                         case let .success(remainingInput2, value):
                             results.append(value)
                             remainingInput = remainingInput2
@@ -875,10 +861,8 @@ public extension Parser {
                 } else if parserEnd.computeAcceptsEmpty() {
                     let result = parserEnd.computeParse(remainingInput, followSetSymbolsManyTill)
                     switch result {
-                    case let .failure(remainingInput, symbols):
-                        return Result<I, [V]>.failure(remainingInput, symbols)
-                    case let .failureUnavailableInput(remainingInput, symbols):
-                        return Result<I, [V]>.failureUnavailableInput(remainingInput, symbols)
+                    case .failure, .failureUnavailableInput:
+                        return result.cast()
                     case let .success(remainingInput2, _):
                         return Result.success(remainingInput2, results)
                     }
@@ -1055,22 +1039,19 @@ public extension Parser {
                 for parser in parsers {
                     if let currentValue = remainingInput.current(), remainingInput.isAvailable {
                         if parser.computeFirstSetSymbols().contains(where: { $0.matches(currentValue) }) {
-                            switch parser.computeParse(remainingInput, followSetSymbols) {
+                            let result = parser.computeParse(remainingInput, followSetSymbols)
+                            switch result {
                             case let .success(remainingSuccessInput, value):
                                 remainingInput = remainingSuccessInput
                                 results.append(value)
-                            case let .failure(remainingInput, expectedSymbols):
-                                return Result.failure(remainingInput, expectedSymbols)
-                            case let .failureUnavailableInput(remainingInput, expectedSymbols):
-                                return Result.failureUnavailableInput(remainingInput, expectedSymbols)
+                            case .failure, .failureUnavailableInput:
+                                return result.cast()
                             }
                         } else if parser.computeAcceptsEmpty() {
                             let result = parser.computeParse(remainingInput, followSetSymbols)
                             switch result {
-                            case let .failure(remainingInput, symbols):
-                                return Result<I, [V]>.failure(remainingInput, symbols)
-                            case let .failureUnavailableInput(remainingInput, symbols):
-                                return Result<I, [V]>.failureUnavailableInput(remainingInput, symbols)
+                            case .failure, .failureUnavailableInput:
+                                return result.cast()
                             case let .success(remainingInput2, value):
                                 remainingInput = remainingInput2
                                 results.append(value)
@@ -1081,10 +1062,8 @@ public extension Parser {
                     } else if parser.computeAcceptsEmpty() {
                         let result = parser.computeParse(remainingInput, followSetSymbols)
                         switch result {
-                        case let .failure(remainingInput, symbols):
-                            return Result<I, [V]>.failure(remainingInput, symbols)
-                        case let .failureUnavailableInput(remainingInput, symbols):
-                            return Result<I, [V]>.failureUnavailableInput(remainingInput, symbols)
+                        case .failure, .failureUnavailableInput:
+                            return result.cast()
                         case let .success(remainingInput2, value):
                             remainingInput = remainingInput2
                             results.append(value)
@@ -1130,22 +1109,19 @@ public extension Parser {
                 for parser in parsers {
                     if let currentValue = remainingInput.current(), remainingInput.isAvailable {
                         if parser.computeFirstSetSymbols().contains(where: { $0.matches(currentValue) }) {
-                            switch parser.computeParse(remainingInput, followSetSymbols) {
+                            let result = parser.computeParse(remainingInput, followSetSymbols)
+                            switch result {
                             case let .success(remainingSuccessInput, value):
                                 remainingInput = remainingSuccessInput
                                 results.append(func1(value))
-                            case let .failure(remainingInput, expectedSymbols):
-                                return Result.failure(remainingInput, expectedSymbols)
-                            case let .failureUnavailableInput(remainingInput, expectedSymbols):
-                                return Result.failureUnavailableInput(remainingInput, expectedSymbols)
+                            case .failure, .failureUnavailableInput:
+                                return result.cast()
                             }
                         } else if parser.computeAcceptsEmpty() {
                             let result = parser.computeParse(remainingInput, followSetSymbols)
                             switch result {
-                            case let .failure(remainingInput, symbols):
-                                return Result<I, [V2]>.failure(remainingInput, symbols)
-                            case let .failureUnavailableInput(remainingInput, symbols):
-                                return Result<I, [V2]>.failureUnavailableInput(remainingInput, symbols)
+                            case .failure, .failureUnavailableInput:
+                                return result.cast()
                             case let .success(remainingInput2, value):
                                 remainingInput = remainingInput2
                                 results.append(func1(value))
@@ -1156,10 +1132,8 @@ public extension Parser {
                     } else if parser.computeAcceptsEmpty() {
                         let result = parser.computeParse(remainingInput, followSetSymbols)
                         switch result {
-                        case let .failure(remainingInput, symbols):
-                            return Result<I, [V2]>.failure(remainingInput, symbols)
-                        case let .failureUnavailableInput(remainingInput, symbols):
-                            return Result<I, [V2]>.failureUnavailableInput(remainingInput, symbols)
+                        case .failure, .failureUnavailableInput:
+                            return result.cast()
                         case let .success(remainingInput2, value):
                             remainingInput = remainingInput2
                             results.append(func1(value))

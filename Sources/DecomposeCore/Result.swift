@@ -44,4 +44,18 @@ public enum Result<I: Input, Value> where I.Element: Comparable, I.Element: Hash
             return Result<I, MappedValue>.failureUnavailableInput(remainingInput, symbols)
         }
     }
+
+    /// Casts failure messages to a `Result<I, V2>` type.
+    ///
+    /// - Returns: A typecasted result.
+    public func cast<V2>() -> Result<I, V2> {
+        switch self {
+        case let .failure(remainingInput, symbols):
+            return Result<I, V2>.failure(remainingInput, symbols)
+        case let .failureUnavailableInput(remainingInput, symbols):
+            return Result<I, V2>.failureUnavailableInput(remainingInput, symbols)
+        case .success:
+            fatalError("Cannot cast Result.success.")
+        }
+    }
 }
