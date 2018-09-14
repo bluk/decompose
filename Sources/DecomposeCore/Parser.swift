@@ -363,7 +363,7 @@ public extension Parser {
     /// - Parameters:
     ///     - parser: The Parser to invoke.
     /// - Returns: A `Parser` which invokes the `parser` parameter one or more times.
-    public static func many1<I, V>(_ parser: Parser<I, V>) -> Parser<I, [V]> {
+    public static func many1(_ parser: Parser<I, V>) -> Parser<I, [V]> {
         return parser.many1()
     }
 
@@ -379,7 +379,7 @@ public extension Parser {
     /// - Parameters:
     ///     - parser: The Parser to invoke.
     /// - Returns: A `Parser` which discards the return value of the `parser` parameter zero or more times.
-    public static func skipMany<I, V>(_ parser: Parser<I, V>) -> Parser<I, Empty> {
+    public static func skipMany(_ parser: Parser<I, V>) -> Parser<I, Empty> {
         return parser.skipMany()
     }
 
@@ -395,7 +395,7 @@ public extension Parser {
     /// - Parameters:
     ///     - parser: The Parser to invoke.
     /// - Returns: A `Parser` which discards the return value of the `parser` parameter one or more times.
-    public static func skipMany1<I, V>(_ parser: Parser<I, V>) -> Parser<I, Empty> {
+    public static func skipMany1(_ parser: Parser<I, V>) -> Parser<I, Empty> {
         return parser.skipMany1()
     }
 

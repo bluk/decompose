@@ -30,33 +30,6 @@ public enum Combinators {
         return parser1.apply(parser2)
     }
 
-    /// Returns a `Parser` which invokes the `parser` parameter one or more times.
-    ///
-    /// - Parameters:
-    ///     - parser: The Parser to invoke.
-    /// - Returns: A `Parser` which invokes the `parser` parameter one or more times.
-    public static func many1<I, V>(_ parser: Parser<I, V>) -> Parser<I, [V]> {
-        return parser.many1()
-    }
-
-    /// Returns a `Parser` which discards the return value of the `parser` parameter zero or more times.
-    ///
-    /// - Parameters:
-    ///     - parser: The Parser to invoke.
-    /// - Returns: A `Parser` which discards the return value of the `parser` parameter zero or more times.
-    public static func skipMany<I, V>(_ parser: Parser<I, V>) -> Parser<I, Empty> {
-        return parser.skipMany()
-    }
-
-    /// Returns a `Parser` which discards the return value of the `parser` parameter one or more times.
-    ///
-    /// - Parameters:
-    ///     - parser: The Parser to invoke.
-    /// - Returns: A `Parser` which discards the return value of the `parser` parameter one or more times.
-    public static func skipMany1<I, V>(_ parser: Parser<I, V>) -> Parser<I, Empty> {
-        return parser.skipMany1()
-    }
-
     /// Returns a `Parser` which attempts the parser parameter and if it succeeds, return the value, but if it fails,
     /// return nil.
     ///

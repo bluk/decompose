@@ -352,7 +352,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testMany1Success() {
-        let many1Parser = Combinators.many1(Parser<StringInput, Character>.symbol("o"))
+        let many1Parser = Parser.many1(Parser<StringInput, Character>.symbol("o"))
         let input = StringInput("ooo")
 
         let result = many1Parser.parse(input)
@@ -365,7 +365,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testMany1FailureWithEmptyInput() {
-        let many1Parser = Combinators.many1(Parser<StringInput, Character>.symbol("o"))
+        let many1Parser = Parser.many1(Parser<StringInput, Character>.symbol("o"))
         let input = StringInput("")
 
         let result = many1Parser.parse(input)
@@ -378,7 +378,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testMany1SuccessComplex() {
-        let many1Parser: Parser<StringInput, [String]> = Combinators.many1(Combinators.Text.string("hello"))
+        let many1Parser: Parser<StringInput, [String]> = Parser.many1(Combinators.Text.string("hello"))
         let input = StringInput("hellohello")
 
         let result = many1Parser.parse(input)
@@ -391,7 +391,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testMany1Failure() {
-        let many1Parser = Combinators.many1(Parser<StringInput, Character>.symbol("o"))
+        let many1Parser = Parser.many1(Parser<StringInput, Character>.symbol("o"))
         let input = StringInput("b")
 
         let result = many1Parser.parse(input)
@@ -404,7 +404,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testSkipManySuccess() {
-        let skipManyParser: Parser<StringInput, Empty> = Combinators.skipMany(Combinators.Text.letter())
+        let skipManyParser: Parser<StringInput, Empty> = Parser.skipMany(Combinators.Text.letter())
         let input = StringInput("foobar")
 
         let result = skipManyParser.parse(input)
@@ -417,7 +417,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testSkipManySuccessWithEmptyInput() {
-        let skipManyParser: Parser<StringInput, Empty> = Combinators.skipMany(Combinators.Text.letter())
+        let skipManyParser: Parser<StringInput, Empty> = Parser.skipMany(Combinators.Text.letter())
         let input = StringInput("")
 
         let result = skipManyParser.parse(input)
@@ -430,7 +430,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testSkipManyFailure() {
-        let skipManyParser: Parser<StringInput, Empty> = Combinators.skipMany(Combinators.Text.letter())
+        let skipManyParser: Parser<StringInput, Empty> = Parser.skipMany(Combinators.Text.letter())
         let input = StringInput("123")
 
         let result = skipManyParser.parse(input)
@@ -443,7 +443,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testSkipMany1Success() {
-        let skipMany1Parser: Parser<StringInput, Empty> = Combinators.skipMany1(Combinators.Text.letter())
+        let skipMany1Parser: Parser<StringInput, Empty> = Parser.skipMany1(Combinators.Text.letter())
         let input = StringInput("foobar")
 
         let result = skipMany1Parser.parse(input)
@@ -456,7 +456,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testSkipMany1FailureWithEmptyInput() {
-        let skipMany1Parser: Parser<StringInput, Empty> = Combinators.skipMany1(Combinators.Text.letter())
+        let skipMany1Parser: Parser<StringInput, Empty> = Parser.skipMany1(Combinators.Text.letter())
         let input = StringInput("")
 
         let result = skipMany1Parser.parse(input)
@@ -469,7 +469,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testSkipMany1Failure() {
-        let skipMany1Parser: Parser<StringInput, Empty> = Combinators.skipMany1(Combinators.Text.letter())
+        let skipMany1Parser: Parser<StringInput, Empty> = Parser.skipMany1(Combinators.Text.letter())
         let input = StringInput("123")
 
         let result = skipMany1Parser.parse(input)
