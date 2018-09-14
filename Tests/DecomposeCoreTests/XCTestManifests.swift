@@ -19,7 +19,7 @@ import XCTest
 public func allTests() -> [XCTestCaseEntry] {
     return [
         testCase(StringInputTests.allTests),
-        testCase(CombinatorsTests.allTests),
+        testCase(ParserTests.allTests),
         testCase(CombinatorsTextTests.allTests)
     ]
 }

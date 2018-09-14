@@ -14,11 +14,11 @@
 
 import Foundation
 
-/// Convience methods to generate parsers
-public extension Combinators {
+/// Convience methods to generate parsers.
+public enum Combinators {
 
     /// Text related parsers.
-    enum Text {
+    public enum Text {
         /// Returns a `Parser` which tests if the current element is a specific `Character`.
         ///
         /// - Parameters:

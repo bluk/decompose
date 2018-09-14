@@ -77,9 +77,9 @@ public extension Parser {
     ///     - parser2: The second `Parser` to invoke
     /// - Returns: A `Parser` which invokes the first `Parser` parameter, then the second `Parser` parameter and then
     ///           invokes the first `Parser`'s returned function value with the second `Parser`'s returned value.
-    public static func apply<I, V1, V2>(
-        _ parser1: Parser<I, (V1) -> V2>,
-        _ parser2: Parser<I, V1>) -> Parser<I, V2> {
+    public static func apply<V2>(
+        _ parser1: Parser<I, (V2) -> V>,
+        _ parser2: Parser<I, V2>) -> Parser<I, V> {
         return parser1.apply(parser2)
     }
 
