@@ -36,24 +36,6 @@ internal final class StringInputTests: XCTestCase {
         XCTAssertEqual(input.position, 1)
     }
 
-    func testPeekWithCount() {
-        let input = StringInput("Hello, World!")
-
-        XCTAssertEqual(input.position, 0)
-        XCTAssertEqual(String(input.current(count: 5)), "Hello")
-        // Still at the 0 position
-        XCTAssertEqual(input.position, 0)
-    }
-
-    func testOriginalPositionNotAt0AndPeekWithCount() {
-        let input = StringInput("Hello, World!", position: 7)
-
-        XCTAssertEqual(input.position, 7)
-        XCTAssertEqual(String(input.current(count: 5)), "World")
-        // Still at the 0 position
-        XCTAssertEqual(input.position, 7)
-    }
-
     func testAdvanced() {
         let originalInput = StringInput("Hello, World!")
         let newInput = originalInput.advanced()
@@ -76,37 +58,6 @@ internal final class StringInputTests: XCTestCase {
         XCTAssertEqual(originalInput.position, 7)
     }
 
-    func testAdvancedWithCount() {
-        let originalInput = StringInput("Hello, World!")
-        let newInput = originalInput.advanced(by: 5)
-
-        XCTAssertEqual(newInput.current(), ",")
-        XCTAssertEqual(originalInput.current(), "H")
-
-        XCTAssertEqual(newInput.position, 5)
-        XCTAssertEqual(originalInput.position, 0)
-    }
-
-    func testOriginalPositionNotAt0AndAdvancedWithCount() {
-        let originalInput = StringInput("Hello, World!", position: 5)
-        let newInput = originalInput.advanced(by: 2)
-
-        XCTAssertEqual(newInput.current(), "W")
-        XCTAssertEqual(originalInput.current(), ",")
-
-        XCTAssertEqual(newInput.position, 7)
-        XCTAssertEqual(originalInput.position, 5)
-    }
-
-    func testEmptyString() {
-        let input = StringInput("")
-
-        XCTAssertFalse(input.isAvailable)
-        XCTAssertEqual(input.position, 0)
-        XCTAssertNil(input.current())
-        XCTAssertEqual(input.current(count: 2), [])
-    }
-
     func testAdvancedTillEndOfString() {
         let testString = "Hello, World!"
 
@@ -121,32 +72,13 @@ internal final class StringInputTests: XCTestCase {
         XCTAssertFalse(input.isAvailable)
         XCTAssertEqual(input.position, 13)
         XCTAssertNil(input.current())
-        XCTAssertEqual(input.current(count: 1), [])
-    }
-
-    func testAdvancedPastEndOfString() {
-        let originalInput = StringInput("Hello, World!")
-        let newInput = originalInput.advanced(by: 13)
-
-        XCTAssertFalse(newInput.isAvailable)
-        XCTAssertEqual(newInput.position, 13)
-
-        let beyondEndOfStringInput = newInput.advanced()
-        XCTAssertFalse(beyondEndOfStringInput.isAvailable)
-        XCTAssertEqual(beyondEndOfStringInput.position, 14)
     }
 
     static var allTests = [
         ("testInit", testInit),
         ("testInitWithPosition", testInitWithPosition),
-        ("testPeekWithCount", testPeekWithCount),
-        ("testOriginalPositionNotAt0AndPeekWithCount", testOriginalPositionNotAt0AndPeekWithCount),
         ("testAdvanced", testAdvanced),
         ("testOriginalPositionNotAt0AndAdvanced", testOriginalPositionNotAt0AndAdvanced),
-        ("testAdvancedWithCount", testAdvancedWithCount),
-        ("testOriginalPositionNotAt0AndAdvancedWithCount", testOriginalPositionNotAt0AndAdvancedWithCount),
-        ("testEmptyString", testEmptyString),
-        ("testAdvancedTillEndOfString", testAdvancedTillEndOfString),
-        ("testAdvancedPastEndOfString", testAdvancedPastEndOfString)
+        ("testAdvancedTillEndOfString", testAdvancedTillEndOfString)
     ]
 }

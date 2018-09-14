@@ -36,18 +36,7 @@ public struct StringInput: Input, Equatable, Hashable {
         return value[index]
     }
 
-    public func current(count: Int) -> [Character] {
-        guard position < value.count else {
-            return []
-        }
-        let startIndex = value.index(value.startIndex, offsetBy: position)
-        let endIndex = value.index(value.startIndex, offsetBy: position + count)
-        return [Character](value[startIndex..<endIndex])
+    public func advanced() -> StringInput {
+        return StringInput(value, position: position + 1)
     }
-
-    // swiftlint:disable identifier_name
-    public func advanced(by n: Int) -> StringInput {
-        return StringInput(value, position: position + n)
-    }
-    // swiftlint:enable identifier_name
 }

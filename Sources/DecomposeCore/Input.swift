@@ -29,37 +29,8 @@ public protocol Input {
     /// - Returns: The current element.
     func current() -> Element?
 
-    /// Returns the current and next `count - 1` number of elements.
-    ///
-    /// - Parameters:
-    ///     - count: The number of elements to return.
-    /// - Returns: The current and next `count - 1` number of elements.
-    /// - Precondition: `count` must be >= 0.
-    func current(count: Int) -> [Element]
-
     /// Returns an `Input` which is offset by 1 element.
     ///
     /// - Returns: The remaining `Input`.
     func advanced() -> Self
-
-    // swiftlint:disable identifier_name
-    /// Returns an `Input` which is offset by the specified number of elements.
-    ///
-    /// - Parameters:
-    ///     - n: The number of elements to advanced by.
-    /// - Returns: An `Input` which is offset from this value by `n`.
-    /// - Precondition: `n` must be > 0.
-    func advanced(by n: Int) -> Self
-    // swiftlint:enable identifier_name
-}
-
-/// Default implementation of methods for Input.
-public extension Input {
-
-    /// Returns an `Input` which is offset by 1 element.
-    ///
-    /// - Returns: The remaining `Input`.
-    func advanced() -> Self {
-        return advanced(by: 1)
-    }
 }
