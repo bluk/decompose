@@ -61,6 +61,24 @@ public extension Combinators {
             #endif
         }
 
+        /// Parses a non-zero digit.
+        ///
+        /// - Returns: A `Parser` which parses a non-zero digit character.
+        public static func nonzeroDigit<I>() -> Parser<I, Character>
+            where I.Element == Character {
+            return Parser<I, Character>.choice([
+                Combinators.Text.char("1"),
+                Combinators.Text.char("2"),
+                Combinators.Text.char("3"),
+                Combinators.Text.char("4"),
+                Combinators.Text.char("5"),
+                Combinators.Text.char("6"),
+                Combinators.Text.char("7"),
+                Combinators.Text.char("8"),
+                Combinators.Text.char("9")
+            ])
+        }
+
         /// Parses a hexadecimal character.
         ///
         /// - Returns: A `Parser` which parses a hexadecimal character.

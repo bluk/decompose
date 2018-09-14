@@ -69,6 +69,42 @@ internal final class CombinatorsTextTests: XCTestCase {
         XCTAssertEqual(expectedSymbols, Set([Symbol<Character>.predicate(name: "digit", { _ in true })]))
     }
 
+    func testNonzeroDigitSuccess() {
+        let nonzeroDigitParser: Parser<StringInput, [Character]> = Combinators.Text.nonzeroDigit().many()
+        let input = StringInput("123456789")
+
+        let result = nonzeroDigitParser.parse(input)
+        guard case let .success(remainingInput, value) = result else {
+            XCTFail("Expected parse to be successful.")
+            return
+        }
+        XCTAssertEqual(value, ["1", "2", "3", "4", "5", "6", "7", "8", "9"])
+        XCTAssertEqual(remainingInput.position, 9)
+    }
+
+    func testNonzeroDigitFailure() {
+        let nonzeroDigitParser: Parser<StringInput, Character> = Combinators.Text.nonzeroDigit()
+        let input = StringInput("0")
+
+        let result = nonzeroDigitParser.parse(input)
+        guard case let .failure(remainingInput, expectedSymbols) = result else {
+            XCTFail("Expected parse to fail.")
+            return
+        }
+        XCTAssertEqual(remainingInput.position, 0)
+        XCTAssertEqual(expectedSymbols, Set([
+            Symbol<Character>.value("1"),
+            Symbol<Character>.value("2"),
+            Symbol<Character>.value("3"),
+            Symbol<Character>.value("4"),
+            Symbol<Character>.value("5"),
+            Symbol<Character>.value("6"),
+            Symbol<Character>.value("7"),
+            Symbol<Character>.value("8"),
+            Symbol<Character>.value("9")
+        ]))
+    }
+
     func testHexadecimalSuccess() {
         let hexadecimal: Parser<StringInput, [Character]> = Combinators.Text.hexadecimal().many()
         let input = StringInput("1234567890ABCDEF")
