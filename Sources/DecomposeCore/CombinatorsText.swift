@@ -112,6 +112,17 @@ public extension Combinators {
             return hexadecimal().map { Int(String($0), radix: 16)! }
         }
 
+        /// Parses a positive or negative sign.
+        ///
+        /// - Returns: A `Parser` which parses a non-zero digit character.
+        public static func sign<I>() -> Parser<I, Character>
+            where I.Element == Character {
+            return Parser<I, Character>.choice([
+                Combinators.Text.char("+"),
+                Combinators.Text.char("-")
+            ])
+        }
+
         /// Returns a `Parser` which matches a given string.
         ///
         /// - Parameters:

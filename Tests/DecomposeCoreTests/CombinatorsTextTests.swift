@@ -15,7 +15,7 @@
 @testable import DecomposeCore
 import XCTest
 
-// swiftlint:disable type_body_length
+// swiftlint:disable type_body_length file_length
 internal final class CombinatorsTextTests: XCTestCase {
 
     func testIsLetterSuccess() {
@@ -191,6 +191,32 @@ internal final class CombinatorsTextTests: XCTestCase {
         ]))
     }
 
+    func testSignSuccessNegative() {
+        let signParser: Parser<StringInput, Character> = Combinators.Text.sign()
+        let input = StringInput("-")
+
+        let result = signParser.parse(input)
+        guard case let .success(remainingInput, value) = result else {
+            XCTFail("Expected parse to be successful.")
+            return
+        }
+        XCTAssertEqual(value, "-")
+        XCTAssertEqual(remainingInput.position, 1)
+    }
+
+    func testSignSuccessPositive() {
+        let signParser: Parser<StringInput, Character> = Combinators.Text.sign()
+        let input = StringInput("+")
+
+        let result = signParser.parse(input)
+        guard case let .success(remainingInput, value) = result else {
+            XCTFail("Expected parse to be successful.")
+            return
+        }
+        XCTAssertEqual(value, "+")
+        XCTAssertEqual(remainingInput.position, 1)
+    }
+
     func testStringSuccess() {
         let stringParser: Parser<StringInput, String> = Combinators.Text.string("foo")
         let input = StringInput("foo")
@@ -356,6 +382,8 @@ internal final class CombinatorsTextTests: XCTestCase {
         ("testHexadecimalFailure", testHexadecimalFailure),
         ("testHexadecimalAsIntSuccess", testHexadecimalAsIntSuccess),
         ("testHexadecimalAsIntFailure", testHexadecimalAsIntFailure),
+        ("testSignSuccessNegative", testSignSuccessNegative),
+        ("testSignSuccessPositive", testSignSuccessPositive),
         ("testStringSuccess", testStringSuccess),
         ("testStringFailure", testStringFailure),
         ("testStringEmptyReturnValueSuccess", testStringEmptyReturnValueSuccess),
@@ -370,4 +398,4 @@ internal final class CombinatorsTextTests: XCTestCase {
         ("testTabFailure", testTabFailure)
     ]
 }
-// swiftlint:enable type_body_length
+// swiftlint:enable type_body_length file_length
