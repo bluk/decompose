@@ -915,25 +915,7 @@ public extension Parser {
     /// - Parameters:
     ///     - symbol: The value to expect.
     /// - Returns: A `Parser` which accepts the symbol parameter and advances the `Input`.
-    public static func symbol(_ symbol: I.Element) -> Parser<I, I.Element> {
-        return Parser.value(symbol)
-    }
-
-    /// Instantiates a `Parser` which accepts the element parameter and advances the `Input`.
-    ///
-    /// - Parameters:
-    ///     - element: The element to expect.
-    /// - Returns: A `Parser` which accepts the  element parameter and advances the `Input`.
-    public static func value(_ element: I.Element) -> Parser<I, I.Element> {
-        return Parser.value(element: element, value: element)
-    }
-
-    /// Instantiates a `Parser` which accepts the symbol parameter and advances the `Input`.
-    ///
-    /// - Parameters:
-    ///     - symbol: The value to expect.
-    /// - Returns: A `Parser` which accepts the symbol parameter and advances the `Input`.
-    public static func value<I, V>(element: I.Element, value: V) -> Parser<I, V> {
+    public static func value(element: I.Element, value: V) -> Parser<I, V> {
         return Parser<I, V>(acceptsEmpty: false, firstSetSymbols: [Symbol.value(element)]) { input, _ in
             Result.success(input.advanced(), value)
         }
@@ -1193,4 +1175,26 @@ public extension Parser {
 
 }
 
+/// Extension with returned `Value` equal to `Input.Element` conformance.
+public extension Parser where V == I.Element {
+
+    /// Instantiates a `Parser` which accepts the symbol parameter and advances the `Input`.
+    ///
+    /// - Parameters:
+    ///     - symbol: The value to expect.
+    /// - Returns: A `Parser` which accepts the symbol parameter and advances the `Input`.
+    static func symbol(_ symbol: V) -> Parser<I, V> {
+        return Parser.value(symbol)
+    }
+
+    /// Instantiates a `Parser` which accepts the element parameter and advances the `Input`.
+    ///
+    /// - Parameters:
+    ///     - element: The element to expect.
+    /// - Returns: A `Parser` which accepts the  element parameter and advances the `Input`.
+    static func value(_ element: V) -> Parser<I, V> {
+        return Parser.value(element: element, value: element)
+    }
+
+}
 // swiftlint:enable file_length

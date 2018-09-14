@@ -19,7 +19,7 @@ import XCTest
 internal final class CombinatorsTextTests: XCTestCase {
 
     func testIsLetterSuccess() {
-        let letter: Parser<StringInput, Character> = Combinators.Text.letter()
+        let letter = Combinators.Text<StringInput>.letter()
 
         let result = letter.parse(StringInput("A"))
         guard case let .success(remainingInput, value) = result else {
@@ -31,7 +31,7 @@ internal final class CombinatorsTextTests: XCTestCase {
     }
 
     func testIsLetterFailure() {
-        let letter: Parser<StringInput, Character> = Combinators.Text.letter()
+        let letter = Combinators.Text<StringInput>.letter()
         let input = StringInput("1")
 
         let result = letter.parse(input)
@@ -44,7 +44,7 @@ internal final class CombinatorsTextTests: XCTestCase {
     }
 
     func testIsDigitSuccess() {
-        let digit: Parser<StringInput, Character> = Combinators.Text.digit()
+        let digit = Combinators.Text<StringInput>.digit()
         let input = StringInput("1")
 
         let result = digit.parse(input)
@@ -57,7 +57,7 @@ internal final class CombinatorsTextTests: XCTestCase {
     }
 
     func testIsDigitFailure() {
-        let digit: Parser<StringInput, Character> = Combinators.Text.digit()
+        let digit = Combinators.Text<StringInput>.digit()
         let input = StringInput("A")
 
         let result = digit.parse(input)
@@ -70,7 +70,7 @@ internal final class CombinatorsTextTests: XCTestCase {
     }
 
     func testNonzeroDigitSuccess() {
-        let nonzeroDigitParser: Parser<StringInput, [Character]> = Combinators.Text.nonzeroDigit().many()
+        let nonzeroDigitParser = Combinators.Text<StringInput>.nonzeroDigit().many()
         let input = StringInput("123456789")
 
         let result = nonzeroDigitParser.parse(input)
@@ -83,7 +83,7 @@ internal final class CombinatorsTextTests: XCTestCase {
     }
 
     func testNonzeroDigitFailure() {
-        let nonzeroDigitParser: Parser<StringInput, Character> = Combinators.Text.nonzeroDigit()
+        let nonzeroDigitParser = Combinators.Text<StringInput>.nonzeroDigit()
         let input = StringInput("0")
 
         let result = nonzeroDigitParser.parse(input)
@@ -106,7 +106,7 @@ internal final class CombinatorsTextTests: XCTestCase {
     }
 
     func testHexadecimalSuccess() {
-        let hexadecimal: Parser<StringInput, [Character]> = Combinators.Text.hexadecimal().many()
+        let hexadecimal = Combinators.Text<StringInput>.hexadecimal().many()
         let input = StringInput("1234567890ABCDEF")
 
         let result = hexadecimal.parse(input)
@@ -119,7 +119,7 @@ internal final class CombinatorsTextTests: XCTestCase {
     }
 
     func testHexadecimalFailure() {
-        let hexadecimal: Parser<StringInput, Character> = Combinators.Text.hexadecimal()
+        let hexadecimal = Combinators.Text<StringInput>.hexadecimal()
         let input = StringInput("G")
 
         let result = hexadecimal.parse(input)
@@ -149,7 +149,7 @@ internal final class CombinatorsTextTests: XCTestCase {
     }
 
     func testHexadecimalAsIntSuccess() {
-        let hexadecimalAsInt: Parser<StringInput, Int> = Combinators.Text.hexadecimalAsInt()
+        let hexadecimalAsInt = Combinators.Text<StringInput>.hexadecimalAsInt()
         let input = StringInput("B")
 
         let result = hexadecimalAsInt.parse(input)
@@ -162,7 +162,7 @@ internal final class CombinatorsTextTests: XCTestCase {
     }
 
     func testHexadecimalAsIntFailure() {
-        let hexadecimalAsInt: Parser<StringInput, Int> = Combinators.Text.hexadecimalAsInt()
+        let hexadecimalAsInt = Combinators.Text<StringInput>.hexadecimalAsInt()
         let input = StringInput("G")
 
         let result = hexadecimalAsInt.parse(input)
@@ -192,7 +192,7 @@ internal final class CombinatorsTextTests: XCTestCase {
     }
 
     func testSignSuccessNegative() {
-        let signParser: Parser<StringInput, Character> = Combinators.Text.sign()
+        let signParser = Combinators.Text<StringInput>.sign()
         let input = StringInput("-")
 
         let result = signParser.parse(input)
@@ -205,7 +205,7 @@ internal final class CombinatorsTextTests: XCTestCase {
     }
 
     func testSignSuccessPositive() {
-        let signParser: Parser<StringInput, Character> = Combinators.Text.sign()
+        let signParser = Combinators.Text<StringInput>.sign()
         let input = StringInput("+")
 
         let result = signParser.parse(input)
@@ -218,7 +218,7 @@ internal final class CombinatorsTextTests: XCTestCase {
     }
 
     func testStringSuccess() {
-        let stringParser: Parser<StringInput, String> = Combinators.Text.string("foo")
+        let stringParser = Combinators.Text<StringInput>.string("foo")
         let input = StringInput("foo")
 
         let result = stringParser.parse(input)
@@ -231,7 +231,7 @@ internal final class CombinatorsTextTests: XCTestCase {
     }
 
     func testStringFailure() {
-        let stringParser: Parser<StringInput, String> = Combinators.Text.string("foo")
+        let stringParser = Combinators.Text<StringInput>.string("foo")
         let input = StringInput("bar")
 
         let result = stringParser.parse(input)
@@ -244,7 +244,7 @@ internal final class CombinatorsTextTests: XCTestCase {
     }
 
     func testStringEmptyReturnValueSuccess() {
-        let stringParser: Parser<StringInput, Empty> = Combinators.Text.stringEmptyReturnValue("foo")
+        let stringParser = Combinators.Text<StringInput>.stringEmptyReturnValue("foo")
         let input = StringInput("foo")
 
         let result = stringParser.parse(input)
@@ -257,7 +257,7 @@ internal final class CombinatorsTextTests: XCTestCase {
     }
 
     func testStringEmptyReturnValueFailure() {
-        let stringParser: Parser<StringInput, Empty> = Combinators.Text.stringEmptyReturnValue("foo")
+        let stringParser = Combinators.Text<StringInput>.stringEmptyReturnValue("foo")
         let input = StringInput("barfoo")
 
         let result = stringParser.parse(input)
@@ -270,7 +270,7 @@ internal final class CombinatorsTextTests: XCTestCase {
     }
 
     func testWhitespaceSuccessWithSpace() {
-        let whitespaceParser: Parser<StringInput, Character> = Combinators.Text.whitespace()
+        let whitespaceParser = Combinators.Text<StringInput>.whitespace()
         let input = StringInput(" ")
 
         let result = whitespaceParser.parse(input)
@@ -283,7 +283,7 @@ internal final class CombinatorsTextTests: XCTestCase {
     }
 
     func testWhitespaceSuccessWithTab() {
-        let whitespaceParser: Parser<StringInput, Character> = Combinators.Text.whitespace()
+        let whitespaceParser = Combinators.Text<StringInput>.whitespace()
         let input = StringInput("\t")
 
         let result = whitespaceParser.parse(input)
@@ -296,7 +296,7 @@ internal final class CombinatorsTextTests: XCTestCase {
     }
 
     func testWhitespaceFailure() {
-        let whitespaceParser: Parser<StringInput, Character> = Combinators.Text.whitespace()
+        let whitespaceParser = Combinators.Text<StringInput>.whitespace()
         let input = StringInput("\n")
 
         let result = whitespaceParser.parse(input)
@@ -309,7 +309,7 @@ internal final class CombinatorsTextTests: XCTestCase {
     }
 
     func testNewlineSuccessWithCarriageReturn() {
-        let newlineParser: Parser<StringInput, Character> = Combinators.Text.newline()
+        let newlineParser = Combinators.Text<StringInput>.newline()
         let input = StringInput("\n")
 
         let result = newlineParser.parse(input)
@@ -322,7 +322,7 @@ internal final class CombinatorsTextTests: XCTestCase {
     }
 
     func testNewlineSuccessWithLinefeed() {
-        let newlineParser: Parser<StringInput, Character> = Combinators.Text.newline()
+        let newlineParser = Combinators.Text<StringInput>.newline()
         let input = StringInput("\r")
 
         let result = newlineParser.parse(input)
@@ -335,7 +335,7 @@ internal final class CombinatorsTextTests: XCTestCase {
     }
 
     func testNewlineFailure() {
-        let newlineParser: Parser<StringInput, Character> = Combinators.Text.newline()
+        let newlineParser = Combinators.Text<StringInput>.newline()
         let input = StringInput("\t")
 
         let result = newlineParser.parse(input)
@@ -348,7 +348,7 @@ internal final class CombinatorsTextTests: XCTestCase {
     }
 
     func testTabSuccess() {
-        let tabParser: Parser<StringInput, Character> = Combinators.Text.tab()
+        let tabParser = Combinators.Text<StringInput>.tab()
         let input = StringInput("\t")
 
         let result = tabParser.parse(input)
@@ -361,7 +361,7 @@ internal final class CombinatorsTextTests: XCTestCase {
     }
 
     func testTabFailure() {
-        let tabParser: Parser<StringInput, Character> = Combinators.Text.tab()
+        let tabParser = Combinators.Text<StringInput>.tab()
         let input = StringInput("    ")
 
         let result = tabParser.parse(input)

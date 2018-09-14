@@ -18,22 +18,20 @@ import Foundation
 public enum Combinators {
 
     /// Text related parsers.
-    public enum Text {
+    public enum Text<I> where I: Input, I.Element == Character {
         /// Returns a `Parser` which tests if the current element is a specific `Character`.
         ///
         /// - Parameters:
         ///     - value: The `Character` to test with.
         /// - Returns: A `Parser` which tests if the current element is a specific `Character`.
-        public static func char<I>(_ value: Character) -> Parser<I, Character>
-            where I.Element == Character {
+        public static func char(_ value: Character) -> Parser<I, Character> {
             return Parser<I, Character>.symbol(value)
         }
 
         /// Returns a `Parser` which tests if the current element is a letter.
         ///
         /// - Returns: A `Parser` which tests if the current element is a letter.
-        public static func letter<I>() -> Parser<I, Character>
-            where I.Element == Character {
+        public static func letter() -> Parser<I, Character> {
             let characterSet = CharacterSet.letters
             #if swift(>=4.2)
             return Parser<I, Character>.satisfy { $0.unicodeScalars.allSatisfy(characterSet.contains) }
@@ -48,8 +46,7 @@ public enum Combinators {
         /// Returns a `Parser` which tests if the current element is a digit.
         ///
         /// - Returns: A `Parser` which tests if the current element is a digit.
-        public static func digit<I>() -> Parser<I, Character>
-            where I.Element == Character {
+        public static func digit() -> Parser<I, Character> {
             let characterSet = CharacterSet.decimalDigits
             #if swift(>=4.2)
             return Parser<I, Character>.satisfy { $0.unicodeScalars.allSatisfy(characterSet.contains) }
@@ -64,8 +61,7 @@ public enum Combinators {
         /// Parses a non-zero digit.
         ///
         /// - Returns: A `Parser` which parses a non-zero digit character.
-        public static func nonzeroDigit<I>() -> Parser<I, Character>
-            where I.Element == Character {
+        public static func nonzeroDigit() -> Parser<I, Character> {
             return Parser<I, Character>.choice([
                 Combinators.Text.char("1"),
                 Combinators.Text.char("2"),
@@ -82,8 +78,7 @@ public enum Combinators {
         /// Parses a hexadecimal character.
         ///
         /// - Returns: A `Parser` which parses a hexadecimal character.
-        public static func hexadecimal<I>() -> Parser<I, Character>
-            where I.Element == Character {
+        public static func hexadecimal() -> Parser<I, Character> {
             return Parser<I, Character>.choice([
                 Combinators.Text.char("0"),
                 Combinators.Text.char("1"),
@@ -107,16 +102,14 @@ public enum Combinators {
         /// Parse a hexadecimal character and returns an `Int` value.
         ///
         /// - Returns: A `Parser` which parses a hexadecimal character and returns an `Int` value.
-        public static func hexadecimalAsInt<I>() -> Parser<I, Int>
-            where I.Element == Character {
+        public static func hexadecimalAsInt() -> Parser<I, Int> {
             return hexadecimal().map { Int(String($0), radix: 16)! }
         }
 
         /// Parses a positive or negative sign.
         ///
         /// - Returns: A `Parser` which parses a non-zero digit character.
-        public static func sign<I>() -> Parser<I, Character>
-            where I.Element == Character {
+        public static func sign() -> Parser<I, Character> {
             return Parser<I, Character>.choice([
                 Combinators.Text.char("+"),
                 Combinators.Text.char("-")
@@ -128,13 +121,13 @@ public enum Combinators {
         /// - Parameters:
         ///     - value: The `String` to test with.
         /// - Returns: A `Parser` which matches a given string.
-        public static func string<I>(_ value: String) -> Parser<I, String> where I.Element == Character {
+        public static func string(_ value: String) -> Parser<I, String> {
             guard !value.isEmpty else {
                 return Parser<I, String>.pure("")
             }
 
             let firstChar = value.first!
-            return Parser<I, String>.symbol(firstChar)
+            return Parser.symbol(firstChar)
                 .andR(string(String(value.dropFirst())))
                 .andR(Parser<I, String>.pure(value))
         }
@@ -144,8 +137,7 @@ public enum Combinators {
         /// - Parameters:
         ///     - value: The `String` to test with.
         /// - Returns: A `Parser` which matches a given string. If successful, the returned value is an empty array.
-        public static func stringEmptyReturnValue<I>(_ value: String)
-            -> Parser<I, Empty> where I.Element == Character {
+        public static func stringEmptyReturnValue(_ value: String) -> Parser<I, Empty> {
             guard !value.isEmpty else {
                 return Parser<I, Empty>.pure(Empty.empty)
             }
@@ -159,8 +151,7 @@ public enum Combinators {
         /// Returns a `Parser` which tests if the current element is a whitespace character.
         ///
         /// - Returns: A `Parser` which tests if the current element is a whitespace character.
-        public static func whitespace<I>() -> Parser<I, Character>
-            where I.Element == Character {
+        public static func whitespace() -> Parser<I, Character> {
             let characterSet = CharacterSet.whitespaces
             #if swift(>=4.2)
             return Parser<I, Character>.satisfy { $0.unicodeScalars.allSatisfy(characterSet.contains) }
@@ -175,8 +166,7 @@ public enum Combinators {
         /// Returns a `Parser` which tests if the current element is a newline character.
         ///
         /// - Returns: A `Parser` which tests if the current element is a newline character.
-        public static func newline<I>() -> Parser<I, Character>
-            where I.Element == Character {
+        public static func newline() -> Parser<I, Character> {
             let characterSet = CharacterSet.newlines
             #if swift(>=4.2)
             return Parser<I, Character>.satisfy { $0.unicodeScalars.allSatisfy(characterSet.contains) }
@@ -191,8 +181,7 @@ public enum Combinators {
         /// Returns a `Parser` which tests if the current element is a tab character.
         ///
         /// - Returns: A `Parser` which tests if the current element is a tab character.
-        public static func tab<I>() -> Parser<I, Character>
-            where I.Element == Character {
+        public static func tab() -> Parser<I, Character> {
             return Parser<I, Character>.symbol("\t")
         }
     }
