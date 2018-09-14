@@ -17,15 +17,6 @@ import Foundation
 /// Convenience methods to create and compose `Parser`s.
 public enum Combinators {
 
-    /// Instantiates a `Parser` which returns the value parameter and does not advanced the `Input`.
-    ///
-    /// - Parameters:
-    ///     - value: The value to return from the `Parser`.
-    /// - Returns: A `Parser` which returns the value parameter and does not advanced the `Input`.
-    public static func pure<I, V>(_ value: V) -> Parser<I, V> {
-        return Parser<I, V>.pure(value)
-    }
-
     /// Sequentially invokes a `Parser` in the array until one of them succeeds or all of them fail.
     ///
     /// - Parameters:
