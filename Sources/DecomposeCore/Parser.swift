@@ -143,7 +143,7 @@ public extension Parser {
     ///     - parser: The `Parser` to invoke the input with.
     ///     - func1: A function which will transform the `parser`'s return value into a new value.
     /// - Returns: A Parser which transforms the original value to a value using the function.
-    public static func map<I, V1, V2>(_ parser: Parser<I, V1>, _ func1: @escaping (V1) -> V2) -> Parser<I, V2> {
+    public static func map<V2>(_ parser: Parser<I, V>, _ func1: @escaping (V) -> V2) -> Parser<I, V2> {
         return parser.map(func1)
     }
 

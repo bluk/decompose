@@ -178,7 +178,7 @@ internal final class CombinatorsTests: XCTestCase {
 
     func testMapSuccess() {
         let matches2 = Parser<StringInput, Character>.symbol("2")
-        let mappedParser = Combinators.map(matches2) { Int(String($0)) }
+        let mappedParser = Parser.map(matches2) { Int(String($0)) }
 
         let result = mappedParser.parse(StringInput("2"))
         guard case let .success(remainingInput, value) = result else {
@@ -192,7 +192,7 @@ internal final class CombinatorsTests: XCTestCase {
 
     func testMapFailure() {
         let matches2 = Parser<StringInput, Character>.symbol("2")
-        let mappedParser = Combinators.map(matches2) { Int(String($0)) }
+        let mappedParser = Parser.map(matches2) { Int(String($0)) }
 
         let result = mappedParser.parse(StringInput("3"))
         guard case let .failure(remainingInput, expectedSymbols) = result else {
@@ -212,7 +212,7 @@ internal final class CombinatorsTests: XCTestCase {
                 }
             }
         }
-        let applyParser = Combinators.apply(Combinators.apply(Combinators.map(symbol2, func1), symbolTimes), symbol3)
+        let applyParser = Combinators.apply(Combinators.apply(Parser.map(symbol2, func1), symbolTimes), symbol3)
 
         let result = applyParser.parse(StringInput("2*3"))
         guard case let .success(remainingInput, value) = result else {
@@ -233,7 +233,7 @@ internal final class CombinatorsTests: XCTestCase {
                 }
             }
         }
-        let applyParser = Combinators.apply(Combinators.apply(Combinators.map(symbol2, func1), symbolTimes), symbol3)
+        let applyParser = Combinators.apply(Combinators.apply(Parser.map(symbol2, func1), symbolTimes), symbol3)
 
         let result = applyParser.parse(StringInput("2+3"))
         guard case let .failure(remainingInput, expectedSymbols) = result else {

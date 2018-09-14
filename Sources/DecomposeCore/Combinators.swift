@@ -17,18 +17,6 @@ import Foundation
 /// Convenience methods to create and compose `Parser`s.
 public enum Combinators {
 
-    /// Maps a `Parser`'s value using the function parameter.
-    ///
-    /// - Parameters:
-    ///     - parser: The `Parser` to invoke the input with.
-    ///     - func1: A function which will transform the `parser`'s return value into a new value.
-    /// - Returns: A Parser which transforms the original value to a value using the function.
-    public static func map<I, V1, V2>(
-        _ parser: Parser<I, V1>,
-        _ func1: @escaping (V1) -> V2) -> Parser<I, V2> {
-        return parser.map(func1)
-    }
-
     /// Sequentially invokes two Parsers while invoking the second parser's result into the first parser's function.
     ///
     /// - Parameters:
