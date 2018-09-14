@@ -817,7 +817,7 @@ public extension Parser {
     ///     - parserEnd: Parses an end value.
     /// - Returns: A `Parser` which parses `parserV` values zero or more times until `parserEnd` is encountered, and
     ///            returns an array of the `parserV` values.
-    public static func manyTill<I, V, V2>(_ parser: Parser<I, V>, _ parserEnd: Parser<I, V2>) -> Parser<I, [V]> {
+    public static func manyTill<V2>(_ parser: Parser<I, V>, _ parserEnd: Parser<I, V2>) -> Parser<I, [V]> {
         return parser.manyTill(parserEnd)
     }
 

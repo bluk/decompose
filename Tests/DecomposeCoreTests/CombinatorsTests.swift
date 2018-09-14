@@ -1661,7 +1661,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testManyTillSuccess() {
-        let manyTillParser: Parser<StringInput, [Character]> = Combinators.manyTill(
+        let manyTillParser: Parser<StringInput, [Character]> = Parser.manyTill(
             Combinators.Text.digit(),
             Parser<StringInput, Character>.symbol("A")
         )
@@ -1677,7 +1677,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testManyTillSuccessWithAcceptEmptyEndParser() {
-        let manyTillParser: Parser<StringInput, [Character]> = Combinators.manyTill(
+        let manyTillParser: Parser<StringInput, [Character]> = Parser.manyTill(
             Combinators.Text.digit(),
             Parser<StringInput, Character>.pure("A")
         )
@@ -1693,7 +1693,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testManyTillSuccessWithAcceptEmptyManyParser() {
-        let manyTillParser: Parser<StringInput, [Character]> = Combinators.manyTill(
+        let manyTillParser: Parser<StringInput, [Character]> = Parser.manyTill(
             Parser<StringInput, Character>.pure("A"),
             Parser<StringInput, Character>.symbol("B")
         )
@@ -1709,7 +1709,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testManyTillSuccessWithAcceptEmptyManyAndParsers() {
-        let manyTillParser: Parser<StringInput, [Character]> = Combinators.manyTill(
+        let manyTillParser: Parser<StringInput, [Character]> = Parser.manyTill(
             Parser<StringInput, Character>.pure("A"),
             Parser<StringInput, Character>.pure("B")
         )
@@ -1725,7 +1725,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testManyTillSuccessWithNoValues() {
-        let manyTillParser: Parser<StringInput, [Character]> = Combinators.manyTill(
+        let manyTillParser: Parser<StringInput, [Character]> = Parser.manyTill(
             Combinators.Text.digit(),
             Parser<StringInput, Character>.symbol("A")
         )
@@ -1741,7 +1741,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testManyTillFailureWithNoEndValue() {
-        let manyTillParser: Parser<StringInput, [Character]> = Combinators.manyTill(
+        let manyTillParser: Parser<StringInput, [Character]> = Parser.manyTill(
             Combinators.Text.digit(),
             Parser<StringInput, Character>.symbol("A")
         )
@@ -1757,7 +1757,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testManyTillFailureWithUnexpectedInput() {
-        let manyTillParser: Parser<StringInput, [Character]> = Combinators.manyTill(
+        let manyTillParser: Parser<StringInput, [Character]> = Parser.manyTill(
             Combinators.Text.digit(),
             Parser<StringInput, Character>.symbol("A")
         )
