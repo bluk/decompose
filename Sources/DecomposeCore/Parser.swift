@@ -470,7 +470,7 @@ public extension Parser {
     ///     - value: The value to use if the `parserV` fails.
     /// - Returns: A `Parser` which parses an optional operand and an optional repeat of operator and operand where the
     ///            final parsed value is the calculation of the operands with the operators with right associativity.
-    public static func chainr<I, V>(_ parserV: Parser<I, V>, _ parserOp: Parser<I, (V) -> (V) -> V>, _ value: V)
+    public static func chainr(_ parserV: Parser<I, V>, _ parserOp: Parser<I, (V) -> (V) -> V>, _ value: V)
         -> Parser<I, V> {
         return parserV.chainr(parserOp, value)
     }
@@ -495,7 +495,7 @@ public extension Parser {
     ///     - parserOp: The operator Parser.
     /// - Returns: A `Parser` which parses an operand and zero or more operator and operand where the
     ///            final parsed value is the calculation of the operands with the operators with right associativity.
-    public static func chainr1<I, V>(_ parserV: Parser<I, V>, _ parserOp: Parser<I, (V) -> (V) -> V>) -> Parser<I, V> {
+    public static func chainr1(_ parserV: Parser<I, V>, _ parserOp: Parser<I, (V) -> (V) -> V>) -> Parser<I, V> {
         return parserV.chainr1(parserOp)
     }
 
@@ -524,7 +524,7 @@ public extension Parser {
     /// - Returns: A `Parser` which parses an optional operand operand and an optional repeat of operator and operand
     ///            where the final parsed value is the calculation of the operands with the operators with left
     ///            associativity.
-    public static func chainl<I, V>(_ parserV: Parser<I, V>, _ parserOp: Parser<I, (V) -> (V) -> V>, _ value: V)
+    public static func chainl(_ parserV: Parser<I, V>, _ parserOp: Parser<I, (V) -> (V) -> V>, _ value: V)
         -> Parser<I, V> {
         return parserV.chainl(parserOp, value)
     }
@@ -551,7 +551,7 @@ public extension Parser {
     ///     - parserOp: The operator Parser.
     /// - Returns: A `Parser` which parses an operand and zero more operator and operand where the
     ///            final parsed value is the calculation of the operands with the operators with left associativity.
-    public static func chainl1<I, V>(_ parserV: Parser<I, V>, _ parserOp: Parser<I, (V) -> (V) -> V>) -> Parser<I, V> {
+    public static func chainl1(_ parserV: Parser<I, V>, _ parserOp: Parser<I, (V) -> (V) -> V>) -> Parser<I, V> {
         return parserV.chainl1(parserOp)
     }
 

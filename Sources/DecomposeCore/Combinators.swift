@@ -30,59 +30,6 @@ public enum Combinators {
         return parser1.apply(parser2)
     }
 
-    /// Parses an optional operand with an optional repeat of operator and operand where the final parsed value is the
-    /// calculation of the operands with the operators with right associativity.
-    ///
-    /// - Parameters:
-    ///     - parserV: The value operand Parser.
-    ///     - parserOp: The operator Parser.
-    ///     - value: The value to use if the `parserV` fails.
-    /// - Returns: A `Parser` which parses an optional operand and an optional repeat of operator and operand where the
-    ///            final parsed value is the calculation of the operands with the operators with right associativity.
-    public static func chainr<I, V>(_ parserV: Parser<I, V>, _ parserOp: Parser<I, (V) -> (V) -> V>, _ value: V)
-        -> Parser<I, V> {
-            return parserV.chainr(parserOp, value)
-    }
-
-    /// Parses a value operand and zero or more operator and operand where the final parsed value is the
-    /// calculation of the operands with the operators with right associativity.
-    ///
-    /// - Parameters:
-    ///     - parserV: The value operand Parser.
-    ///     - parserOp: The operator Parser.
-    /// - Returns: A `Parser` which parses an operand and zero or more operator and operand where the
-    ///            final parsed value is the calculation of the operands with the operators with right associativity.
-    public static func chainr1<I, V>(_ parserV: Parser<I, V>, _ parserOp: Parser<I, (V) -> (V) -> V>) -> Parser<I, V> {
-        return parserV.chainr1(parserOp)
-    }
-
-    /// Parses an optional operand with an optional repeat of operator and operand where the final parsed value is the
-    /// calculation of the operands with the operators with left associativity.
-    ///
-    /// - Parameters:
-    ///     - parserV: The value operand Parser.
-    ///     - parserOp: The operator Parser.
-    ///     - value: The value to use if the `parserV` fails.
-    /// - Returns: A `Parser` which parses an optional operand operand and an optional repeat of operator and operand
-    ///            where the final parsed value is the calculation of the operands with the operators with left
-    ///            associativity.
-    public static func chainl<I, V>(_ parserV: Parser<I, V>, _ parserOp: Parser<I, (V) -> (V) -> V>, _ value: V)
-        -> Parser<I, V> {
-            return parserV.chainl(parserOp, value)
-    }
-
-    /// Parses a value operand and zero or more operator and operand where the final parsed value is the
-    /// calculation of the operands with the operators with left associativity.
-    ///
-    /// - Parameters:
-    ///     - parserV: The value operand Parser.
-    ///     - parserOp: The operator Parser.
-    /// - Returns: A `Parser` which parses an operand and zero more operator and operand where the
-    ///            final parsed value is the calculation of the operands with the operators with left associativity.
-    public static func chainl1<I, V>(_ parserV: Parser<I, V>, _ parserOp: Parser<I, (V) -> (V) -> V>) -> Parser<I, V> {
-        return parserV.chainl1(parserOp)
-    }
-
     /// Parses zero or more values separated by a separator and returns an array of the parsed values.
     ///
     /// - Parameters:
