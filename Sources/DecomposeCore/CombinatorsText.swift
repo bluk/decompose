@@ -26,7 +26,7 @@ public extension Combinators {
         /// - Returns: A `Parser` which tests if the current element is a specific `Character`.
         public static func char<I>(_ value: Character) -> Parser<I, Character>
             where I.Element == Character {
-            return Parser<I, Character>.satisfy(conditionName: "\"\(value)\"") { $0 == value }
+            return Parser<I, Character>.symbol(value)
         }
 
         /// Returns a `Parser` which tests if the current element is a letter.
