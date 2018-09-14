@@ -30,37 +30,6 @@ public enum Combinators {
         return parser1.apply(parser2)
     }
 
-    /// Returns a `Parser` which attempts the parser parameter and if it succeeds, return the value, but if it fails,
-    /// return nil.
-    ///
-    /// - Parameters:
-    ///     - parser: The Parser to attempt.
-    /// - Returns: A `Parser` which attempts the parser parameter and if it succeeds, return the value, but if it fails,
-    ///            return nil
-    public static func optionOptional<I, V>(_ parser: Parser<I, V>) -> Parser<I, V?> {
-        return parser.optionOptional()
-    }
-
-    /// Returns a `Parser` which attempts the parser parameter and if it succeeds or not, return an `Empty.empty`.
-    ///
-    /// - Parameters:
-    ///     - parser: The Parser to attempt.
-    /// - Returns: A `Parser` which attempts the parser parameter and if it succeeds or not, return an `Empty.empty`.
-    public static func optional<I, V>(_ parser: Parser<I, V>) -> Parser<I, Empty> {
-        return parser.optional()
-    }
-
-    /// Returns a `Parser` which attempts the parser parameter and if it succeeds, return the value, but if it fails,
-    /// return the second paramater.
-    ///
-    /// - Parameters:
-    ///     - parser: The Parser to attempt.
-    /// - Returns: A `Parser` which attempts the parser parameter and if it succeeds, return the value, but if it fails,
-    ///            return nil
-    public static func option<I, V>(_ parser: Parser<I, V>, _ value: V) -> Parser<I, V> {
-        return parser.option(value)
-    }
-
     /// Parses an optional operand with an optional repeat of operator and operand where the final parsed value is the
     /// calculation of the operands with the operators with right associativity.
     ///

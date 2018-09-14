@@ -482,7 +482,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testOptionOptionalWithParserSuccess() {
-        let optParser: Parser<StringInput, Character?> = Combinators.optionOptional(Combinators.Text.letter())
+        let optParser: Parser<StringInput, Character?> = Parser.optionOptional(Combinators.Text.letter())
         let input = StringInput("f")
 
         let result = optParser.parse(input)
@@ -495,7 +495,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testOptionOptionalWithParserFailure() {
-        let optParser: Parser<StringInput, Character?> = Combinators.optionOptional(Combinators.Text.letter())
+        let optParser: Parser<StringInput, Character?> = Parser.optionOptional(Combinators.Text.letter())
         let input = StringInput("")
 
         let result = optParser.parse(input)
@@ -508,7 +508,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testOptionAndValueWithParserSuccess() {
-        let optParser: Parser<StringInput, Character> = Combinators.option(Combinators.Text.letter(), "A")
+        let optParser: Parser<StringInput, Character> = Parser.option(Combinators.Text.letter(), "A")
         let input = StringInput("f")
 
         let result = optParser.parse(input)
@@ -521,7 +521,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testOptionAndValueWithParserFailure() {
-        let optParser: Parser<StringInput, Character> = Combinators.option(Combinators.Text.letter(), "A")
+        let optParser: Parser<StringInput, Character> = Parser.option(Combinators.Text.letter(), "A")
         let input = StringInput("")
 
         let result = optParser.parse(input)
@@ -534,7 +534,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testOptionalAndEmptyWithParserSuccess() {
-        let optParser: Parser<StringInput, Empty> = Combinators.optional(Combinators.Text.letter())
+        let optParser: Parser<StringInput, Empty> = Parser.optional(Combinators.Text.letter())
         let input = StringInput("f")
 
         let result = optParser.parse(input)
@@ -547,7 +547,7 @@ internal final class CombinatorsTests: XCTestCase {
     }
 
     func testOptionalAndEmptyWithParserFailure() {
-        let optParser: Parser<StringInput, Empty> = Combinators.optional(Combinators.Text.letter())
+        let optParser: Parser<StringInput, Empty> = Parser.optional(Combinators.Text.letter())
         let input = StringInput("")
 
         let result = optParser.parse(input)

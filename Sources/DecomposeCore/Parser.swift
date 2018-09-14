@@ -413,7 +413,7 @@ public extension Parser {
     ///     - parser: The Parser to attempt.
     /// - Returns: A `Parser` which attempts the parser parameter and if it succeeds, return the value, but if it fails,
     ///            return nil
-    public static func optionOptional<I, V>(_ parser: Parser<I, V>) -> Parser<I, V?> {
+    public static func optionOptional(_ parser: Parser<I, V>) -> Parser<I, V?> {
         return parser.optionOptional()
     }
 
@@ -429,7 +429,7 @@ public extension Parser {
     /// - Parameters:
     ///     - parser: The Parser to attempt.
     /// - Returns: A `Parser` which attempts the parser parameter and if it succeeds or not, return an `Empty.empty`.
-    public static func optional<I, V>(_ parser: Parser<I, V>) -> Parser<I, Empty> {
+    public static func optional(_ parser: Parser<I, V>) -> Parser<I, Empty> {
         return parser.optional()
     }
 
@@ -448,7 +448,7 @@ public extension Parser {
     ///     - value: The value to return if the `Parser` does not succeed.
     /// - Returns: A `Parser` which attempts the parser parameter and if it succeeds, return the value, but if it fails,
     ///            return nil
-    public static func option<I, V>(_ parser: Parser<I, V>, _ value: V) -> Parser<I, V> {
+    public static func option(_ parser: Parser<I, V>, _ value: V) -> Parser<I, V> {
         return parser.option(value)
     }
 
