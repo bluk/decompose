@@ -61,6 +61,39 @@ public extension Combinators {
             #endif
         }
 
+        /// Parses a hexadecimal character.
+        ///
+        /// - Returns: A `Parser` which parses a hexadecimal character.
+        public static func hexadecimal<I>() -> Parser<I, Character>
+            where I.Element == Character {
+            return Parser<I, Character>.choice([
+                Combinators.Text.char("0"),
+                Combinators.Text.char("1"),
+                Combinators.Text.char("2"),
+                Combinators.Text.char("3"),
+                Combinators.Text.char("4"),
+                Combinators.Text.char("5"),
+                Combinators.Text.char("6"),
+                Combinators.Text.char("7"),
+                Combinators.Text.char("8"),
+                Combinators.Text.char("9"),
+                Combinators.Text.char("A"),
+                Combinators.Text.char("B"),
+                Combinators.Text.char("C"),
+                Combinators.Text.char("D"),
+                Combinators.Text.char("E"),
+                Combinators.Text.char("F")
+            ])
+        }
+
+        /// Parse a hexadecimal character and returns an `Int` value.
+        ///
+        /// - Returns: A `Parser` which parses a hexadecimal character and returns an `Int` value.
+        public static func hexadecimalAsInt<I>() -> Parser<I, Int>
+            where I.Element == Character {
+            return hexadecimal().map { Int(String($0), radix: 16)! }
+        }
+
         /// Returns a `Parser` which matches a given string.
         ///
         /// - Parameters:
