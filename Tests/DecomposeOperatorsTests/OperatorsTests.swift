@@ -19,8 +19,8 @@ import XCTest
 internal final class OperatorsTests: XCTestCase {
 
     func testChoiceSuccessAsOperator() {
-        let matchesF: Parser<StringInput, Character> = Combinators.symbol("f")
-        let matchesB: Parser<StringInput, Character> = Combinators.symbol("b")
+        let matchesF = Parser<StringInput, Character>.symbol("f")
+        let matchesB = Parser<StringInput, Character>.symbol("b")
         let choiceParser = matchesF <|> matchesB
         let input = StringInput("b")
 
@@ -35,7 +35,7 @@ internal final class OperatorsTests: XCTestCase {
     }
 
     func testMapSuccessAsOperator() {
-        let matches2: Parser<StringInput, Character> = Combinators.symbol("2")
+        let matches2 = Parser<StringInput, Character>.symbol("2")
         let mappedParser = { Int(String($0)) } <^> matches2
 
         let result = mappedParser.parse(StringInput("2"))
@@ -49,9 +49,9 @@ internal final class OperatorsTests: XCTestCase {
     }
 
     func testApplySuccessAsOperator() {
-        let symbol2: Parser<StringInput, Character> = Combinators.symbol("2")
-        let symbol3: Parser<StringInput, Character> = Combinators.symbol("3")
-        let symbolTimes: Parser<StringInput, Character> = Combinators.symbol("*")
+        let symbol2 = Parser<StringInput, Character>.symbol("2")
+        let symbol3 = Parser<StringInput, Character>.symbol("3")
+        let symbolTimes = Parser<StringInput, Character>.symbol("*")
         let func1: (Character) -> (Character) -> (Character) -> Int? = { first in { _ in { second in
             Int(String(first))! * Int(String(second))!
             }

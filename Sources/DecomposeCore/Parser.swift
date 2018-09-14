@@ -166,7 +166,7 @@ public extension Parser {
     ///     - parser1: The first `Parser` to invoke the input with.
     ///     - parser2: The second `Parser` to invoke the input with if the first `Parser` fails.
     /// - Returns: A `Parser` which invokes the first `Parser`, and if it fails, invokes the second `Parser`.
-    public static func or<I, V>(_ parser1: Parser<I, V>, _ parser2: Parser<I, V>) -> Parser<I, V> {
+    public static func or(_ parser1: Parser<I, V>, _ parser2: Parser<I, V>) -> Parser<I, V> {
         return parser1.or(parser2)
     }
 
@@ -421,7 +421,7 @@ public extension Parser {
     ///
     /// - Returns: A `Parser` which if it succeeds, return the value, but if it fails, return nil.
     public func optionOptional() -> Parser<I, V?> {
-        return map({ Optional($0) }).or(Parser<I, V>.pure(nil))
+        return map({ Optional($0) }).or(Parser.pure(nil))
     }
 
     /// Returns a `Parser` which attempts the parser parameter and if it succeeds or not, return an `Empty.empty`.
@@ -915,8 +915,8 @@ public extension Parser {
     /// - Parameters:
     ///     - symbol: The value to expect.
     /// - Returns: A `Parser` which accepts the symbol parameter and advances the `Input`.
-    public static func symbol<I, S>(_ symbol: S) -> Parser<I, S> where S == I.Element {
-        return value(symbol)
+    public static func symbol(_ symbol: I.Element) -> Parser<I, I.Element> {
+        return Parser.value(symbol)
     }
 
     /// Instantiates a `Parser` which accepts the element parameter and advances the `Input`.
@@ -924,8 +924,8 @@ public extension Parser {
     /// - Parameters:
     ///     - element: The element to expect.
     /// - Returns: A `Parser` which accepts the  element parameter and advances the `Input`.
-    public static func value<I, E>(_ element: E) -> Parser<I, E> where E == I.Element {
-        return Parser<I, E>.value(element: element, value: element)
+    public static func value(_ element: I.Element) -> Parser<I, I.Element> {
+        return Parser.value(element: element, value: element)
     }
 
     /// Instantiates a `Parser` which accepts the symbol parameter and advances the `Input`.
@@ -933,7 +933,7 @@ public extension Parser {
     /// - Parameters:
     ///     - symbol: The value to expect.
     /// - Returns: A `Parser` which accepts the symbol parameter and advances the `Input`.
-    public static func value<I, E, V>(element: E, value: V) -> Parser<I, V> where E == I.Element {
+    public static func value<I, V>(element: I.Element, value: V) -> Parser<I, V> {
         return Parser<I, V>(acceptsEmpty: false, firstSetSymbols: [Symbol.value(element)]) { input, _ in
             Result.success(input.advanced(), value)
         }

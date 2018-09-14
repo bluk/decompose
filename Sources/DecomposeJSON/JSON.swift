@@ -107,9 +107,9 @@ internal let element: Parser<StringInput, JSONValue> = Combinators.Text.whitespa
 
 internal let string: Parser<StringInput, JSONValue> = Combinators
     .between(
-        Combinators.symbol("\""),
+        Parser<StringInput, JSONValue>.symbol("\""),
         characters,
-        Combinators.symbol("\"")
+        Parser<StringInput, JSONValue>.symbol("\"")
     )
     .map { JSONValue.string($0) }
 
@@ -157,7 +157,7 @@ internal let number: Parser<StringInput, JSONValue> = { int in { frac in { exp i
 internal let int: Parser<StringInput, String> = Combinators.Text.char("0").map { value in String(value) }
     <|> Combinators
         .sequence([
-            Combinators.symbol("-").map { [[$0]] },
+            Parser<StringInput, JSONValue>.symbol("-").map { [[$0]] },
             Combinators.Text.char("0").map { [[$0]] }
                 <|> Combinators.sequence([
                     Combinators.Text.nonzeroDigit().map { [$0] },
@@ -173,10 +173,10 @@ internal let int: Parser<StringInput, String> = Combinators.Text.char("0").map {
         .map { String($0.flatMap { $0 }) }
 
 internal let frac: Parser<StringInput, String> =
-    (Combinators.symbol(".") *> Combinators.Text.digit().many1()).map { String($0) }.option("")
+    (Parser<StringInput, JSONValue>.symbol(".") *> Combinators.Text.digit().many1()).map { String($0) }.option("")
 
-internal let exp: Parser<StringInput, String> =
-    ({ sign in { digits in sign + digits } } <^> (Combinators.symbol("E") <|> Combinators.symbol("e"))
+internal let exp =
+    ({ sign in { digits in sign + digits } } <^> (Parser<StringInput, JSONValue>.symbol("E") <|> Parser<StringInput, JSONValue>.symbol("e"))
         *> Combinators.Text.sign().map { [$0] }.option([]) <*> Combinators.Text.digit().many1())
         .map { String($0) }.option("")
 

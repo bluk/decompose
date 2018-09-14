@@ -26,18 +26,6 @@ public enum Combinators {
         return Parser<I, V>.pure(value)
     }
 
-    /// Returns a `Parser` which invokes the first `Parser`, and if it fails, invokes the second `Parser`.
-    ///
-    /// - Parameters:
-    ///     - parser1: The first `Parser` to invoke the input with.
-    ///     - parser2: The second `Parser` to invoke the input with if the first `Parser` fails.
-    /// - Returns: A `Parser` which invokes the first `Parser`, and if it fails, invokes the second `Parser`.
-    public static func or<I, V>(
-        _ parser1: Parser<I, V>,
-        _ parser2: Parser<I, V>) -> Parser<I, V> {
-        return parser1.or(parser2)
-    }
-
     /// Sequentially invokes a `Parser` in the array until one of them succeeds or all of them fail.
     ///
     /// - Parameters:
@@ -296,15 +284,6 @@ public enum Combinators {
     ///            returns an array of the `parserV` values.
     public static func manyTill<I, V, V2>(_ parser: Parser<I, V>, _ parserEnd: Parser<I, V2>) -> Parser<I, [V]> {
         return parser.manyTill(parserEnd)
-    }
-
-    /// Instantiates a `Parser` which accepts the symbol parameter and advances the `Input`.
-    ///
-    /// - Parameters:
-    ///     - symbol: The value to expect.
-    /// - Returns: A `Parser` which accepts the symbol parameter and advances the `Input`.
-    public static func symbol<I, S>(_ symbol: S) -> Parser<I, S> where S == I.Element {
-        return Parser<I, S>.symbol(symbol)
     }
 
     // swiftlint:enable cyclomatic_complexity function_body_length
