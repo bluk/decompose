@@ -38,6 +38,12 @@ internal let package = Package(
             dependencies: ["DecomposeCore"]),
         .testTarget(
             name: "DecomposeOperatorsTests",
-            dependencies: ["DecomposeOperators"])
+            dependencies: ["DecomposeOperators"]),
+        .target(
+            name: "DecomposeJSON",
+            dependencies: ["DecomposeCore", "DecomposeOperators"]),
+        .testTarget(
+            name: "DecomposeJSONTests",
+            dependencies: ["DecomposeJSON"])
     ]
 )

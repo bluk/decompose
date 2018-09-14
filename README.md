@@ -48,6 +48,7 @@ bundle install
 swift package generate-xcodeproj
 jazzy -o docs/DecomposeCore --module "DecomposeCore" --module-version latest -g https://github.com/bluk/decompose
 jazzy -o docs/DecomposeOperators --module "DecomposeOperators" --module-version latest -g https://github.com/bluk/decompose
+jazzy -o docs/DecomposeJSON --module "DecomposeJSON" --module-version latest -g https://github.com/bluk/decompose
 ```
 
 ## Related Links

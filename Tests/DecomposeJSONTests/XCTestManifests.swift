@@ -14,14 +14,11 @@
 
 import XCTest
 
-import DecomposeCoreTests
-import DecomposeJSONTests
-import DecomposeOperatorsTests
-
-private var tests = [XCTestCaseEntry]()
-
-tests += DecomposeCoreTests.allTests()
-tests += DecomposeOperatorsTests.allTests()
-tests += DecomposeJSONTests.allTests()
-
-XCTMain(tests)
+#if !os(macOS)
+/// Returns all the runnable tests
+public func allTests() -> [XCTestCaseEntry] {
+    return [
+        testCase(JSONTests.allTests)
+    ]
+}
+#endif
