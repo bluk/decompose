@@ -14,7 +14,7 @@
     <a title="Text Enumeration Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="../../index.html">DecomposeCore Docs</a> (97% documented)</p>
+        <p><a href="../../index.html">DecomposeCore Docs</a> (95% documented)</p>
         <p class="header-right"><a href="https://github.com/bluk/decompose"><img src="../../img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
@@ -75,7 +75,7 @@
             <h1>Text</h1>
               <div class="declaration">
                 <div class="language">
-                  <pre class="highlight swift"><code><span class="kd">enum</span> <span class="kt">Text</span></code></pre>
+                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">enum</span> <span class="kt">Text</span><span class="o">&lt;</span><span class="kt">I</span><span class="o">&gt;</span> <span class="k">where</span> <span class="kt">I</span> <span class="p">:</span> <span class="kt"><a href="../../Protocols/Input.html">Input</a></span><span class="p">,</span> <span class="kt">I</span><span class="o">.</span><span class="kt">Element</span> <span class="o">==</span> <span class="kt">Character</span></code></pre>
 
                 </div>
               </div>
@@ -88,9 +88,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:13DecomposeCore11CombinatorsO4TextO4charyAA6ParserVyxSJGSJAA5InputRzSJ7ElementRtzlFZ"></a>
+                    <a name="/s:13DecomposeCore11CombinatorsO4TextO4charyAA6ParserVyxSJGSJFZ"></a>
                     <a name="//apple_ref/swift/Method/char(_:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:13DecomposeCore11CombinatorsO4TextO4charyAA6ParserVyxSJGSJAA5InputRzSJ7ElementRtzlFZ">char(_:)</a>
+                    <a class="token" href="#/s:13DecomposeCore11CombinatorsO4TextO4charyAA6ParserVyxSJGSJFZ">char(_:)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -105,8 +105,7 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="n">char</span><span class="o">&lt;</span><span class="kt">I</span><span class="o">&gt;</span><span class="p">(</span><span class="n">_</span> <span class="nv">value</span><span class="p">:</span> <span class="kt">Character</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../../Structs/Parser.html">Parser</a></span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">Character</span><span class="o">&gt;</span>
-    <span class="k">where</span> <span class="kt">I</span><span class="o">.</span><span class="kt">Element</span> <span class="o">==</span> <span class="kt">Character</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">char</span><span class="p">(</span><span class="n">_</span> <span class="nv">value</span><span class="p">:</span> <span class="kt">Character</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../../Structs/Parser.html">Parser</a></span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">Character</span><span class="o">&gt;</span></code></pre>
 
                         </div>
                       </div>
@@ -139,9 +138,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:13DecomposeCore11CombinatorsO4TextO6letterAA6ParserVyxSJGyAA5InputRzSJ7ElementRtzlFZ"></a>
+                    <a name="/s:13DecomposeCore11CombinatorsO4TextO6letterAA6ParserVyxSJGyFZ"></a>
                     <a name="//apple_ref/swift/Method/letter()" class="dashAnchor"></a>
-                    <a class="token" href="#/s:13DecomposeCore11CombinatorsO4TextO6letterAA6ParserVyxSJGyAA5InputRzSJ7ElementRtzlFZ">letter()</a>
+                    <a class="token" href="#/s:13DecomposeCore11CombinatorsO4TextO6letterAA6ParserVyxSJGyFZ">letter()</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -156,8 +155,7 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="n">letter</span><span class="o">&lt;</span><span class="kt">I</span><span class="o">&gt;</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kt"><a href="../../Structs/Parser.html">Parser</a></span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">Character</span><span class="o">&gt;</span>
-    <span class="k">where</span> <span class="kt">I</span><span class="o">.</span><span class="kt">Element</span> <span class="o">==</span> <span class="kt">Character</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">letter</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kt"><a href="../../Structs/Parser.html">Parser</a></span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">Character</span><span class="o">&gt;</span></code></pre>
 
                         </div>
                       </div>
@@ -171,9 +169,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:13DecomposeCore11CombinatorsO4TextO5digitAA6ParserVyxSJGyAA5InputRzSJ7ElementRtzlFZ"></a>
+                    <a name="/s:13DecomposeCore11CombinatorsO4TextO5digitAA6ParserVyxSJGyFZ"></a>
                     <a name="//apple_ref/swift/Method/digit()" class="dashAnchor"></a>
-                    <a class="token" href="#/s:13DecomposeCore11CombinatorsO4TextO5digitAA6ParserVyxSJGyAA5InputRzSJ7ElementRtzlFZ">digit()</a>
+                    <a class="token" href="#/s:13DecomposeCore11CombinatorsO4TextO5digitAA6ParserVyxSJGyFZ">digit()</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -188,8 +186,7 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="n">digit</span><span class="o">&lt;</span><span class="kt">I</span><span class="o">&gt;</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kt"><a href="../../Structs/Parser.html">Parser</a></span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">Character</span><span class="o">&gt;</span>
-    <span class="k">where</span> <span class="kt">I</span><span class="o">.</span><span class="kt">Element</span> <span class="o">==</span> <span class="kt">Character</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">digit</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kt"><a href="../../Structs/Parser.html">Parser</a></span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">Character</span><span class="o">&gt;</span></code></pre>
 
                         </div>
                       </div>
@@ -203,9 +200,133 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:13DecomposeCore11CombinatorsO4TextO6stringyAA6ParserVyxSSGSSAA5InputRzSJ7ElementRtzlFZ"></a>
+                    <a name="/s:13DecomposeCore11CombinatorsO4TextO12nonzeroDigitAA6ParserVyxSJGyFZ"></a>
+                    <a name="//apple_ref/swift/Method/nonzeroDigit()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13DecomposeCore11CombinatorsO4TextO12nonzeroDigitAA6ParserVyxSJGyFZ">nonzeroDigit()</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Parses a non-zero digit.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">nonzeroDigit</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kt"><a href="../../Structs/Parser.html">Parser</a></span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">Character</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>A <code><a href="../../Structs/Parser.html">Parser</a></code> which parses a non-zero digit character.</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13DecomposeCore11CombinatorsO4TextO11hexadecimalAA6ParserVyxSJGyFZ"></a>
+                    <a name="//apple_ref/swift/Method/hexadecimal()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13DecomposeCore11CombinatorsO4TextO11hexadecimalAA6ParserVyxSJGyFZ">hexadecimal()</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Parses a hexadecimal character.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">hexadecimal</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kt"><a href="../../Structs/Parser.html">Parser</a></span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">Character</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>A <code><a href="../../Structs/Parser.html">Parser</a></code> which parses a hexadecimal character.</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13DecomposeCore11CombinatorsO4TextO16hexadecimalAsIntAA6ParserVyxSiGyFZ"></a>
+                    <a name="//apple_ref/swift/Method/hexadecimalAsInt()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13DecomposeCore11CombinatorsO4TextO16hexadecimalAsIntAA6ParserVyxSiGyFZ">hexadecimalAsInt()</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Parse a hexadecimal character and returns an <code>Int</code> value.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">hexadecimalAsInt</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kt"><a href="../../Structs/Parser.html">Parser</a></span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">Int</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>A <code><a href="../../Structs/Parser.html">Parser</a></code> which parses a hexadecimal character and returns an <code>Int</code> value.</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13DecomposeCore11CombinatorsO4TextO4signAA6ParserVyxSJGyFZ"></a>
+                    <a name="//apple_ref/swift/Method/sign()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13DecomposeCore11CombinatorsO4TextO4signAA6ParserVyxSJGyFZ">sign()</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Parses a positive or negative sign.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">sign</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kt"><a href="../../Structs/Parser.html">Parser</a></span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">Character</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>A <code><a href="../../Structs/Parser.html">Parser</a></code> which parses a non-zero digit character.</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13DecomposeCore11CombinatorsO4TextO6stringyAA6ParserVyxSSGSSFZ"></a>
                     <a name="//apple_ref/swift/Method/string(_:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:13DecomposeCore11CombinatorsO4TextO6stringyAA6ParserVyxSSGSSAA5InputRzSJ7ElementRtzlFZ">string(_:)</a>
+                    <a class="token" href="#/s:13DecomposeCore11CombinatorsO4TextO6stringyAA6ParserVyxSSGSSFZ">string(_:)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -220,7 +341,7 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="n">string</span><span class="o">&lt;</span><span class="kt">I</span><span class="o">&gt;</span><span class="p">(</span><span class="n">_</span> <span class="nv">value</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../../Structs/Parser.html">Parser</a></span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">String</span><span class="o">&gt;</span> <span class="k">where</span> <span class="kt">I</span> <span class="p">:</span> <span class="kt"><a href="../../Protocols/Input.html">Input</a></span><span class="p">,</span> <span class="kt">I</span><span class="o">.</span><span class="kt">Element</span> <span class="o">==</span> <span class="kt">Character</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">string</span><span class="p">(</span><span class="n">_</span> <span class="nv">value</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../../Structs/Parser.html">Parser</a></span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">String</span><span class="o">&gt;</span></code></pre>
 
                         </div>
                       </div>
@@ -253,9 +374,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:13DecomposeCore11CombinatorsO4TextO22stringEmptyReturnValueyAA6ParserVyxAA0F0OGSSAA5InputRzSJ7ElementRtzlFZ"></a>
+                    <a name="/s:13DecomposeCore11CombinatorsO4TextO22stringEmptyReturnValueyAA6ParserVyxAA0F0OGSSFZ"></a>
                     <a name="//apple_ref/swift/Method/stringEmptyReturnValue(_:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:13DecomposeCore11CombinatorsO4TextO22stringEmptyReturnValueyAA6ParserVyxAA0F0OGSSAA5InputRzSJ7ElementRtzlFZ">stringEmptyReturnValue(_:)</a>
+                    <a class="token" href="#/s:13DecomposeCore11CombinatorsO4TextO22stringEmptyReturnValueyAA6ParserVyxAA0F0OGSSFZ">stringEmptyReturnValue(_:)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -270,8 +391,7 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="n">stringEmptyReturnValue</span><span class="o">&lt;</span><span class="kt">I</span><span class="o">&gt;</span><span class="p">(</span><span class="n">_</span> <span class="nv">value</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span>
-    <span class="o">-&gt;</span> <span class="kt"><a href="../../Structs/Parser.html">Parser</a></span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt"><a href="../../Enums/Empty.html">Empty</a></span><span class="o">&gt;</span> <span class="k">where</span> <span class="kt">I</span><span class="o">.</span><span class="kt">Element</span> <span class="o">==</span> <span class="kt">Character</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">stringEmptyReturnValue</span><span class="p">(</span><span class="n">_</span> <span class="nv">value</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../../Structs/Parser.html">Parser</a></span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt"><a href="../../Enums/Empty.html">Empty</a></span><span class="o">&gt;</span></code></pre>
 
                         </div>
                       </div>
@@ -304,9 +424,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:13DecomposeCore11CombinatorsO4TextO10whitespaceAA6ParserVyxSJGyAA5InputRzSJ7ElementRtzlFZ"></a>
+                    <a name="/s:13DecomposeCore11CombinatorsO4TextO10whitespaceAA6ParserVyxSJGyFZ"></a>
                     <a name="//apple_ref/swift/Method/whitespace()" class="dashAnchor"></a>
-                    <a class="token" href="#/s:13DecomposeCore11CombinatorsO4TextO10whitespaceAA6ParserVyxSJGyAA5InputRzSJ7ElementRtzlFZ">whitespace()</a>
+                    <a class="token" href="#/s:13DecomposeCore11CombinatorsO4TextO10whitespaceAA6ParserVyxSJGyFZ">whitespace()</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -321,8 +441,7 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="n">whitespace</span><span class="o">&lt;</span><span class="kt">I</span><span class="o">&gt;</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kt"><a href="../../Structs/Parser.html">Parser</a></span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">Character</span><span class="o">&gt;</span>
-    <span class="k">where</span> <span class="kt">I</span><span class="o">.</span><span class="kt">Element</span> <span class="o">==</span> <span class="kt">Character</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">whitespace</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kt"><a href="../../Structs/Parser.html">Parser</a></span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">Character</span><span class="o">&gt;</span></code></pre>
 
                         </div>
                       </div>
@@ -336,9 +455,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:13DecomposeCore11CombinatorsO4TextO7newlineAA6ParserVyxSJGyAA5InputRzSJ7ElementRtzlFZ"></a>
+                    <a name="/s:13DecomposeCore11CombinatorsO4TextO7newlineAA6ParserVyxSJGyFZ"></a>
                     <a name="//apple_ref/swift/Method/newline()" class="dashAnchor"></a>
-                    <a class="token" href="#/s:13DecomposeCore11CombinatorsO4TextO7newlineAA6ParserVyxSJGyAA5InputRzSJ7ElementRtzlFZ">newline()</a>
+                    <a class="token" href="#/s:13DecomposeCore11CombinatorsO4TextO7newlineAA6ParserVyxSJGyFZ">newline()</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -353,8 +472,7 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="n">newline</span><span class="o">&lt;</span><span class="kt">I</span><span class="o">&gt;</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kt"><a href="../../Structs/Parser.html">Parser</a></span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">Character</span><span class="o">&gt;</span>
-    <span class="k">where</span> <span class="kt">I</span><span class="o">.</span><span class="kt">Element</span> <span class="o">==</span> <span class="kt">Character</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">newline</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kt"><a href="../../Structs/Parser.html">Parser</a></span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">Character</span><span class="o">&gt;</span></code></pre>
 
                         </div>
                       </div>
@@ -368,9 +486,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:13DecomposeCore11CombinatorsO4TextO3tabAA6ParserVyxSJGyAA5InputRzSJ7ElementRtzlFZ"></a>
+                    <a name="/s:13DecomposeCore11CombinatorsO4TextO3tabAA6ParserVyxSJGyFZ"></a>
                     <a name="//apple_ref/swift/Method/tab()" class="dashAnchor"></a>
-                    <a class="token" href="#/s:13DecomposeCore11CombinatorsO4TextO3tabAA6ParserVyxSJGyAA5InputRzSJ7ElementRtzlFZ">tab()</a>
+                    <a class="token" href="#/s:13DecomposeCore11CombinatorsO4TextO3tabAA6ParserVyxSJGyFZ">tab()</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -385,8 +503,7 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="n">tab</span><span class="o">&lt;</span><span class="kt">I</span><span class="o">&gt;</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kt"><a href="../../Structs/Parser.html">Parser</a></span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">Character</span><span class="o">&gt;</span>
-    <span class="k">where</span> <span class="kt">I</span><span class="o">.</span><span class="kt">Element</span> <span class="o">==</span> <span class="kt">Character</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">tab</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kt"><a href="../../Structs/Parser.html">Parser</a></span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">Character</span><span class="o">&gt;</span></code></pre>
 
                         </div>
                       </div>
@@ -402,7 +519,7 @@
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2018 <a class="link" href="" target="_blank" rel="external"></a>. All rights reserved. (Last updated: 2018-09-13)</p>
+          <p>&copy; 2018 <a class="link" href="" target="_blank" rel="external"></a>. All rights reserved. (Last updated: 2018-09-14)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>

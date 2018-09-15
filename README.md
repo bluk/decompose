@@ -4,9 +4,10 @@
 
 [![Build Status](https://travis-ci.com/bluk/decompose.svg?branch=master)](https://travis-ci.com/bluk/decompose)
 
-A(nother) parser combinator library inspired mainly by [Parsec](https://hackage.haskell.org/package/parsec) and
-a port of some of the functionality from
-[funcj.parser, Java parser combinator framework](https://github.com/typemeta/funcj/tree/master/parser).
+A(nother) parser combinator library inspired by
+[Parsec: Direct Style Monadic Parser Combinators for the Real World](https://www.microsoft.com/en-us/research/people/daan/#!publications),
+[Deterministic, Error-Correcting Combinator Parsers](http://www.staff.science.uu.nl/~swier101/Papers/1996/DetErrCorrComPars.pdf),
+and [funcj.parser, Java parser combinator framework](https://github.com/typemeta/funcj/tree/master/parser).
 
 ## Getting Started
 
@@ -15,8 +16,23 @@ own package, add the following dependency:
 
 ```
 dependencies: [
-    .package(url: "https://github.com/bluk/decompose.git", from: "0.1.0")
+    .package(url: "https://github.com/bluk/decompose.git", from: "0.2.0")
 ]
+```
+
+Be sure to also add `Decompose` as a dependency in your `.target` like:
+
+```
+.target(
+  name: "YourTarget",
+  dependencies: ["Decompose"]),
+```
+
+In your code:
+
+```
+import DecomposeCore
+import DecomposeOperators
 ```
 
 ## Documentation
@@ -56,8 +72,8 @@ jazzy -o docs/DecomposeJSON --module "DecomposeJSON" --module-version latest -g 
 * [Parsec](https://hackage.haskell.org/package/parsec)
 * [Parsec: Direct Style Monadic Parser Combinators for the Real World](https://www.microsoft.com/en-us/research/people/daan/#!publications)
 * [Haskell/do notation](https://en.wikibooks.org/wiki/Haskell/do_notation)
-* [Nom, Rust parser combinator framework](https://github.com/Geal/nom/)
 * [ParsecJ: Java monadic parser combinator framework for constructing LL(1) parsers](https://github.com/jon-hanson/parsecj/)
+* [Deterministic, Error-Correcting Combinator Parsers](http://www.staff.science.uu.nl/~swier101/Papers/1996/DetErrCorrComPars.pdf)
 * [funcj.parser, Java parser combinator framework](https://github.com/typemeta/funcj/tree/master/parser)
 * [Functional Swift](https://www.objc.io/books/functional-swift/)
 
