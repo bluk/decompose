@@ -12,17 +12,25 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 
+import Foundation
+
 /// Use a `String` as an `Input` type.
 public struct StringInput: Input, Equatable, Hashable {
 
-    public init(_ value: String, position: Int = 0) {
+    public init(_ value: String, position: Int = 0, lineCount: Int = 0, charCount: Int = 0) {
         self.value = value
         self.position = position
+        self.lineCount = lineCount
+        self.charCount = charCount
     }
 
     let value: String
 
     public let position: Int
+
+    public let lineCount: Int
+
+    public let charCount: Int
 
     public var isAvailable: Bool {
         return self.position < self.value.count
@@ -37,6 +45,13 @@ public struct StringInput: Input, Equatable, Hashable {
     }
 
     public func advanced() -> StringInput {
-        return StringInput(value, position: position + 1)
+        if let currentChar = current() {
+            let isNewline = !currentChar.unicodeScalars.contains { !CharacterSet.newlines.contains($0) }
+            if isNewline {
+                return StringInput(value, position: position + 1, lineCount: lineCount + 1, charCount: 0)
+            }
+        }
+
+        return StringInput(value, position: position + 1, lineCount: lineCount, charCount: charCount + 1)
     }
 }

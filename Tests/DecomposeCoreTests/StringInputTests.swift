@@ -74,11 +74,35 @@ internal final class StringInputTests: XCTestCase {
         XCTAssertNil(input.current())
     }
 
+    func testCharacterCountAndLineCount() {
+        let testString = "Hi!\nBye!"
+
+        var input = StringInput(testString)
+        for (counter, char) in testString.enumerated() {
+            XCTAssertTrue(input.isAvailable)
+            XCTAssertEqual(input.position, counter)
+            if counter > 3 {
+                XCTAssertEqual(input.charCount, counter - 4)
+                XCTAssertEqual(input.lineCount, 1)
+            } else {
+                XCTAssertEqual(input.charCount, counter)
+                XCTAssertEqual(input.lineCount, 0)
+            }
+            XCTAssertEqual(input.current(), char)
+            input = input.advanced()
+        }
+
+        XCTAssertFalse(input.isAvailable)
+        XCTAssertEqual(input.position, 8)
+        XCTAssertNil(input.current())
+    }
+
     static var allTests = [
         ("testInit", testInit),
         ("testInitWithPosition", testInitWithPosition),
         ("testAdvanced", testAdvanced),
         ("testOriginalPositionNotAt0AndAdvanced", testOriginalPositionNotAt0AndAdvanced),
-        ("testAdvancedTillEndOfString", testAdvancedTillEndOfString)
+        ("testAdvancedTillEndOfString", testAdvancedTillEndOfString),
+        ("testCharacterCountAndLineCount", testCharacterCountAndLineCount)
     ]
 }

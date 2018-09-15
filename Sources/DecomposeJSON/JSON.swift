@@ -51,7 +51,7 @@ public enum JSONValue: Equatable {
 /// The result from decoding JSON
 public enum JSONResult {
     case success(JSONValue)
-    case failure(Int, Set<String>)
+    case failure(lineCount: Int, charCount: Int, Set<String>)
 }
 
 internal let json: Parser<StringInput, JSONValue> = element
@@ -69,13 +69,13 @@ internal let value: Parser<StringInput, JSONValue> = Parser.choice([
 internal let object: Parser<StringInput, JSONValue> = Parser
     .between(
         Combinators.Text.char("{"),
-        Combinators.Text.whitespace().many() *> members <* Combinators.Text.whitespace().many(),
+        whitespace *> members <* whitespace,
         Combinators.Text.char("}")
     )
     .map { values in JSONValue.object(values) }
 
 internal let members: Parser<StringInput, [String: JSONValue]> = member.sepBy(
-    Combinators.Text.whitespace().many() *> Combinators.Text.char(",") <* Combinators.Text.whitespace().many()
+    whitespace *> Combinators.Text.char(",") <* whitespace
 ).map { values in
     values.reduce([:], { result, value in result.merging(value, uniquingKeysWith: { first, _ in first }) })
 }
@@ -87,23 +87,23 @@ internal let member: Parser<StringInput, [String: JSONValue]> = { key in { value
         fatalError("Expected the key to be a string.")
     }
 } <^>
-    Combinators.Text.whitespace().many() *> string <*> Combinators.Text.whitespace().many()
-    *> Combinators.Text.char(":") *> Combinators.Text.whitespace().many() *> element
+    whitespace *> string <*> whitespace
+    *> Combinators.Text.char(":") *> whitespace *> element
 
 internal let array: Parser<StringInput, JSONValue> = Parser
     .between(
         Combinators.Text.char("["),
-        Combinators.Text.whitespace().many() *> elements <* Combinators.Text.whitespace().many(),
+        whitespace *> elements <* whitespace,
         Combinators.Text.char("]")
     )
     .map { values in JSONValue.array(values) }
 
 internal let elements: Parser<StringInput, [JSONValue]> = element.sepBy(
-    Combinators.Text.whitespace().many() *> Combinators.Text.char(",") <* Combinators.Text.whitespace().many()
+    whitespace *> Combinators.Text.char(",") <* whitespace
 )
 
-internal let element: Parser<StringInput, JSONValue> = Combinators.Text.whitespace().many()
-    *> Parser<StringInput, JSONValue>.wrap { value } <* Combinators.Text.whitespace().many()
+internal let element: Parser<StringInput, JSONValue> = whitespace
+    *> Parser<StringInput, JSONValue>.wrap { value } <* whitespace
 
 internal let string: Parser<StringInput, JSONValue> = Parser
     .between(
@@ -180,6 +180,10 @@ internal let exp =
         *> Combinators.Text.sign().map { [$0] }.option([]) <*> Combinators.Text.digit().many1())
         .map { String($0) }.option("")
 
+internal let whitespace = whitespaceChar.many()
+
+internal let whitespaceChar = Combinators.Text<StringInput>.whitespace() <|> Combinators.Text<StringInput>.newline()
+
 /// The JSON enum contains methods to process JSON.
 public enum JSON {
     /// Decodes a JSON string.
@@ -193,9 +197,17 @@ public enum JSON {
         case let .success(_, value):
             return JSONResult.success(value)
         case let .failure(remainingInput, expectedSymbols):
-            return JSONResult.failure(remainingInput.position, Set(expectedSymbols.map { "\($0)" }))
+            return JSONResult.failure(
+                lineCount: remainingInput.lineCount,
+                charCount: remainingInput.charCount,
+                Set(expectedSymbols.map { "\($0)" })
+            )
         case let .failureUnavailableInput(remainingInput, expectedSymbols):
-            return JSONResult.failure(remainingInput.position, Set(expectedSymbols.map { "\($0)" }))
+            return JSONResult.failure(
+                lineCount: remainingInput.lineCount,
+                charCount: remainingInput.charCount,
+                Set(expectedSymbols.map { "\($0)" })
+            )
         }
     }
 }

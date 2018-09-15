@@ -15,7 +15,8 @@
 @testable import DecomposeJSON
 import XCTest
 
-// swiftlint:disable type_body_length
+// swiftlint:disable type_body_length file_length
+
 internal final class JSONTests: XCTestCase {
 
     func testTrueValue() {
@@ -83,12 +84,20 @@ internal final class JSONTests: XCTestCase {
     func testNumberFailureLeadingZero() {
         let input = "0123"
         let result = JSON.decode(input)
-        guard case let .failure(position, expectedSymbols) = result else {
+        guard case let .failure(lineCount, charCount, expectedSymbols) = result else {
             XCTFail("Expected parse to fail.")
             return
         }
-        XCTAssertEqual(position, 1)
-        XCTAssertEqual(expectedSymbols, ["predicate(id: whitespace)", "empty", "value(.)", "value(e)", "value(E)"])
+        XCTAssertEqual(lineCount, 0)
+        XCTAssertEqual(charCount, 1)
+        XCTAssertEqual(expectedSymbols, [
+            "predicate(id: whitespace)",
+            "empty",
+            "value(.)",
+            "value(e)",
+            "value(E)",
+            "predicate(id: newline)"
+        ])
     }
 
     func testMinusBeforeNumberValue() {
@@ -114,12 +123,19 @@ internal final class JSONTests: XCTestCase {
     func testMinusZeroFollowedByNumberFailure() {
         let input = "-01"
         let result = JSON.decode(input)
-        guard case let .failure(position, expectedSymbols) = result else {
+        guard case let .failure(lineCount, charCount, expectedSymbols) = result else {
             XCTFail("Expected parse to fail.")
             return
         }
-        XCTAssertEqual(position, 2)
-        XCTAssertEqual(expectedSymbols, ["predicate(id: whitespace)", "empty", "value(.)", "value(e)", "value(E)"])
+        XCTAssertEqual(lineCount, 0)
+        XCTAssertEqual(charCount, 2)
+        XCTAssertEqual(expectedSymbols, [
+            "predicate(id: whitespace)",
+            "empty", "value(.)",
+            "value(e)",
+            "value(E)",
+            "predicate(id: newline)"
+        ])
     }
 
     func testString() {
@@ -196,13 +212,15 @@ internal final class JSONTests: XCTestCase {
         let input = "[true, ]"
         print(input)
         let result = JSON.decode(input)
-        guard case let .failure(position, expectedSymbols) = result else {
+        guard case let .failure(lineCount, charCount, expectedSymbols) = result else {
             XCTFail("Expected parse to fail.")
             return
         }
-        XCTAssertEqual(position, 7)
+        XCTAssertEqual(lineCount, 0)
+        XCTAssertEqual(charCount, 7)
         XCTAssertEqual(expectedSymbols, [
             "predicate(id: whitespace)",
+            "predicate(id: newline)",
             "value(n)",
             "value(t)",
             "value(f)",
@@ -219,20 +237,23 @@ internal final class JSONTests: XCTestCase {
             "value(6)",
             "value(7)",
             "value(8)",
-            "value(9)"])
+            "value(9)"
+        ])
     }
 
     func testArrayFailureWithOnlyComma() {
         let input = "[, ]"
         print(input)
         let result = JSON.decode(input)
-        guard case let .failure(position, expectedSymbols) = result else {
+        guard case let .failure(lineCount, charCount, expectedSymbols) = result else {
             XCTFail("Expected parse to fail.")
             return
         }
-        XCTAssertEqual(position, 1)
+        XCTAssertEqual(lineCount, 0)
+        XCTAssertEqual(charCount, 1)
         XCTAssertEqual(expectedSymbols, [
             "predicate(id: whitespace)",
+            "predicate(id: newline)",
             "value(n)",
             "value(t)",
             "value(f)",
@@ -270,23 +291,31 @@ internal final class JSONTests: XCTestCase {
         let input = "{ , }"
         print(input)
         let result = JSON.decode(input)
-        guard case let .failure(position, expectedSymbols) = result else {
+        guard case let .failure(lineCount, charCount, expectedSymbols) = result else {
             XCTFail("Expected parse to fail.")
             return
         }
-        XCTAssertEqual(position, 2)
-        XCTAssertEqual(expectedSymbols, ["predicate(id: whitespace)", "value(\")", "value(})", "empty"])
+        XCTAssertEqual(lineCount, 0)
+        XCTAssertEqual(charCount, 2)
+        XCTAssertEqual(expectedSymbols, [
+            "predicate(id: whitespace)",
+            "value(\")",
+            "value(})",
+            "empty",
+            "predicate(id: newline)"
+        ])
     }
 
     func testObjectFailureWithOnlyKey() {
         let input = "{ \"A\" }"
         print(input)
         let result = JSON.decode(input)
-        guard case let .failure(position, expectedSymbols) = result else {
+        guard case let .failure(lineCount, charCount, expectedSymbols) = result else {
             XCTFail("Expected parse to fail.")
             return
         }
-        XCTAssertEqual(position, 6)
+        XCTAssertEqual(lineCount, 0)
+        XCTAssertEqual(charCount, 6)
         XCTAssertEqual(expectedSymbols, ["value(:)"])
     }
 
@@ -294,11 +323,12 @@ internal final class JSONTests: XCTestCase {
         let input = "{ \"A\"  : }"
         print(input)
         let result = JSON.decode(input)
-        guard case let .failure(position, expectedSymbols) = result else {
+        guard case let .failure(lineCount, charCount, expectedSymbols) = result else {
             XCTFail("Expected parse to fail.")
             return
         }
-        XCTAssertEqual(position, 9)
+        XCTAssertEqual(lineCount, 0)
+        XCTAssertEqual(charCount, 9)
         XCTAssertEqual(expectedSymbols, [
             "value({)",
             "value(0)",
@@ -308,6 +338,7 @@ internal final class JSONTests: XCTestCase {
             "value([)",
             "value(\")",
             "predicate(id: whitespace)",
+            "predicate(id: newline)",
             "value(-)",
             "value(1)",
             "value(2)",
@@ -325,11 +356,25 @@ internal final class JSONTests: XCTestCase {
         let input = "{ "
         print(input)
         let result = JSON.decode(input)
-        guard case let .failure(position, expectedSymbols) = result else {
+        guard case let .failure(lineCount, charCount, expectedSymbols) = result else {
             XCTFail("Expected parse to fail.")
             return
         }
-        XCTAssertEqual(position, 2)
+        XCTAssertEqual(lineCount, 0)
+        XCTAssertEqual(charCount, 2)
+        XCTAssertEqual(expectedSymbols, ["value(})"])
+    }
+
+    func testObjectFailureMultipleLinesMissingClosingBrace() {
+        let input = "{\n\n "
+        print(input)
+        let result = JSON.decode(input)
+        guard case let .failure(lineCount, charCount, expectedSymbols) = result else {
+            XCTFail("Expected parse to fail.")
+            return
+        }
+        XCTAssertEqual(lineCount, 2)
+        XCTAssertEqual(charCount, 1)
         XCTAssertEqual(expectedSymbols, ["value(})"])
     }
 
@@ -355,7 +400,8 @@ internal final class JSONTests: XCTestCase {
         ("testObject", testObject),
         ("testObjectFailureWithTrailingComma", testObjectFailureWithTrailingComma),
         ("testObjectFailureWithOnlyKey", testObjectFailureWithOnlyKey),
-        ("testObjectFailureWithOnlyKeyAndColon", testObjectFailureWithOnlyKeyAndColon)
+        ("testObjectFailureWithOnlyKeyAndColon", testObjectFailureWithOnlyKeyAndColon),
+        ("testObjectFailureMultipleLinesMissingClosingBrace", testObjectFailureMultipleLinesMissingClosingBrace)
     ]
 }
-// swiftlint:enable type_body_length
+// swiftlint:enable type_body_length file_length
