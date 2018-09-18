@@ -1,3 +1,5 @@
+disabled_rules:
+  - trailing_comma
 opt_in_rules:
   - anyobject_protocol
   - array_init
