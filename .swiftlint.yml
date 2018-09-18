@@ -1,5 +1,3 @@
-disabled_rules:
-  - trailing_comma
 opt_in_rules:
   - anyobject_protocol
   - array_init
@@ -50,6 +48,7 @@ opt_in_rules:
   - sorted_first_last
   - sorted_imports
   - switch_case_on_newline
+  - trailing_comma
   - unavailable_function
   - unneeded_parentheses_in_closure_argument
   - untyped_error_in_catch
@@ -76,5 +75,8 @@ file_header:
 
 file_name:
   excluded: ['CombinatorsText.swift']
+trailing_comma:
+  mandatory_comma: true
+  severity: error
 excluded:
   - .build

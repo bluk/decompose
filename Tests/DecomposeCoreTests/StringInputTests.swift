@@ -103,6 +103,6 @@ internal final class StringInputTests: XCTestCase {
         ("testAdvanced", testAdvanced),
         ("testOriginalPositionNotAt0AndAdvanced", testOriginalPositionNotAt0AndAdvanced),
         ("testAdvancedTillEndOfString", testAdvancedTillEndOfString),
-        ("testCharacterCountAndLineCount", testCharacterCountAndLineCount)
+        ("testCharacterCountAndLineCount", testCharacterCountAndLineCount),
     ]
 }

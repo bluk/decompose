@@ -71,7 +71,7 @@ public enum Combinators {
                 Combinators.Text.char("6"),
                 Combinators.Text.char("7"),
                 Combinators.Text.char("8"),
-                Combinators.Text.char("9")
+                Combinators.Text.char("9"),
             ])
         }
 
@@ -95,7 +95,7 @@ public enum Combinators {
                 Combinators.Text.char("C"),
                 Combinators.Text.char("D"),
                 Combinators.Text.char("E"),
-                Combinators.Text.char("F")
+                Combinators.Text.char("F"),
             ])
         }
 
@@ -112,7 +112,7 @@ public enum Combinators {
         public static func sign() -> Parser<I, Character> {
             return Parser<I, Character>.choice([
                 Combinators.Text.char("+"),
-                Combinators.Text.char("-")
+                Combinators.Text.char("-"),
             ])
         }
 

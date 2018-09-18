@@ -72,6 +72,6 @@ internal final class OperatorsTests: XCTestCase {
     static var allTests = [
         ("testChoiceSuccessAsOperator", testChoiceSuccessAsOperator),
         ("testMapSuccessAsOperator", testMapSuccessAsOperator),
-        ("testApplySuccessAsOperator", testApplySuccessAsOperator)
+        ("testApplySuccessAsOperator", testApplySuccessAsOperator),
     ]
 }

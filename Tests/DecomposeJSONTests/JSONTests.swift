@@ -96,7 +96,7 @@ internal final class JSONTests: XCTestCase {
             "value(.)",
             "value(e)",
             "value(E)",
-            "predicate(id: newline)"
+            "predicate(id: newline)",
         ])
     }
 
@@ -134,7 +134,7 @@ internal final class JSONTests: XCTestCase {
             "empty", "value(.)",
             "value(e)",
             "value(E)",
-            "predicate(id: newline)"
+            "predicate(id: newline)",
         ])
     }
 
@@ -204,7 +204,7 @@ internal final class JSONTests: XCTestCase {
             JSONValue.literalFalse,
             JSONValue.literalNull,
             JSONValue.string("A"),
-            JSONValue.number("1", "", "")
+            JSONValue.number("1", "", ""),
         ]))
     }
 
@@ -237,7 +237,7 @@ internal final class JSONTests: XCTestCase {
             "value(6)",
             "value(7)",
             "value(8)",
-            "value(9)"
+            "value(9)",
         ])
     }
 
@@ -272,7 +272,7 @@ internal final class JSONTests: XCTestCase {
             "value(6)",
             "value(7)",
             "value(8)",
-            "value(9)"
+            "value(9)",
         ])
     }
 
@@ -302,7 +302,7 @@ internal final class JSONTests: XCTestCase {
             "value(\")",
             "value(})",
             "empty",
-            "predicate(id: newline)"
+            "predicate(id: newline)",
         ])
     }
 
@@ -348,7 +348,7 @@ internal final class JSONTests: XCTestCase {
             "value(6)",
             "value(7)",
             "value(8)",
-            "value(9)"
+            "value(9)",
         ])
     }
 
@@ -401,7 +401,7 @@ internal final class JSONTests: XCTestCase {
         ("testObjectFailureWithTrailingComma", testObjectFailureWithTrailingComma),
         ("testObjectFailureWithOnlyKey", testObjectFailureWithOnlyKey),
         ("testObjectFailureWithOnlyKeyAndColon", testObjectFailureWithOnlyKeyAndColon),
-        ("testObjectFailureMultipleLinesMissingClosingBrace", testObjectFailureMultipleLinesMissingClosingBrace)
+        ("testObjectFailureMultipleLinesMissingClosingBrace", testObjectFailureMultipleLinesMissingClosingBrace),
     ]
 }
 // swiftlint:enable type_body_length file_length

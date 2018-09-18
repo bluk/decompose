@@ -172,7 +172,7 @@ internal final class ParserTests: XCTestCase {
         XCTAssertEqual(expectedSymbols, Set([
             Symbol<Character>.value("f"),
             Symbol<Character>.value("b"),
-            Symbol<Character>.value("o")
+            Symbol<Character>.value("o"),
         ]))
     }
 
@@ -1199,7 +1199,7 @@ internal final class ParserTests: XCTestCase {
     func testCountSuccessWithAcceptEmptyParserInSequence() {
         let countParser = Parser.sequence([
             Parser.count(Parser<StringInput, Character>.pure("A"), 3),
-            Parser.count(Parser<StringInput, Character>.symbol("B"), 1)
+            Parser.count(Parser<StringInput, Character>.symbol("B"), 1),
         ])
         let input = StringInput("B")
 
@@ -1879,7 +1879,7 @@ internal final class ParserTests: XCTestCase {
     func testSequenceSuccess() {
         let sequenceParser = Parser.sequence([
             Parser<StringInput, Character>.symbol("A"),
-            Parser<StringInput, Character>.symbol("B")
+            Parser<StringInput, Character>.symbol("B"),
         ])
         let input = StringInput("AB")
 
@@ -1897,7 +1897,7 @@ internal final class ParserTests: XCTestCase {
             Parser<StringInput, Character>.symbol("A"),
             Parser<StringInput, Character>.pure("B"),
             Parser<StringInput, Character>.symbol("C"),
-            Parser<StringInput, Character>.pure("D")
+            Parser<StringInput, Character>.pure("D"),
         ])
         let input = StringInput("AC")
 
@@ -1913,7 +1913,7 @@ internal final class ParserTests: XCTestCase {
     func testSequenceFailureWithParseFailure() {
         let sequenceParser = Parser.sequence([
             Parser<StringInput, Character>.symbol("A"),
-            Parser<StringInput, Character>.symbol("B")
+            Parser<StringInput, Character>.symbol("B"),
         ])
         let input = StringInput("AC")
 
@@ -1929,7 +1929,7 @@ internal final class ParserTests: XCTestCase {
     func testSequenceFailureWithUnavailableInput() {
         let sequenceParser = Parser.sequence([
             Parser<StringInput, Character>.symbol("A"),
-            Parser<StringInput, Character>.symbol("B")
+            Parser<StringInput, Character>.symbol("B"),
         ])
         let input = StringInput("")
 
@@ -1945,7 +1945,7 @@ internal final class ParserTests: XCTestCase {
     func testSequenceFailureWithMissingSequence() {
         let sequenceParser = Parser.sequence([
             Parser<StringInput, Character>.symbol("A"),
-            Parser<StringInput, Character>.symbol("B")
+            Parser<StringInput, Character>.symbol("B"),
         ])
         let input = StringInput("A")
 
@@ -1962,7 +1962,7 @@ internal final class ParserTests: XCTestCase {
         let traverseParser = Parser.traverse(
             [
                 Parser<StringInput, Character>.symbol("1"),
-                Parser<StringInput, Character>.symbol("2")
+                Parser<StringInput, Character>.symbol("2"),
             ], { value in
                 Int(String(value))!
             }
@@ -1984,7 +1984,7 @@ internal final class ParserTests: XCTestCase {
                 Parser<StringInput, Character>.symbol("1"),
                 Parser<StringInput, Character>.pure("2"),
                 Parser<StringInput, Character>.symbol("3"),
-                Parser<StringInput, Character>.pure("4")
+                Parser<StringInput, Character>.pure("4"),
             ], { value in
                 Int(String(value))!
             }
@@ -2004,7 +2004,7 @@ internal final class ParserTests: XCTestCase {
         let traverseParser = Parser.traverse(
             [
                 Parser<StringInput, Character>.symbol("1"),
-                Parser<StringInput, Character>.symbol("2")
+                Parser<StringInput, Character>.symbol("2"),
             ], { value in
                 Int(String(value))!
             }
@@ -2024,7 +2024,7 @@ internal final class ParserTests: XCTestCase {
         let traverseParser = Parser.traverse(
             [
                 Parser<StringInput, Character>.symbol("1"),
-                Parser<StringInput, Character>.symbol("2")
+                Parser<StringInput, Character>.symbol("2"),
             ], { value in
                 Int(String(value))!
             }
@@ -2044,7 +2044,7 @@ internal final class ParserTests: XCTestCase {
         let traverseParser = Parser.traverse(
             [
                 Parser<StringInput, Character>.symbol("1"),
-                Parser<StringInput, Character>.symbol("2")
+                Parser<StringInput, Character>.symbol("2"),
             ], { value in
                 Int(String(value))!
             }
@@ -2186,7 +2186,7 @@ internal final class ParserTests: XCTestCase {
         ("testTraverseSuccessWithEmptyAccept", testTraverseSuccessWithEmptyAccept),
         ("testTraverseFailureWithParseFailure", testTraverseFailureWithParseFailure),
         ("testTraverseFailureWithUnavailableInput", testTraverseFailureWithUnavailableInput),
-        ("testTraverseFailureWithMissingSequence", testTraverseFailureWithMissingSequence)
+        ("testTraverseFailureWithMissingSequence", testTraverseFailureWithMissingSequence),
     ]
 }
 // swiftlint:enable type_body_length file_length

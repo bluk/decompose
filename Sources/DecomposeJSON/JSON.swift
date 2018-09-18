@@ -63,7 +63,7 @@ internal let value: Parser<StringInput, JSONValue> = Parser.choice([
     number,
     Combinators.Text.string("true").map { _ in JSONValue.literalTrue },
     Combinators.Text.string("false").map { _ in JSONValue.literalFalse },
-    Combinators.Text.string("null").map { _ in JSONValue.literalNull }
+    Combinators.Text.string("null").map { _ in JSONValue.literalNull },
 ])
 
 internal let object: Parser<StringInput, JSONValue> = Parser
@@ -161,14 +161,14 @@ internal let int: Parser<StringInput, String> = Combinators.Text.char("0").map {
             Combinators.Text.char("0").map { [[$0]] }
                 <|> Parser.sequence([
                     Combinators.Text.nonzeroDigit().map { [$0] },
-                    Combinators.Text.digit().many()
-                ])
+                    Combinators.Text.digit().many(),
+                ]),
         ])
         .map { String($0.flatMap { $0.flatMap { $0 } }) }
     <|> Parser
         .sequence([
             Combinators.Text.nonzeroDigit().map { [$0] },
-            Combinators.Text.digit().many()
+            Combinators.Text.digit().many(),
         ])
         .map { String($0.flatMap { $0 }) }
 

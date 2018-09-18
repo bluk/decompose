@@ -101,7 +101,7 @@ internal final class CombinatorsTextTests: XCTestCase {
             Symbol<Character>.value("6"),
             Symbol<Character>.value("7"),
             Symbol<Character>.value("8"),
-            Symbol<Character>.value("9")
+            Symbol<Character>.value("9"),
         ]))
     }
 
@@ -144,7 +144,7 @@ internal final class CombinatorsTextTests: XCTestCase {
             Symbol<Character>.value("C"),
             Symbol<Character>.value("D"),
             Symbol<Character>.value("E"),
-            Symbol<Character>.value("F")
+            Symbol<Character>.value("F"),
         ]))
     }
 
@@ -187,7 +187,7 @@ internal final class CombinatorsTextTests: XCTestCase {
             Symbol<Character>.value("C"),
             Symbol<Character>.value("D"),
             Symbol<Character>.value("E"),
-            Symbol<Character>.value("F")
+            Symbol<Character>.value("F"),
         ]))
     }
 
@@ -395,7 +395,7 @@ internal final class CombinatorsTextTests: XCTestCase {
         ("testNewlineSuccessWithLinefeed", testNewlineSuccessWithLinefeed),
         ("testNewlineFailure", testNewlineFailure),
         ("testTabSuccess", testTabSuccess),
-        ("testTabFailure", testTabFailure)
+        ("testTabFailure", testTabFailure),
     ]
 }
 // swiftlint:enable type_body_length file_length
