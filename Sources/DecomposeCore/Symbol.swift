@@ -15,7 +15,6 @@
 /// Possible next symbols that can be accepted from the `Input`.
 public enum Symbol<E>: Comparable, Hashable, CustomDebugStringConvertible
     where E: Comparable, E: Hashable {
-
     #if swift(>=4.2)
     public func hash(into hasher: inout Hasher) {
         switch self {
@@ -29,6 +28,7 @@ public enum Symbol<E>: Comparable, Hashable, CustomDebugStringConvertible
             hasher.combine(value)
         }
     }
+
     #else
     public var hashValue: Int {
         switch self {
@@ -94,6 +94,7 @@ public enum Symbol<E>: Comparable, Hashable, CustomDebugStringConvertible
             }
         }
     }
+
     // swiftlint:enable cyclomatic_complexity function_body_length
 
     public static func == (lhs: Symbol<E>, rhs: Symbol<E>) -> Bool {

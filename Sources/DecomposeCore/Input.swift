@@ -14,7 +14,6 @@
 
 /// A view for a collection of values.
 public protocol Input {
-
     /// The individual element type.
     associatedtype Element
 

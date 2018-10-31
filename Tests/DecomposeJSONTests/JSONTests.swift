@@ -18,7 +18,6 @@ import XCTest
 // swiftlint:disable type_body_length file_length
 
 internal final class JSONTests: XCTestCase {
-
     func testTrueValue() {
         let input = "true"
         let result = JSON.decode(input)
@@ -90,14 +89,16 @@ internal final class JSONTests: XCTestCase {
         }
         XCTAssertEqual(lineCount, 0)
         XCTAssertEqual(charCount, 1)
-        XCTAssertEqual(expectedSymbols, [
-            "predicate(id: whitespace)",
-            "empty",
-            "value(.)",
-            "value(e)",
-            "value(E)",
-            "predicate(id: newline)",
-        ])
+        XCTAssertEqual(
+            expectedSymbols, [
+                "predicate(id: whitespace)",
+                "empty",
+                "value(.)",
+                "value(e)",
+                "value(E)",
+                "predicate(id: newline)",
+            ]
+        )
     }
 
     func testMinusBeforeNumberValue() {
@@ -129,13 +130,15 @@ internal final class JSONTests: XCTestCase {
         }
         XCTAssertEqual(lineCount, 0)
         XCTAssertEqual(charCount, 2)
-        XCTAssertEqual(expectedSymbols, [
-            "predicate(id: whitespace)",
-            "empty", "value(.)",
-            "value(e)",
-            "value(E)",
-            "predicate(id: newline)",
-        ])
+        XCTAssertEqual(
+            expectedSymbols, [
+                "predicate(id: whitespace)",
+                "empty", "value(.)",
+                "value(e)",
+                "value(E)",
+                "predicate(id: newline)",
+            ]
+        )
     }
 
     func testString() {
@@ -199,13 +202,17 @@ internal final class JSONTests: XCTestCase {
             XCTFail("Expected parse to be successful.")
             return
         }
-        XCTAssertEqual(value, JSONValue.array([
-            JSONValue.literalTrue,
-            JSONValue.literalFalse,
-            JSONValue.literalNull,
-            JSONValue.string("A"),
-            JSONValue.number("1", "", ""),
-        ]))
+        XCTAssertEqual(
+            value, JSONValue.array(
+                [
+                    JSONValue.literalTrue,
+                    JSONValue.literalFalse,
+                    JSONValue.literalNull,
+                    JSONValue.string("A"),
+                    JSONValue.number("1", "", ""),
+                ]
+            )
+        )
     }
 
     func testArrayFailureWithTrailingComma() {
@@ -218,27 +225,29 @@ internal final class JSONTests: XCTestCase {
         }
         XCTAssertEqual(lineCount, 0)
         XCTAssertEqual(charCount, 7)
-        XCTAssertEqual(expectedSymbols, [
-            "predicate(id: whitespace)",
-            "predicate(id: newline)",
-            "value(n)",
-            "value(t)",
-            "value(f)",
-            "value(-)",
-            "value([)",
-            "value(0)",
-            "value(\")",
-            "value({)",
-            "value(1)",
-            "value(2)",
-            "value(3)",
-            "value(4)",
-            "value(5)",
-            "value(6)",
-            "value(7)",
-            "value(8)",
-            "value(9)",
-        ])
+        XCTAssertEqual(
+            expectedSymbols, [
+                "predicate(id: whitespace)",
+                "predicate(id: newline)",
+                "value(n)",
+                "value(t)",
+                "value(f)",
+                "value(-)",
+                "value([)",
+                "value(0)",
+                "value(\")",
+                "value({)",
+                "value(1)",
+                "value(2)",
+                "value(3)",
+                "value(4)",
+                "value(5)",
+                "value(6)",
+                "value(7)",
+                "value(8)",
+                "value(9)",
+            ]
+        )
     }
 
     func testArrayFailureWithOnlyComma() {
@@ -251,29 +260,31 @@ internal final class JSONTests: XCTestCase {
         }
         XCTAssertEqual(lineCount, 0)
         XCTAssertEqual(charCount, 1)
-        XCTAssertEqual(expectedSymbols, [
-            "predicate(id: whitespace)",
-            "predicate(id: newline)",
-            "value(n)",
-            "value(t)",
-            "value(f)",
-            "value(-)",
-            "value([)",
-            "value(0)",
-            "value(\")",
-            "empty",
-            "value(])",
-            "value({)",
-            "value(1)",
-            "value(2)",
-            "value(3)",
-            "value(4)",
-            "value(5)",
-            "value(6)",
-            "value(7)",
-            "value(8)",
-            "value(9)",
-        ])
+        XCTAssertEqual(
+            expectedSymbols, [
+                "predicate(id: whitespace)",
+                "predicate(id: newline)",
+                "value(n)",
+                "value(t)",
+                "value(f)",
+                "value(-)",
+                "value([)",
+                "value(0)",
+                "value(\")",
+                "empty",
+                "value(])",
+                "value({)",
+                "value(1)",
+                "value(2)",
+                "value(3)",
+                "value(4)",
+                "value(5)",
+                "value(6)",
+                "value(7)",
+                "value(8)",
+                "value(9)",
+            ]
+        )
     }
 
     func testObject() {
@@ -297,13 +308,15 @@ internal final class JSONTests: XCTestCase {
         }
         XCTAssertEqual(lineCount, 0)
         XCTAssertEqual(charCount, 2)
-        XCTAssertEqual(expectedSymbols, [
-            "predicate(id: whitespace)",
-            "value(\")",
-            "value(})",
-            "empty",
-            "predicate(id: newline)",
-        ])
+        XCTAssertEqual(
+            expectedSymbols, [
+                "predicate(id: whitespace)",
+                "value(\")",
+                "value(})",
+                "empty",
+                "predicate(id: newline)",
+            ]
+        )
     }
 
     func testObjectFailureWithOnlyKey() {
@@ -329,27 +342,29 @@ internal final class JSONTests: XCTestCase {
         }
         XCTAssertEqual(lineCount, 0)
         XCTAssertEqual(charCount, 9)
-        XCTAssertEqual(expectedSymbols, [
-            "value({)",
-            "value(0)",
-            "value(n)",
-            "value(t)",
-            "value(f)",
-            "value([)",
-            "value(\")",
-            "predicate(id: whitespace)",
-            "predicate(id: newline)",
-            "value(-)",
-            "value(1)",
-            "value(2)",
-            "value(3)",
-            "value(4)",
-            "value(5)",
-            "value(6)",
-            "value(7)",
-            "value(8)",
-            "value(9)",
-        ])
+        XCTAssertEqual(
+            expectedSymbols, [
+                "value({)",
+                "value(0)",
+                "value(n)",
+                "value(t)",
+                "value(f)",
+                "value([)",
+                "value(\")",
+                "predicate(id: whitespace)",
+                "predicate(id: newline)",
+                "value(-)",
+                "value(1)",
+                "value(2)",
+                "value(3)",
+                "value(4)",
+                "value(5)",
+                "value(6)",
+                "value(7)",
+                "value(8)",
+                "value(9)",
+            ]
+        )
     }
 
     func testObjectFailureMissingClosingBrace() {
@@ -404,4 +419,5 @@ internal final class JSONTests: XCTestCase {
         ("testObjectFailureMultipleLinesMissingClosingBrace", testObjectFailureMultipleLinesMissingClosingBrace),
     ]
 }
+
 // swiftlint:enable type_body_length file_length

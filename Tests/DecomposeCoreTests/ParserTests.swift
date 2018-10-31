@@ -18,7 +18,6 @@ import XCTest
 // swiftlint:disable type_body_length file_length
 
 internal final class ParserTests: XCTestCase {
-
     func testPure() {
         let result = Parser.pure("Hello, World!").computeParse(StringInput("A"), [Symbol.empty])
 
@@ -169,11 +168,15 @@ internal final class ParserTests: XCTestCase {
             return
         }
         XCTAssertEqual(remainingInput.position, 0)
-        XCTAssertEqual(expectedSymbols, Set([
-            Symbol<Character>.value("f"),
-            Symbol<Character>.value("b"),
-            Symbol<Character>.value("o"),
-        ]))
+        XCTAssertEqual(
+            expectedSymbols, Set(
+                [
+                    Symbol<Character>.value("f"),
+                    Symbol<Character>.value("b"),
+                    Symbol<Character>.value("o"),
+                ]
+            )
+        )
     }
 
     func testMapSuccess() {
@@ -208,9 +211,9 @@ internal final class ParserTests: XCTestCase {
         let symbol3 = Parser<StringInput, Character>.symbol("3")
         let symbolTimes = Parser<StringInput, Character>.symbol("*")
         let func1: (Character) -> (Character) -> (Character) -> Int? = { first in { _ in { second in
-                    Int(String(first))! * Int(String(second))!
-                }
+            Int(String(first))! * Int(String(second))!
             }
+        }
         }
         let applyParser = Parser.apply(Parser.apply(Parser.map(symbol2, func1), symbolTimes), symbol3)
 
@@ -229,9 +232,9 @@ internal final class ParserTests: XCTestCase {
         let symbol3 = Parser<StringInput, Character>.symbol("3")
         let symbolTimes = Parser<StringInput, Character>.symbol("*")
         let func1: (Character) -> (Character) -> (Character) -> Int? = { first in { _ in { second in
-                    Int(String(first))! * Int(String(second))!
-                }
+            Int(String(first))! * Int(String(second))!
             }
+        }
         }
         let applyParser = Parser.apply(Parser.apply(Parser.map(symbol2, func1), symbolTimes), symbol3)
 
@@ -1197,10 +1200,12 @@ internal final class ParserTests: XCTestCase {
     }
 
     func testCountSuccessWithAcceptEmptyParserInSequence() {
-        let countParser = Parser.sequence([
-            Parser.count(Parser<StringInput, Character>.pure("A"), 3),
-            Parser.count(Parser<StringInput, Character>.symbol("B"), 1),
-        ])
+        let countParser = Parser.sequence(
+            [
+                Parser.count(Parser<StringInput, Character>.pure("A"), 3),
+                Parser.count(Parser<StringInput, Character>.symbol("B"), 1),
+            ]
+        )
         let input = StringInput("B")
 
         let result = countParser.parse(input)
@@ -1877,10 +1882,12 @@ internal final class ParserTests: XCTestCase {
     }
 
     func testSequenceSuccess() {
-        let sequenceParser = Parser.sequence([
-            Parser<StringInput, Character>.symbol("A"),
-            Parser<StringInput, Character>.symbol("B"),
-        ])
+        let sequenceParser = Parser.sequence(
+            [
+                Parser<StringInput, Character>.symbol("A"),
+                Parser<StringInput, Character>.symbol("B"),
+            ]
+        )
         let input = StringInput("AB")
 
         let result = sequenceParser.parse(input)
@@ -1893,12 +1900,14 @@ internal final class ParserTests: XCTestCase {
     }
 
     func testSequenceSuccessWithEmptyAccept() {
-        let sequenceParser = Parser.sequence([
-            Parser<StringInput, Character>.symbol("A"),
-            Parser<StringInput, Character>.pure("B"),
-            Parser<StringInput, Character>.symbol("C"),
-            Parser<StringInput, Character>.pure("D"),
-        ])
+        let sequenceParser = Parser.sequence(
+            [
+                Parser<StringInput, Character>.symbol("A"),
+                Parser<StringInput, Character>.pure("B"),
+                Parser<StringInput, Character>.symbol("C"),
+                Parser<StringInput, Character>.pure("D"),
+            ]
+        )
         let input = StringInput("AC")
 
         let result = sequenceParser.parse(input)
@@ -1911,10 +1920,12 @@ internal final class ParserTests: XCTestCase {
     }
 
     func testSequenceFailureWithParseFailure() {
-        let sequenceParser = Parser.sequence([
-            Parser<StringInput, Character>.symbol("A"),
-            Parser<StringInput, Character>.symbol("B"),
-        ])
+        let sequenceParser = Parser.sequence(
+            [
+                Parser<StringInput, Character>.symbol("A"),
+                Parser<StringInput, Character>.symbol("B"),
+            ]
+        )
         let input = StringInput("AC")
 
         let result = sequenceParser.parse(input)
@@ -1927,10 +1938,12 @@ internal final class ParserTests: XCTestCase {
     }
 
     func testSequenceFailureWithUnavailableInput() {
-        let sequenceParser = Parser.sequence([
-            Parser<StringInput, Character>.symbol("A"),
-            Parser<StringInput, Character>.symbol("B"),
-        ])
+        let sequenceParser = Parser.sequence(
+            [
+                Parser<StringInput, Character>.symbol("A"),
+                Parser<StringInput, Character>.symbol("B"),
+            ]
+        )
         let input = StringInput("")
 
         let result = sequenceParser.parse(input)
@@ -1943,10 +1956,12 @@ internal final class ParserTests: XCTestCase {
     }
 
     func testSequenceFailureWithMissingSequence() {
-        let sequenceParser = Parser.sequence([
-            Parser<StringInput, Character>.symbol("A"),
-            Parser<StringInput, Character>.symbol("B"),
-        ])
+        let sequenceParser = Parser.sequence(
+            [
+                Parser<StringInput, Character>.symbol("A"),
+                Parser<StringInput, Character>.symbol("B"),
+            ]
+        )
         let input = StringInput("A")
 
         let result = sequenceParser.parse(input)
@@ -2189,4 +2204,5 @@ internal final class ParserTests: XCTestCase {
         ("testTraverseFailureWithMissingSequence", testTraverseFailureWithMissingSequence),
     ]
 }
+
 // swiftlint:enable type_body_length file_length

@@ -16,16 +16,17 @@
 
 /// A value type for the `apply` function.
 public struct Parser<I, V> where I: Input, I.Element: Comparable, I.Element: Hashable {
-
     /// Initializes a parser.
     ///
     /// - Parameters:
     ///     - computeAcceptsEmpty: A function to lazily compute if the `Parser` accepts an empty input.
     ///     - firstSetSymbols: A function to lazily compute the first set of accepted symbols.
     ///     - parse: A function to parse the `Input`
-    public init(acceptsEmpty computeAcceptsEmpty: @autoclosure @escaping () -> Bool,
-                firstSetSymbols computeFirstSetSymbols: @autoclosure @escaping () -> Set<Symbol<I.Element>>,
-                parse: @escaping (I, Set<Symbol<I.Element>>) -> Result<I, V>) {
+    public init(
+        acceptsEmpty computeAcceptsEmpty: @autoclosure @escaping () -> Bool,
+        firstSetSymbols computeFirstSetSymbols: @autoclosure @escaping () -> Set<Symbol<I.Element>>,
+        parse: @escaping (I, Set<Symbol<I.Element>>) -> Result<I, V>
+    ) {
         self.computeAcceptsEmpty = computeAcceptsEmpty
         self.computeFirstSetSymbols = computeFirstSetSymbols
         self.computeParse = parse
@@ -58,7 +59,6 @@ public struct Parser<I, V> where I: Input, I.Element: Comparable, I.Element: Has
 
 /// Convenience methods for `Parser`.
 public extension Parser {
-
     /// Instantiates a `Parser` which returns the value parameter and does not advanced the `Input`.
     ///
     /// - Parameters:
@@ -78,8 +78,9 @@ public extension Parser {
     /// - Returns: A `Parser` which invokes the first `Parser` parameter, then the second `Parser` parameter and then
     ///           invokes the first `Parser`'s returned function value with the second `Parser`'s returned value.
     public static func apply<V2>(
-        _ parser1: Parser<I, (V2) -> V>,
-        _ parser2: Parser<I, V2>) -> Parser<I, V> {
+        _ parser1: Parser < I, (V2) -> V>,
+        _ parser2: Parser<I, V2>
+    ) -> Parser<I, V> {
         return parser1.apply(parser2)
     }
 
@@ -121,7 +122,7 @@ public extension Parser {
 
                         #if swift(>=4.2)
                         if parser2.computeFirstSetSymbols().allSatisfy({ !$0.matches(remainingInput.current()!) }) {
-                        return Result.failure(remainingInput, parser2.computeFirstSetSymbols())
+                            return Result.failure(remainingInput, parser2.computeFirstSetSymbols())
                         }
                         #else
                         // https://github.com/apple/swift-evolution/blob/master/proposals/0207-containsOnly.md
@@ -132,7 +133,8 @@ public extension Parser {
                     }
                     return parser2.computeParse(remainingInput, followSetSymbols).map(value)
                 }
-            })
+            }
+        )
     }
 
     /// Maps a `Parser`'s value using the function parameter.
@@ -153,8 +155,9 @@ public extension Parser {
     public func map<V2>(_ func1: @escaping (V) -> V2) -> Parser<I, V2> {
         return Parser<I, V2>(
             acceptsEmpty: self.computeAcceptsEmpty(),
-            firstSetSymbols: self.computeFirstSetSymbols()) {
-                self.computeParse($0, $1).map(func1)
+            firstSetSymbols: self.computeFirstSetSymbols()
+        ) {
+            self.computeParse($0, $1).map(func1)
         }
     }
 
@@ -239,12 +242,16 @@ public extension Parser {
     /// - Returns: A `Parser` which invokes this `Parser`, and if it fails, attempts the next `Parser` in the array.
     public func choice(_ parsers: [Parser<I, V>]) -> Parser<I, V> {
         return Parser<I, V>(
-            acceptsEmpty: parsers.reduce(self.computeAcceptsEmpty(), { result, parser in
-                result || parser.computeAcceptsEmpty()
-            }),
-            firstSetSymbols: parsers.reduce(self.computeFirstSetSymbols(), { result, parser in
-                result.union(parser.computeFirstSetSymbols())
-            })
+            acceptsEmpty: parsers.reduce(
+                self.computeAcceptsEmpty(), { result, parser in
+                    result || parser.computeAcceptsEmpty()
+                }
+            ),
+            firstSetSymbols: parsers.reduce(
+                self.computeFirstSetSymbols(), { result, parser in
+                    result.union(parser.computeFirstSetSymbols())
+                }
+            )
         ) { input, followSetSymbols in
             if let currentValue = input.current(), input.isAvailable {
                 if self.computeFirstSetSymbols().contains(where: { $0.matches(currentValue) }) {
@@ -269,9 +276,11 @@ public extension Parser {
                     }
                 }
 
-                let possibleSymbols = parsers.reduce(self.computeFirstSetSymbols(), { result, parser in
-                    result.union(parser.computeFirstSetSymbols())
-                })
+                let possibleSymbols = parsers.reduce(
+                    self.computeFirstSetSymbols(), { result, parser in
+                        result.union(parser.computeFirstSetSymbols())
+                    }
+                )
                 return Result.failure(input, possibleSymbols.union(followSetSymbols))
             } else {
                 if self.computeAcceptsEmpty() {
@@ -284,9 +293,11 @@ public extension Parser {
                     }
                 }
 
-                let possibleSymbols = parsers.reduce(self.computeFirstSetSymbols(), { result, parser in
-                    result.union(parser.computeFirstSetSymbols())
-                })
+                let possibleSymbols = parsers.reduce(
+                    self.computeFirstSetSymbols(), { result, parser in
+                        result.union(parser.computeFirstSetSymbols())
+                    }
+                )
                 return Result.failureUnavailableInput(input, possibleSymbols.union(followSetSymbols))
             }
         }
@@ -466,7 +477,7 @@ public extension Parser {
     ///     - value: The value to use if the `parserV` fails.
     /// - Returns: A `Parser` which parses an optional operand and an optional repeat of operator and operand where the
     ///            final parsed value is the calculation of the operands with the operators with right associativity.
-    public static func chainr(_ parserV: Parser<I, V>, _ parserOp: Parser<I, (V) -> (V) -> V>, _ value: V)
+    public static func chainr(_ parserV: Parser<I, V>, _ parserOp: Parser < I, (V) -> (V) -> V>, _ value: V)
         -> Parser<I, V> {
         return parserV.chainr(parserOp, value)
     }
@@ -479,7 +490,7 @@ public extension Parser {
     ///     - value: The value to use if the `parserV` fails.
     /// - Returns: A `Parser` which parses an optional operand and an optional repeat of operator and operand where the
     ///            final parsed value is the calculation of the operands with the operators with right associativity.
-    public func chainr(_ parserOp: Parser<I, (V) -> (V) -> V>, _ value: V) -> Parser<I, V> {
+    public func chainr(_ parserOp: Parser < I, (V) -> (V) -> V>, _ value: V) -> Parser<I, V> {
         return self.chainr1(parserOp).or(Parser.pure(value))
     }
 
@@ -491,7 +502,7 @@ public extension Parser {
     ///     - parserOp: The operator Parser.
     /// - Returns: A `Parser` which parses an operand and zero or more operator and operand where the
     ///            final parsed value is the calculation of the operands with the operators with right associativity.
-    public static func chainr1(_ parserV: Parser<I, V>, _ parserOp: Parser<I, (V) -> (V) -> V>) -> Parser<I, V> {
+    public static func chainr1(_ parserV: Parser<I, V>, _ parserOp: Parser < I, (V) -> (V) -> V>) -> Parser<I, V> {
         return parserV.chainr1(parserOp)
     }
 
@@ -502,8 +513,8 @@ public extension Parser {
     ///     - parserOp: The operator Parser.
     /// - Returns: A `Parser` which parses an operand and zero or more operator and operand where the
     ///            final parsed value is the calculation of the operands with the operators with right associativity.
-    public func chainr1(_ parserOp: Parser<I, (V) -> (V) -> V>) -> Parser<I, V> {
-        let operatorParser: Parser<I, (V) -> V> = parserOp
+    public func chainr1(_ parserOp: Parser < I, (V) -> (V) -> V>) -> Parser<I, V> {
+        let operatorParser: Parser < I, (V) -> V> = parserOp
             .map({ operation in { operation($0) } })
             .apply(Parser.wrap({ self.chainr1(parserOp) }))
             .option({ $0 })
@@ -520,7 +531,7 @@ public extension Parser {
     /// - Returns: A `Parser` which parses an optional operand operand and an optional repeat of operator and operand
     ///            where the final parsed value is the calculation of the operands with the operators with left
     ///            associativity.
-    public static func chainl(_ parserV: Parser<I, V>, _ parserOp: Parser<I, (V) -> (V) -> V>, _ value: V)
+    public static func chainl(_ parserV: Parser<I, V>, _ parserOp: Parser < I, (V) -> (V) -> V>, _ value: V)
         -> Parser<I, V> {
         return parserV.chainl(parserOp, value)
     }
@@ -535,7 +546,7 @@ public extension Parser {
     /// - Returns: A `Parser` which parses an optional operand operand and an optional repeat of operator and operand
     ///            where the final parsed value is the calculation of the operands with the operators with left
     ///            associativity.
-    public func chainl(_ parserOp: Parser<I, (V) -> (V) -> V>, _ value: V) -> Parser<I, V> {
+    public func chainl(_ parserOp: Parser < I, (V) -> (V) -> V>, _ value: V) -> Parser<I, V> {
         return self.chainl1(parserOp).or(Parser.pure(value))
     }
 
@@ -547,7 +558,7 @@ public extension Parser {
     ///     - parserOp: The operator Parser.
     /// - Returns: A `Parser` which parses an operand and zero more operator and operand where the
     ///            final parsed value is the calculation of the operands with the operators with left associativity.
-    public static func chainl1(_ parserV: Parser<I, V>, _ parserOp: Parser<I, (V) -> (V) -> V>) -> Parser<I, V> {
+    public static func chainl1(_ parserV: Parser<I, V>, _ parserOp: Parser < I, (V) -> (V) -> V>) -> Parser<I, V> {
         return parserV.chainl1(parserOp)
     }
 
@@ -558,15 +569,17 @@ public extension Parser {
     ///     - parserOp: The operator Parser.
     /// - Returns: A `Parser` which parses an operand and zero more operator and operand where the
     ///            final parsed value is the calculation of the operands with the operators with left associativity.
-    public func chainl1(_ parserOp: Parser<I, (V) -> (V) -> V>) -> Parser<I, V> {
+    public func chainl1(_ parserOp: Parser < I, (V) -> (V) -> V>) -> Parser<I, V> {
+        let firstValue: (V) -> V = { $0 }
         return self
             .map(Parser.reduceOperations())
-            .apply((Parser.chainlInternal(self, parserOp).many().option([ { $0 } ])))
+            .apply(Parser.chainlInternal(self, parserOp).many().option([firstValue]))
     }
 
     private static func chainlInternal<I, V>(
         _ parserV: Parser<I, V>,
-        _ parserOp: Parser<I, (V) -> (V) -> V>) -> Parser<I, (V) -> (V)> {
+        _ parserOp: Parser < I, (V) -> (V) -> V>
+    ) -> Parser < I, (V) -> V> {
         return parserOp.map({ operation in { yParam in { operation(yParam)($0) } } }).apply(parserV)
     }
 
@@ -629,7 +642,8 @@ public extension Parser {
     public static func between<O, C>(
         _ parserOpen: Parser<I, O>,
         _ parserV: Parser<I, V>,
-        _ parserClose: Parser<I, C>)
+        _ parserClose: Parser<I, C>
+    )
         -> Parser<I, V> {
         return parserV.between(parserOpen, parserClose)
     }
@@ -708,6 +722,7 @@ public extension Parser {
             return Result.success(remainingInput, results)
         }
     }
+
     // swiftlint:enable cyclomatic_complexity
 
     /// Parses zero or more values separated by and ends with a separator and returns an array of the parsed values.
@@ -876,6 +891,7 @@ public extension Parser {
             } while true
         }
     }
+
     // swiftlint:enable cyclomatic_complexity function_body_length
 
     /// Instantiates a `Parser` which constructs its real parser via a function.
@@ -916,12 +932,12 @@ public extension Parser {
     /// - Returns: A `Parser` which returns an element if it succeeds the condition.
     public static func satisfy(conditionName: String, _ condition: @escaping (I.Element) -> Bool)
         -> Parser<I, I.Element> {
-            return Parser<I, I.Element>(
-                acceptsEmpty: false,
-                firstSetSymbols: [Symbol.predicate(name: conditionName, condition)]
-            ) { input, _ in
-                Result.success(input.advanced(), input.current()!)
-            }
+        return Parser<I, I.Element>(
+            acceptsEmpty: false,
+            firstSetSymbols: [Symbol.predicate(name: conditionName, condition)]
+        ) { input, _ in
+            Result.success(input.advanced(), input.current()!)
+        }
     }
 
     /// Instantiates a `Parser` which only fails.
@@ -971,7 +987,8 @@ public extension Parser {
     public static func oneOf(_ elementSet: Set<I.Element>) -> Parser<I, I.Element> {
         return Parser<I, I.Element>(
             acceptsEmpty: false,
-            firstSetSymbols: Set(elementSet.map { Symbol.value($0) })) { input, followSetSymbols in
+            firstSetSymbols: Set(elementSet.map { Symbol.value($0) })
+        ) { input, followSetSymbols in
             if input.isAvailable {
                 if let currentValue = input.current(), elementSet.contains(currentValue) {
                     return Result.success(input.advanced(), currentValue)
@@ -1006,7 +1023,8 @@ public extension Parser {
                 } else {
                     return Result<I, I.Element>.failureUnavailableInput(input, followSetSymbols)
                 }
-            })
+            }
+        )
     }
 
     // swiftlint:disable cyclomatic_complexity function_body_length
@@ -1073,8 +1091,10 @@ public extension Parser {
                     }
                 }
                 return Result.success(remainingInput, results)
-            })
+            }
+        )
     }
+
     // swiftlint:enable cyclomatic_complexity function_body_length
 
     // swiftlint:disable cyclomatic_complexity function_body_length
@@ -1095,13 +1115,13 @@ public extension Parser {
                     return firstParser.computeAcceptsEmpty()
                 }
                 return true
-        }(),
+            }(),
             firstSetSymbols: {
                 if let firstParser = parsers.first {
                     return firstParser.computeFirstSetSymbols()
                 }
                 return [Symbol.empty]
-        }(),
+            }(),
             parse: { input, followSetSymbols in
                 var results: [V2] = []
                 var remainingInput = input
@@ -1143,15 +1163,15 @@ public extension Parser {
                     }
                 }
                 return Result.success(remainingInput, results)
-            })
+            }
+        )
     }
-    // swiftlint:enable cyclomatic_complexity function_body_length
 
+    // swiftlint:enable cyclomatic_complexity function_body_length
 }
 
 /// Extension with returned `Value` equal to `Input.Element` conformance.
 public extension Parser where V == I.Element {
-
     /// Instantiates a `Parser` which accepts the symbol parameter and advances the `Input`.
     ///
     /// - Parameters:
@@ -1169,6 +1189,6 @@ public extension Parser where V == I.Element {
     static func value(_ element: V) -> Parser<I, V> {
         return Parser.value(element: element, value: element)
     }
-
 }
+
 // swiftlint:enable file_length

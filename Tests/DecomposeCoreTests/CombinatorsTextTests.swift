@@ -17,7 +17,6 @@ import XCTest
 
 // swiftlint:disable type_body_length file_length
 internal final class CombinatorsTextTests: XCTestCase {
-
     func testIsLetterSuccess() {
         let letter = Combinators.Text<StringInput>.letter()
 
@@ -92,17 +91,21 @@ internal final class CombinatorsTextTests: XCTestCase {
             return
         }
         XCTAssertEqual(remainingInput.position, 0)
-        XCTAssertEqual(expectedSymbols, Set([
-            Symbol<Character>.value("1"),
-            Symbol<Character>.value("2"),
-            Symbol<Character>.value("3"),
-            Symbol<Character>.value("4"),
-            Symbol<Character>.value("5"),
-            Symbol<Character>.value("6"),
-            Symbol<Character>.value("7"),
-            Symbol<Character>.value("8"),
-            Symbol<Character>.value("9"),
-        ]))
+        XCTAssertEqual(
+            expectedSymbols, Set(
+                [
+                    Symbol<Character>.value("1"),
+                    Symbol<Character>.value("2"),
+                    Symbol<Character>.value("3"),
+                    Symbol<Character>.value("4"),
+                    Symbol<Character>.value("5"),
+                    Symbol<Character>.value("6"),
+                    Symbol<Character>.value("7"),
+                    Symbol<Character>.value("8"),
+                    Symbol<Character>.value("9"),
+                ]
+            )
+        )
     }
 
     func testHexadecimalSuccess() {
@@ -128,24 +131,28 @@ internal final class CombinatorsTextTests: XCTestCase {
             return
         }
         XCTAssertEqual(remainingInput.position, 0)
-        XCTAssertEqual(expectedSymbols, Set([
-            Symbol<Character>.value("1"),
-            Symbol<Character>.value("2"),
-            Symbol<Character>.value("3"),
-            Symbol<Character>.value("4"),
-            Symbol<Character>.value("5"),
-            Symbol<Character>.value("6"),
-            Symbol<Character>.value("7"),
-            Symbol<Character>.value("8"),
-            Symbol<Character>.value("9"),
-            Symbol<Character>.value("0"),
-            Symbol<Character>.value("A"),
-            Symbol<Character>.value("B"),
-            Symbol<Character>.value("C"),
-            Symbol<Character>.value("D"),
-            Symbol<Character>.value("E"),
-            Symbol<Character>.value("F"),
-        ]))
+        XCTAssertEqual(
+            expectedSymbols, Set(
+                [
+                    Symbol<Character>.value("1"),
+                    Symbol<Character>.value("2"),
+                    Symbol<Character>.value("3"),
+                    Symbol<Character>.value("4"),
+                    Symbol<Character>.value("5"),
+                    Symbol<Character>.value("6"),
+                    Symbol<Character>.value("7"),
+                    Symbol<Character>.value("8"),
+                    Symbol<Character>.value("9"),
+                    Symbol<Character>.value("0"),
+                    Symbol<Character>.value("A"),
+                    Symbol<Character>.value("B"),
+                    Symbol<Character>.value("C"),
+                    Symbol<Character>.value("D"),
+                    Symbol<Character>.value("E"),
+                    Symbol<Character>.value("F"),
+                ]
+            )
+        )
     }
 
     func testHexadecimalAsIntSuccess() {
@@ -171,24 +178,28 @@ internal final class CombinatorsTextTests: XCTestCase {
             return
         }
         XCTAssertEqual(remainingInput.position, 0)
-        XCTAssertEqual(expectedSymbols, Set([
-            Symbol<Character>.value("1"),
-            Symbol<Character>.value("2"),
-            Symbol<Character>.value("3"),
-            Symbol<Character>.value("4"),
-            Symbol<Character>.value("5"),
-            Symbol<Character>.value("6"),
-            Symbol<Character>.value("7"),
-            Symbol<Character>.value("8"),
-            Symbol<Character>.value("9"),
-            Symbol<Character>.value("0"),
-            Symbol<Character>.value("A"),
-            Symbol<Character>.value("B"),
-            Symbol<Character>.value("C"),
-            Symbol<Character>.value("D"),
-            Symbol<Character>.value("E"),
-            Symbol<Character>.value("F"),
-        ]))
+        XCTAssertEqual(
+            expectedSymbols, Set(
+                [
+                    Symbol<Character>.value("1"),
+                    Symbol<Character>.value("2"),
+                    Symbol<Character>.value("3"),
+                    Symbol<Character>.value("4"),
+                    Symbol<Character>.value("5"),
+                    Symbol<Character>.value("6"),
+                    Symbol<Character>.value("7"),
+                    Symbol<Character>.value("8"),
+                    Symbol<Character>.value("9"),
+                    Symbol<Character>.value("0"),
+                    Symbol<Character>.value("A"),
+                    Symbol<Character>.value("B"),
+                    Symbol<Character>.value("C"),
+                    Symbol<Character>.value("D"),
+                    Symbol<Character>.value("E"),
+                    Symbol<Character>.value("F"),
+                ]
+            )
+        )
     }
 
     func testSignSuccessNegative() {
@@ -398,4 +409,5 @@ internal final class CombinatorsTextTests: XCTestCase {
         ("testTabFailure", testTabFailure),
     ]
 }
+
 // swiftlint:enable type_body_length file_length

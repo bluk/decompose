@@ -17,7 +17,6 @@ import DecomposeCore
 import XCTest
 
 internal final class OperatorsTests: XCTestCase {
-
     func testChoiceSuccessAsOperator() {
         let matchesF = Parser<StringInput, Character>.symbol("f")
         let matchesB = Parser<StringInput, Character>.symbol("b")
@@ -55,7 +54,7 @@ internal final class OperatorsTests: XCTestCase {
         let func1: (Character) -> (Character) -> (Character) -> Int? = { first in { _ in { second in
             Int(String(first))! * Int(String(second))!
             }
-            }
+        }
         }
         let applyParser = func1 <^> symbol2 <*> symbolTimes <*> symbol3
 

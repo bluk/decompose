@@ -19,7 +19,6 @@ public enum Empty {
 
 /// A value type which indicates if the function was successful or not.
 public enum Result<I: Input, Value> where I.Element: Comparable, I.Element: Hashable {
-
     /// The parse was successful with the associated return `Value` and the remaining `Input`.
     case success(I, Value)
 

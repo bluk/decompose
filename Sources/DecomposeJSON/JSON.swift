@@ -18,7 +18,7 @@ import Foundation
 
 /// A representation of JSON elements
 public enum JSONValue: Equatable {
-    case object([String:JSONValue])
+    case object([String: JSONValue])
     case array([JSONValue])
     case string(String)
     case number(String, String, String)
@@ -56,15 +56,17 @@ public enum JSONResult {
 
 internal let json: Parser<StringInput, JSONValue> = element
 
-internal let value: Parser<StringInput, JSONValue> = Parser.choice([
-    object,
-    array,
-    string,
-    number,
-    Combinators.Text.string("true").map { _ in JSONValue.literalTrue },
-    Combinators.Text.string("false").map { _ in JSONValue.literalFalse },
-    Combinators.Text.string("null").map { _ in JSONValue.literalNull },
-])
+internal let value: Parser<StringInput, JSONValue> = Parser.choice(
+    [
+        object,
+        array,
+        string,
+        number,
+        Combinators.Text.string("true").map { _ in JSONValue.literalTrue },
+        Combinators.Text.string("false").map { _ in JSONValue.literalFalse },
+        Combinators.Text.string("null").map { _ in JSONValue.literalNull },
+    ]
+)
 
 internal let object: Parser<StringInput, JSONValue> = Parser
     .between(
@@ -81,11 +83,11 @@ internal let members: Parser<StringInput, [String: JSONValue]> = member.sepBy(
 }
 
 internal let member: Parser<StringInput, [String: JSONValue]> = { key in { value in
-        if case let JSONValue.string(key) = key {
-            return [key: value]
-        }
-        fatalError("Expected the key to be a string.")
+    if case let JSONValue.string(key) = key {
+        return [key: value]
     }
+    fatalError("Expected the key to be a string.")
+}
 } <^>
     whitespace *> string <*> whitespace
     *> Combinators.Text.char(":") *> whitespace *> element
@@ -115,70 +117,85 @@ internal let string: Parser<StringInput, JSONValue> = Parser
 
 internal let characters: Parser<StringInput, String> = character.many1().map { String($0) }.option("")
 
+internal let charClosure: (Character) -> Character = { char in
+    switch char {
+    case "\\":
+        return Character("\\")
+    case "\"":
+        return Character("\"")
+    case "b":
+        return Character(UnicodeScalar(8))
+    case "n":
+        return Character("\n")
+    case "r":
+        return Character("\r")
+    case "t":
+        return Character("\t")
+    default:
+        assertionFailure()
+        return Character("")
+    }
+}
+
+internal let specialChars: Parser<StringInput, Character> = Parser<StringInput, Character>
+    .oneOf(["\\", "\"", "b", "n", "r", "t"])
+    .map(charClosure)
+    <|> { hexValues in
+        let intValue = hexValues[0] << 12 | hexValues[1] << 8 | hexValues[2] << 4 | hexValues[3] << 0
+        return Character(UnicodeScalar(intValue)!)
+    } <^> Combinators.Text.char("u") *> Combinators.Text.hexadecimalAsInt().count(4)
+
 internal let character: Parser<StringInput, Character> = notControlCharactersOrQuoteOrSlash
-    <|> Combinators.Text.char("\\")
-        *> (Parser<StringInput, Character>.oneOf(["\\", "\"", "b", "n", "r", "t"]).map({ char in
-            switch char {
-            case "\\":
-                return Character("\\")
-            case "\"":
-                return Character("\"")
-            case "b":
-                return Character(UnicodeScalar(8))
-            case "n":
-                return Character("\n")
-            case "r":
-                return Character("\r")
-            case "t":
-                return Character("\t")
-            default:
-                assertionFailure()
-                return Character("")
-            }
-        })
-        <|> { hexValues in
-            let intValue = hexValues[0] << 12 | hexValues[1] << 8 | hexValues[2] << 4 | hexValues[3] << 0
-            return Character(UnicodeScalar(intValue)!)
-        } <^> Combinators.Text.char("u") *> Combinators.Text.hexadecimalAsInt().count(4)
-)
+    <|> Combinators.Text.char("\\") *> specialChars
 
 internal let notControlCharactersOrQuoteOrSlash = Parser<StringInput, Character>.satisfy(
-conditionName: "not control character or quote or escape character") { char in
+    conditionName: "not control character or quote or escape character"
+) { char in
     let characterSet = CharacterSet.controlCharacters
     return char != "\"" && char != "\\" && !char.unicodeScalars.contains { characterSet.contains($0) }
 }
 
 internal let number: Parser<StringInput, JSONValue> = { int in { frac in { exp in
-            JSONValue.number(int, frac, exp)
-        }
+    JSONValue.number(int, frac, exp)
     }
+}
 } <^> int <*> frac <*> exp
 
 internal let int: Parser<StringInput, String> = Combinators.Text.char("0").map { value in String(value) }
     <|> Parser
-        .sequence([
+    .sequence(
+        [
             Parser.symbol("-").map { [[$0]] },
             Combinators.Text.char("0").map { [[$0]] }
-                <|> Parser.sequence([
-                    Combinators.Text.nonzeroDigit().map { [$0] },
-                    Combinators.Text.digit().many(),
-                ]),
-        ])
-        .map { String($0.flatMap { $0.flatMap { $0 } }) }
+                <|> Parser.sequence(
+                    [
+                        Combinators.Text.nonzeroDigit().map { [$0] },
+                        Combinators.Text.digit().many(),
+                    ]
+                ),
+        ]
+    )
+    .map { String($0.flatMap { $0.flatMap { $0 } }) }
     <|> Parser
-        .sequence([
+    .sequence(
+        [
             Combinators.Text.nonzeroDigit().map { [$0] },
             Combinators.Text.digit().many(),
-        ])
-        .map { String($0.flatMap { $0 }) }
+        ]
+    )
+    .map { String($0.flatMap { $0 }) }
 
 internal let frac: Parser<StringInput, String> =
     (Parser.symbol(".") *> Combinators.Text.digit().many1()).map { String($0) }.option("")
 
+internal let digitClosure: ([Character]) -> ([Character]) -> [Character] = { sign in { digits in sign + digits } }
+
 internal let exp =
-    ({ sign in { digits in sign + digits } } <^> (Parser.symbol("E") <|> Parser<StringInput, Character>.symbol("e"))
-        *> Combinators.Text.sign().map { [$0] }.option([]) <*> Combinators.Text.digit().many1())
-        .map { String($0) }.option("")
+    (
+        digitClosure <^> (Parser.symbol("E") <|> Parser<StringInput, Character>.symbol("e"))
+            *> Combinators.Text.sign().map { [$0] }.option([]) <*> Combinators.Text.digit().many1()
+    )
+    .map { String($0) }.option("")
 
 internal let whitespace = whitespaceChar.many()
 

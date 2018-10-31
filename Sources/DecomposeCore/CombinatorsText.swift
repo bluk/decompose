@@ -16,7 +16,6 @@ import Foundation
 
 /// Convience methods to generate parsers.
 public enum Combinators {
-
     /// Text related parsers.
     public enum Text<I> where I: Input, I.Element == Character {
         /// Returns a `Parser` which tests if the current element is a specific `Character`.
@@ -62,41 +61,45 @@ public enum Combinators {
         ///
         /// - Returns: A `Parser` which parses a non-zero digit character.
         public static func nonzeroDigit() -> Parser<I, Character> {
-            return Parser<I, Character>.choice([
-                Combinators.Text.char("1"),
-                Combinators.Text.char("2"),
-                Combinators.Text.char("3"),
-                Combinators.Text.char("4"),
-                Combinators.Text.char("5"),
-                Combinators.Text.char("6"),
-                Combinators.Text.char("7"),
-                Combinators.Text.char("8"),
-                Combinators.Text.char("9"),
-            ])
+            return Parser<I, Character>.choice(
+                [
+                    Combinators.Text.char("1"),
+                    Combinators.Text.char("2"),
+                    Combinators.Text.char("3"),
+                    Combinators.Text.char("4"),
+                    Combinators.Text.char("5"),
+                    Combinators.Text.char("6"),
+                    Combinators.Text.char("7"),
+                    Combinators.Text.char("8"),
+                    Combinators.Text.char("9"),
+                ]
+            )
         }
 
         /// Parses a hexadecimal character.
         ///
         /// - Returns: A `Parser` which parses a hexadecimal character.
         public static func hexadecimal() -> Parser<I, Character> {
-            return Parser<I, Character>.choice([
-                Combinators.Text.char("0"),
-                Combinators.Text.char("1"),
-                Combinators.Text.char("2"),
-                Combinators.Text.char("3"),
-                Combinators.Text.char("4"),
-                Combinators.Text.char("5"),
-                Combinators.Text.char("6"),
-                Combinators.Text.char("7"),
-                Combinators.Text.char("8"),
-                Combinators.Text.char("9"),
-                Combinators.Text.char("A"),
-                Combinators.Text.char("B"),
-                Combinators.Text.char("C"),
-                Combinators.Text.char("D"),
-                Combinators.Text.char("E"),
-                Combinators.Text.char("F"),
-            ])
+            return Parser<I, Character>.choice(
+                [
+                    Combinators.Text.char("0"),
+                    Combinators.Text.char("1"),
+                    Combinators.Text.char("2"),
+                    Combinators.Text.char("3"),
+                    Combinators.Text.char("4"),
+                    Combinators.Text.char("5"),
+                    Combinators.Text.char("6"),
+                    Combinators.Text.char("7"),
+                    Combinators.Text.char("8"),
+                    Combinators.Text.char("9"),
+                    Combinators.Text.char("A"),
+                    Combinators.Text.char("B"),
+                    Combinators.Text.char("C"),
+                    Combinators.Text.char("D"),
+                    Combinators.Text.char("E"),
+                    Combinators.Text.char("F"),
+                ]
+            )
         }
 
         /// Parse a hexadecimal character and returns an `Int` value.
@@ -110,10 +113,12 @@ public enum Combinators {
         ///
         /// - Returns: A `Parser` which parses a non-zero digit character.
         public static func sign() -> Parser<I, Character> {
-            return Parser<I, Character>.choice([
-                Combinators.Text.char("+"),
-                Combinators.Text.char("-"),
-            ])
+            return Parser<I, Character>.choice(
+                [
+                    Combinators.Text.char("+"),
+                    Combinators.Text.char("-"),
+                ]
+            )
         }
 
         /// Returns a `Parser` which matches a given string.

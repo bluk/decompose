@@ -16,7 +16,6 @@ import Foundation
 
 /// Use a `String` as an `Input` type.
 public struct StringInput: Input, Equatable, Hashable {
-
     public init(_ value: String, position: Int = 0, lineCount: Int = 0, charCount: Int = 0) {
         self.value = value
         self.position = position

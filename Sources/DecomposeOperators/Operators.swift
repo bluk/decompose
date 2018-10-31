@@ -34,9 +34,10 @@ infix operator <|>: ChoiceLeftPrecedence
 ///     - lhs: The first `Parser` to invoke the input with.
 ///     - rhs: The second `Parser` to invoke the input with if the first `Parser` fails.
 /// - Returns: A `Parser` which invokes the first `Parser`, and if it fails, invokes the second `Parser`.
-public func <|><I, V1>(
+public func <|> <I, V1>(
     lhs: Parser<I, V1>,
-    rhs: Parser<I, V1>) -> Parser<I, V1> {
+    rhs: Parser<I, V1>
+) -> Parser<I, V1> {
     return lhs.or(rhs)
 }
 
@@ -56,9 +57,10 @@ infix operator <*>: ApplicativeFunctorLeftPrecedence
 ///     - rhs: The second `Parser` to invoke
 /// - Returns: A `Parser` which invokes the first `Parser` parameter, then the second `Parser` parameter and then
 ///           invokes the first `Parser`'s returned function value with the second `Parser`'s returned value.
-public func <*><I, V1, V2>(
+public func <*> <I, V1, V2>(
     lhs: Parser<I, ((V1) -> V2)>,
-    rhs: Parser<I, V1>) -> Parser<I, V2> {
+    rhs: Parser<I, V1>
+) -> Parser<I, V2> {
     return lhs.apply(rhs)
 }
 
@@ -70,9 +72,10 @@ infix operator <^>: ApplicativeFunctorLeftPrecedence
 ///     - lhs: The `Parser` to invoke the input with.
 ///     - rhs: A function which will transform the `parser`'s return value into a new value.
 /// - Returns: A Parser which transforms the original value to a value using the function.
-public func <^><I, V1, V2>(
+public func <^> <I, V1, V2>(
     lhs: @escaping (V1) -> V2,
-    rhs: Parser<I, V1>) -> Parser<I, V2> {
+    rhs: Parser<I, V1>
+) -> Parser<I, V2> {
     return rhs.map(lhs)
 }
 
@@ -91,9 +94,10 @@ infix operator *>: ApplicativeFunctorSequenceLeftPrecedence
 ///     - rhs: The second `Parser` to invoke
 /// - Returns: A `Parser` which invokes the first `Parser` parameter, then the second `Parser` parameter and then
 ///            returns the second `Parser`'s returned value.
-public func *><I, V1, V2>(
+public func *> <I, V1, V2>(
     lhs: Parser<I, V1>,
-    rhs: Parser<I, V2>) -> Parser<I, V2> {
+    rhs: Parser<I, V2>
+) -> Parser<I, V2> {
     return lhs.andR(rhs)
 }
 
@@ -106,9 +110,10 @@ infix operator <*: ApplicativeFunctorSequenceLeftPrecedence
 ///     - rhs: The second `Parser` to invoke
 /// - Returns: A `Parser` which invokes the first `Parser` parameter, then the first `Parser` parameter and then
 ///            returns the first `Parser`'s returned value.
-public func <*<I, V1, V2>(
+public func <* <I, V1, V2>(
     lhs: Parser<I, V1>,
-    rhs: Parser<I, V2>) -> Parser<I, V1> {
+    rhs: Parser<I, V2>
+) -> Parser<I, V1> {
     return lhs.andL(rhs)
 }
 
@@ -122,8 +127,9 @@ infix operator <??>: MonadLeftPrecedence
 ///     - rhs: The value to return if the `lhs` parameter is not successful
 /// - Returns: A `Parser` which attempts the parser parameter and if it succeeds, return the value, but if it fails,
 ///            use the value parameter.
-public func <??><I, V1>(
+public func <??> <I, V1>(
     lhs: Parser<I, V1>,
-    rhs: V1) -> Parser<I, V1> {
+    rhs: V1
+) -> Parser<I, V1> {
     return lhs.option(rhs)
 }
