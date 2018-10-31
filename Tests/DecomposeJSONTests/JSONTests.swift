@@ -163,7 +163,6 @@ internal final class JSONTests: XCTestCase {
 
     func testStringWithUnicode() {
         let input = "\"\\u0041\""
-        print(input)
         let result = JSON.decode(input)
         guard case let .success(value) = result else {
             XCTFail("Expected parse to be successful.")
@@ -174,7 +173,6 @@ internal final class JSONTests: XCTestCase {
 
     func testArrayEmpty() {
         let input = "[]"
-        print(input)
         let result = JSON.decode(input)
         guard case let .success(value) = result else {
             XCTFail("Expected parse to be successful.")
@@ -185,7 +183,6 @@ internal final class JSONTests: XCTestCase {
 
     func testArrayEmptyWithSpaces() {
         let input = "[    ]"
-        print(input)
         let result = JSON.decode(input)
         guard case let .success(value) = result else {
             XCTFail("Expected parse to be successful.")
@@ -196,7 +193,6 @@ internal final class JSONTests: XCTestCase {
 
     func testArray() {
         let input = "[ true  , false, null,\"A\",1   ]"
-        print(input)
         let result = JSON.decode(input)
         guard case let .success(value) = result else {
             XCTFail("Expected parse to be successful.")
@@ -217,7 +213,6 @@ internal final class JSONTests: XCTestCase {
 
     func testArrayFailureWithTrailingComma() {
         let input = "[true, ]"
-        print(input)
         let result = JSON.decode(input)
         guard case let .failure(lineCount, charCount, expectedSymbols) = result else {
             XCTFail("Expected parse to fail.")
@@ -252,7 +247,6 @@ internal final class JSONTests: XCTestCase {
 
     func testArrayFailureWithOnlyComma() {
         let input = "[, ]"
-        print(input)
         let result = JSON.decode(input)
         guard case let .failure(lineCount, charCount, expectedSymbols) = result else {
             XCTFail("Expected parse to fail.")
@@ -289,7 +283,6 @@ internal final class JSONTests: XCTestCase {
 
     func testObject() {
         let input = "{ \"A\": \"B\" }"
-        print(input)
         let result = JSON.decode(input)
         guard case let .success(value) = result else {
             XCTFail("Expected parse to be successful.")
@@ -300,7 +293,6 @@ internal final class JSONTests: XCTestCase {
 
     func testObjectFailureWithTrailingComma() {
         let input = "{ , }"
-        print(input)
         let result = JSON.decode(input)
         guard case let .failure(lineCount, charCount, expectedSymbols) = result else {
             XCTFail("Expected parse to fail.")
@@ -321,7 +313,6 @@ internal final class JSONTests: XCTestCase {
 
     func testObjectFailureWithOnlyKey() {
         let input = "{ \"A\" }"
-        print(input)
         let result = JSON.decode(input)
         guard case let .failure(lineCount, charCount, expectedSymbols) = result else {
             XCTFail("Expected parse to fail.")
@@ -334,7 +325,6 @@ internal final class JSONTests: XCTestCase {
 
     func testObjectFailureWithOnlyKeyAndColon() {
         let input = "{ \"A\"  : }"
-        print(input)
         let result = JSON.decode(input)
         guard case let .failure(lineCount, charCount, expectedSymbols) = result else {
             XCTFail("Expected parse to fail.")
@@ -369,7 +359,6 @@ internal final class JSONTests: XCTestCase {
 
     func testObjectFailureMissingClosingBrace() {
         let input = "{ "
-        print(input)
         let result = JSON.decode(input)
         guard case let .failure(lineCount, charCount, expectedSymbols) = result else {
             XCTFail("Expected parse to fail.")
@@ -382,7 +371,6 @@ internal final class JSONTests: XCTestCase {
 
     func testObjectFailureMultipleLinesMissingClosingBrace() {
         let input = "{\n\n "
-        print(input)
         let result = JSON.decode(input)
         guard case let .failure(lineCount, charCount, expectedSymbols) = result else {
             XCTFail("Expected parse to fail.")
