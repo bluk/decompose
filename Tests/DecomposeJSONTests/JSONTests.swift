@@ -15,7 +15,7 @@
 @testable import DecomposeJSON
 import XCTest
 
-// swiftlint:disable type_body_length file_length
+// swiftlint:disable type_body_length
 
 internal final class JSONTests: XCTestCase {
     func testTrueValue() {
@@ -380,32 +380,6 @@ internal final class JSONTests: XCTestCase {
         XCTAssertEqual(charCount, 1)
         XCTAssertEqual(expectedSymbols, ["value(})"])
     }
-
-    static var allTests = [
-        ("testTrueValue", testTrueValue),
-        ("testFalseValue", testFalseValue),
-        ("testNullValue", testNullValue),
-        ("testNumber0Value", testNumber0Value),
-        ("testNumberValue", testNumberValue),
-        ("testNumberManyDigitsValue", testNumberManyDigitsValue),
-        ("testNumberFailureLeadingZero", testNumberFailureLeadingZero),
-        ("testMinusBeforeNumberValue", testMinusBeforeNumberValue),
-        ("testMinus0NumberValue", testMinus0NumberValue),
-        ("testMinusZeroFollowedByNumberFailure", testMinusZeroFollowedByNumberFailure),
-        ("testString", testString),
-        ("testStringWithEscapeCharacters", testStringWithEscapeCharacters),
-        ("testStringWithUnicode", testStringWithUnicode),
-        ("testArrayEmpty", testArrayEmpty),
-        ("testArrayEmptyWithSpaces", testArrayEmptyWithSpaces),
-        ("testArray", testArray),
-        ("testArrayFailureWithTrailingComma", testArrayFailureWithTrailingComma),
-        ("testArrayFailureWithOnlyComma", testArrayFailureWithOnlyComma),
-        ("testObject", testObject),
-        ("testObjectFailureWithTrailingComma", testObjectFailureWithTrailingComma),
-        ("testObjectFailureWithOnlyKey", testObjectFailureWithOnlyKey),
-        ("testObjectFailureWithOnlyKeyAndColon", testObjectFailureWithOnlyKeyAndColon),
-        ("testObjectFailureMultipleLinesMissingClosingBrace", testObjectFailureMultipleLinesMissingClosingBrace),
-    ]
 }
 
-// swiftlint:enable type_body_length file_length
+// swiftlint:enable type_body_length

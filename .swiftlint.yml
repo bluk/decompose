@@ -74,7 +74,11 @@ file_header:
     //  limitations under the License.
 
 file_name:
-  excluded: ['CombinatorsText.swift']
+  excluded: ['CombinatorsText.swift', 'XCTestManifests.swift']
+identifier_name:
+  excluded:
+    - __allTests
+    - __allTests()
 trailing_comma:
   mandatory_comma: true
   severity: error

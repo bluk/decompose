@@ -14,11 +14,40 @@
 
 import XCTest
 
+internal extension JSONTests {
+    static let __allTests = [
+        ("testArray", testArray),
+        ("testArrayEmpty", testArrayEmpty),
+        ("testArrayEmptyWithSpaces", testArrayEmptyWithSpaces),
+        ("testArrayFailureWithOnlyComma", testArrayFailureWithOnlyComma),
+        ("testArrayFailureWithTrailingComma", testArrayFailureWithTrailingComma),
+        ("testFalseValue", testFalseValue),
+        ("testMinus0NumberValue", testMinus0NumberValue),
+        ("testMinusBeforeNumberValue", testMinusBeforeNumberValue),
+        ("testMinusZeroFollowedByNumberFailure", testMinusZeroFollowedByNumberFailure),
+        ("testNullValue", testNullValue),
+        ("testNumber0Value", testNumber0Value),
+        ("testNumberFailureLeadingZero", testNumberFailureLeadingZero),
+        ("testNumberManyDigitsValue", testNumberManyDigitsValue),
+        ("testNumberValue", testNumberValue),
+        ("testObject", testObject),
+        ("testObjectFailureMissingClosingBrace", testObjectFailureMissingClosingBrace),
+        ("testObjectFailureMultipleLinesMissingClosingBrace", testObjectFailureMultipleLinesMissingClosingBrace),
+        ("testObjectFailureWithOnlyKey", testObjectFailureWithOnlyKey),
+        ("testObjectFailureWithOnlyKeyAndColon", testObjectFailureWithOnlyKeyAndColon),
+        ("testObjectFailureWithTrailingComma", testObjectFailureWithTrailingComma),
+        ("testString", testString),
+        ("testStringWithEscapeCharacters", testStringWithEscapeCharacters),
+        ("testStringWithUnicode", testStringWithUnicode),
+        ("testTrueValue", testTrueValue),
+    ]
+}
+
 #if !os(macOS)
-/// Returns all the runnable tests
-public func allTests() -> [XCTestCaseEntry] {
+/// - Returns: All the tests in the module.
+public func __allTests() -> [XCTestCaseEntry] {
     return [
-        testCase(JSONTests.allTests),
+        testCase(JSONTests.__allTests),
     ]
 }
 #endif

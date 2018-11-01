@@ -14,11 +14,19 @@
 
 import XCTest
 
+extension OperatorsTests {
+    static let __allTests = [
+        ("testApplySuccessAsOperator", testApplySuccessAsOperator),
+        ("testChoiceSuccessAsOperator", testChoiceSuccessAsOperator),
+        ("testMapSuccessAsOperator", testMapSuccessAsOperator),
+    ]
+}
+
 #if !os(macOS)
-/// Returns all the runnable tests
-public func allTests() -> [XCTestCaseEntry] {
+/// - Returns: All the tests in the module.
+public func __allTests() -> [XCTestCaseEntry] {
     return [
-        testCase(OperatorsTests.allTests),
+        testCase(OperatorsTests.__allTests),
     ]
 }
 #endif

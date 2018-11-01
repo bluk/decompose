@@ -18,10 +18,10 @@ import DecomposeCoreTests
 import DecomposeJSONTests
 import DecomposeOperatorsTests
 
-private var tests = [XCTestCaseEntry]()
+internal var tests = [XCTestCaseEntry]()
 
-tests += DecomposeCoreTests.allTests()
-tests += DecomposeOperatorsTests.allTests()
-tests += DecomposeJSONTests.allTests()
+tests += DecomposeCoreTests.__allTests()
+tests += DecomposeJSONTests.__allTests()
+tests += DecomposeOperatorsTests.__allTests()
 
 XCTMain(tests)

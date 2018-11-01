@@ -15,7 +15,7 @@
 @testable import DecomposeCore
 import XCTest
 
-// swiftlint:disable type_body_length file_length
+// swiftlint:disable type_body_length
 internal final class CombinatorsTextTests: XCTestCase {
     func testIsLetterSuccess() {
         let letter = Combinators.Text<StringInput>.letter()
@@ -383,31 +383,6 @@ internal final class CombinatorsTextTests: XCTestCase {
         XCTAssertEqual(remainingInput.position, 0)
         XCTAssertEqual(expectedSymbols, Set([Symbol<Character>.value("\t")]))
     }
-
-    static var allTests = [
-        ("testIsLetterSuccess", testIsLetterSuccess),
-        ("testIsLetterFailure", testIsLetterFailure),
-        ("testIsDigitSuccess", testIsDigitSuccess),
-        ("testIsDigitFailure", testIsDigitFailure),
-        ("testHexadecimalSuccess", testHexadecimalSuccess),
-        ("testHexadecimalFailure", testHexadecimalFailure),
-        ("testHexadecimalAsIntSuccess", testHexadecimalAsIntSuccess),
-        ("testHexadecimalAsIntFailure", testHexadecimalAsIntFailure),
-        ("testSignSuccessNegative", testSignSuccessNegative),
-        ("testSignSuccessPositive", testSignSuccessPositive),
-        ("testStringSuccess", testStringSuccess),
-        ("testStringFailure", testStringFailure),
-        ("testStringEmptyReturnValueSuccess", testStringEmptyReturnValueSuccess),
-        ("testStringEmptyReturnValueFailure", testStringEmptyReturnValueFailure),
-        ("testWhitespaceSuccessWithSpace", testWhitespaceSuccessWithSpace),
-        ("testWhitespaceSuccessWithTab", testWhitespaceSuccessWithTab),
-        ("testWhitespaceFailure", testWhitespaceFailure),
-        ("testNewlineSuccessWithCarriageReturn", testNewlineSuccessWithCarriageReturn),
-        ("testNewlineSuccessWithLinefeed", testNewlineSuccessWithLinefeed),
-        ("testNewlineFailure", testNewlineFailure),
-        ("testTabSuccess", testTabSuccess),
-        ("testTabFailure", testTabFailure),
-    ]
 }
 
-// swiftlint:enable type_body_length file_length
+// swiftlint:enable type_body_length

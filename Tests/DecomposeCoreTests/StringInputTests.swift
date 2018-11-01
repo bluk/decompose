@@ -96,13 +96,4 @@ internal final class StringInputTests: XCTestCase {
         XCTAssertEqual(input.position, 8)
         XCTAssertNil(input.current())
     }
-
-    static var allTests = [
-        ("testInit", testInit),
-        ("testInitWithPosition", testInitWithPosition),
-        ("testAdvanced", testAdvanced),
-        ("testOriginalPositionNotAt0AndAdvanced", testOriginalPositionNotAt0AndAdvanced),
-        ("testAdvancedTillEndOfString", testAdvancedTillEndOfString),
-        ("testCharacterCountAndLineCount", testCharacterCountAndLineCount),
-    ]
 }
