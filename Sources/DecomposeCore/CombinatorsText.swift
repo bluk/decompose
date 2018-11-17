@@ -32,14 +32,9 @@ public enum Combinators {
         /// - Returns: A `Parser` which tests if the current element is a letter.
         public static func letter() -> Parser<I, Character> {
             let characterSet = CharacterSet.letters
-            #if swift(>=4.2)
-            return Parser<I, Character>.satisfy { $0.unicodeScalars.allSatisfy(characterSet.contains) }
-            #else
-            // https://github.com/apple/swift-evolution/blob/master/proposals/0207-containsOnly.md
             return Parser<I, Character>.satisfy(conditionName: "letter") {
-                !$0.unicodeScalars.contains { !characterSet.contains($0) }
+                $0.unicodeScalars.allSatisfy(characterSet.contains)
             }
-            #endif
         }
 
         /// Returns a `Parser` which tests if the current element is a digit.
@@ -47,14 +42,9 @@ public enum Combinators {
         /// - Returns: A `Parser` which tests if the current element is a digit.
         public static func digit() -> Parser<I, Character> {
             let characterSet = CharacterSet.decimalDigits
-            #if swift(>=4.2)
-            return Parser<I, Character>.satisfy { $0.unicodeScalars.allSatisfy(characterSet.contains) }
-            #else
-            // https://github.com/apple/swift-evolution/blob/master/proposals/0207-containsOnly.md
             return Parser<I, Character>.satisfy(conditionName: "digit") {
-                !$0.unicodeScalars.contains { !characterSet.contains($0) }
+                $0.unicodeScalars.allSatisfy(characterSet.contains)
             }
-            #endif
         }
 
         /// Parses a non-zero digit.
@@ -158,14 +148,9 @@ public enum Combinators {
         /// - Returns: A `Parser` which tests if the current element is a whitespace character.
         public static func whitespace() -> Parser<I, Character> {
             let characterSet = CharacterSet.whitespaces
-            #if swift(>=4.2)
-            return Parser<I, Character>.satisfy { $0.unicodeScalars.allSatisfy(characterSet.contains) }
-            #else
-            // https://github.com/apple/swift-evolution/blob/master/proposals/0207-containsOnly.md
             return Parser<I, Character>.satisfy(conditionName: "whitespace") {
-                !$0.unicodeScalars.contains { !characterSet.contains($0) }
+                $0.unicodeScalars.allSatisfy(characterSet.contains)
             }
-            #endif
         }
 
         /// Returns a `Parser` which tests if the current element is a newline character.
@@ -173,14 +158,9 @@ public enum Combinators {
         /// - Returns: A `Parser` which tests if the current element is a newline character.
         public static func newline() -> Parser<I, Character> {
             let characterSet = CharacterSet.newlines
-            #if swift(>=4.2)
-            return Parser<I, Character>.satisfy { $0.unicodeScalars.allSatisfy(characterSet.contains) }
-            #else
-            // https://github.com/apple/swift-evolution/blob/master/proposals/0207-containsOnly.md
             return Parser<I, Character>.satisfy(conditionName: "newline") {
-                !$0.unicodeScalars.contains { !characterSet.contains($0) }
+                $0.unicodeScalars.allSatisfy(characterSet.contains)
             }
-            #endif
         }
 
         /// Returns a `Parser` which tests if the current element is a tab character.
