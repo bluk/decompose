@@ -5,7 +5,7 @@ matrix:
     - language: objective-c
       sudo: required
       os: osx
-      osx_image: xcode9.4
+      osx_image: xcode10
       before_install:
         - brew update
         - brew upgrade swiftlint
@@ -21,6 +21,6 @@ matrix:
         - sudo apt-get update
         - sudo apt-get -y install docker-ce
       script:
-        - docker run -it --name swift --volume=$(pwd):/usr/src/ --rm bluk/docker-swift-build-tools:4.1 swift build
-        - docker run -it --name swift --volume=$(pwd):/usr/src/ --rm bluk/docker-swift-build-tools:4.1 swiftlint --strict
-        - docker run -it --name swift --volume=$(pwd):/usr/src/ --rm bluk/docker-swift-build-tools:4.1 swift test
+        - docker run -it --name swift --volume=$(pwd):/usr/src/ --rm bluk/docker-swift-build-tools:4.2 swift build
+        - docker run -it --name swift --volume=$(pwd):/usr/src/ --rm bluk/docker-swift-build-tools:4.2 swiftlint --strict
+        - docker run -it --name swift --volume=$(pwd):/usr/src/ --rm bluk/docker-swift-build-tools:4.2 swift test
