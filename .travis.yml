@@ -6,9 +6,6 @@ matrix:
       sudo: required
       os: osx
       osx_image: xcode10
-      before_install:
-        - brew update
-        - brew upgrade swiftlint
       script:
         - swift build
         - swiftlint --strict
