@@ -11,6 +11,9 @@ matrix:
         - swiftlint --strict
         - swift test
     - sudo: required
+      env:
+        - DOCKER_CONTENT_TRUST=1
+        - SWIFT_BUILD_TOOLS_SHA256=bafbce9275422f5cd74bea0f5fe00749e7aa9458693e3d37c40c59cd4ac297dd
       before_install:
         # Update Docker
         - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
@@ -18,6 +21,6 @@ matrix:
         - sudo apt-get update
         - sudo apt-get -y install docker-ce
       script:
-        - docker run -it --name swift --volume=$(pwd):/usr/src/ --rm bluk/docker-swift-build-tools:4.2 swift build
-        - docker run -it --name swift --volume=$(pwd):/usr/src/ --rm bluk/docker-swift-build-tools:4.2 swiftlint --strict
-        - docker run -it --name swift --volume=$(pwd):/usr/src/ --rm bluk/docker-swift-build-tools:4.2 swift test
+        - docker run --rm --volume=$(pwd):/usr/src/ bluk/docker-swift-build-tools@sha256:$SWIFT_BUILD_TOOLS_SHA256 swift build
+        - docker run --rm --volume=$(pwd):/usr/src/ bluk/docker-swift-build-tools@sha256:$SWIFT_BUILD_TOOLS_SHA256 swiftlint --strict
+        - docker run --rm --volume=$(pwd):/usr/src/ bluk/docker-swift-build-tools@sha256:$SWIFT_BUILD_TOOLS_SHA256 swift test
