@@ -1,23 +1,23 @@
 steps:
-  - name: 'gcr.io/$PROJECT_ID/swift-build-tools:4'
+  - name: 'gcr.io/$PROJECT_ID/swift-build-tools:5'
     args:
       - 'swift'
       - 'build'
     id: 'build'
 
-  - name: 'gcr.io/$PROJECT_ID/swift-build-tools:4'
+  - name: 'gcr.io/$PROJECT_ID/swift-build-tools:5'
     args:
       - 'swift'
       - 'test'
     id: 'test'
 
-  - name: 'gcr.io/$PROJECT_ID/swift-build-tools:4'
+  - name: 'gcr.io/$PROJECT_ID/swift-build-tools:5'
     args:
       - 'swiftlint'
       - '--strict'
     id: 'lint'
 
-  - name: 'gcr.io/$PROJECT_ID/swift-build-tools:4'
+  - name: 'gcr.io/$PROJECT_ID/swift-build-tools:5'
     args:
       - 'swift'
       - 'build'
