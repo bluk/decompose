@@ -13,7 +13,7 @@
     <a title="DecomposeCore  Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="index.html">DecomposeCore Docs</a> (95% documented)</p>
+        <p><a href="index.html">DecomposeCore latest Docs</a> (95% documented)</p>
         <p class="header-right"><a href="https://github.com/bluk/decompose"><img src="img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
@@ -74,10 +74,6 @@
             
             <h1 id='decompose' class='heading'>➡️  Decompose</h1>
 
-<p><a href="https://github.com/bluk/decompose/blob/master/LICENSE"><img src="https://img.shields.io/github/license/bluk/decompose.svg" alt="Apache-2.0 License"></a> <a href="https://swift.org"><img src="https://img.shields.io/badge/swift-4.1-orange.svg" alt="Swift"></a> <a href="https://github.com/apple/swift-package-manager"><img src="https://img.shields.io/badge/SPM-compatible-orange.svg" alt="SPM Compatible"></a> <img src="https://img.shields.io/badge/Platforms-macOS%20%7C%20Linux%20%7C%20iOS%20%7C%20watchOS%20%7C%20tvOS-blue.svg" alt="Platforms"></p>
-
-<p><a href="https://travis-ci.com/bluk/decompose"><img src="https://travis-ci.com/bluk/decompose.svg?branch=master" alt="Build Status"></a></p>
-
 <p>A(nother) parser combinator library inspired by
 <a href="https://www.microsoft.com/en-us/research/people/daan/#!publications">Parsec: Direct Style Monadic Parser Combinators for the Real World</a>,
 <a href="http://www.staff.science.uu.nl/%7Eswier101/Papers/1996/DetErrCorrComPars.pdf">Deterministic, Error-Correcting Combinator Parsers</a>,
@@ -86,20 +82,20 @@ and <a href="https://github.com/typemeta/funcj/tree/master/parser">funcj.parser,
 
 <p>This package is intended for use with <a href="https://swift.org/package-manager/">Swift Package Manager</a>. To use in your
 own package, add the following dependency:</p>
-<pre class="highlight plaintext"><code>dependencies: [
-    .package(url: "https://github.com/bluk/decompose.git", from: "0.2.0")
-]
+<pre class="highlight swift"><code><span class="nv">dependencies</span><span class="p">:</span> <span class="p">[</span>
+    <span class="o">.</span><span class="nf">package</span><span class="p">(</span><span class="nv">url</span><span class="p">:</span> <span class="s">"https://github.com/bluk/decompose.git"</span><span class="p">,</span> <span class="nv">from</span><span class="p">:</span> <span class="s">"0.2.0"</span><span class="p">)</span>
+<span class="p">]</span>
 </code></pre>
 
 <p>Be sure to also add <code>Decompose</code> as a dependency in your <code>.target</code> like:</p>
-<pre class="highlight plaintext"><code>.target(
-  name: "YourTarget",
-  dependencies: ["Decompose"]),
+<pre class="highlight swift"><code><span class="o">.</span><span class="nf">target</span><span class="p">(</span>
+  <span class="nv">name</span><span class="p">:</span> <span class="s">"YourTarget"</span><span class="p">,</span>
+  <span class="nv">dependencies</span><span class="p">:</span> <span class="p">[</span><span class="s">"Decompose"</span><span class="p">]),</span>
 </code></pre>
 
 <p>In your code:</p>
-<pre class="highlight plaintext"><code>import DecomposeCore
-import DecomposeOperators
+<pre class="highlight swift"><code><span class="kd">import</span> <span class="kt">DecomposeCore</span>
+<span class="kd">import</span> <span class="kt">DecomposeOperators</span>
 </code></pre>
 <h2 id='documentation' class='heading'>Documentation</h2>
 
@@ -110,21 +106,21 @@ import DecomposeOperators
 
 <p>If you wish to modify this code, you can clone this repository and use
 Swift Package Manager to build and test this code.</p>
-<pre class="highlight plaintext"><code>swift build
-swift test
+<pre class="highlight shell"><code>swift build
+swift <span class="nb">test</span>
 </code></pre>
 
 <p>If you want to generate an Xcode project, you can run:</p>
-<pre class="highlight plaintext"><code>swift package generate-xcodeproj
+<pre class="highlight shell"><code>swift package generate-xcodeproj
 </code></pre>
 <h3 id='generate-docs' class='heading'>Generate Docs</h3>
 
 <p>To generate the documentation, you need Ruby installed, and then run:</p>
-<pre class="highlight plaintext"><code>bundle install
-swift package generate-xcodeproj
-jazzy -o docs/DecomposeCore --module "DecomposeCore" --module-version latest -g https://github.com/bluk/decompose
-jazzy -o docs/DecomposeOperators --module "DecomposeOperators" --module-version latest -g https://github.com/bluk/decompose
-jazzy -o docs/DecomposeJSON --module "DecomposeJSON" --module-version latest -g https://github.com/bluk/decompose
+<pre class="highlight shell"><code>bundle <span class="nb">install
+</span>swift package generate-xcodeproj
+jazzy <span class="nt">-o</span> docs/DecomposeCore <span class="nt">--module</span> <span class="s2">"DecomposeCore"</span> <span class="nt">--module-version</span> latest <span class="nt">-g</span> https://github.com/bluk/decompose
+jazzy <span class="nt">-o</span> docs/DecomposeOperators <span class="nt">--module</span> <span class="s2">"DecomposeOperators"</span> <span class="nt">--module-version</span> latest <span class="nt">-g</span> https://github.com/bluk/decompose
+jazzy <span class="nt">-o</span> docs/DecomposeJSON <span class="nt">--module</span> <span class="s2">"DecomposeJSON"</span> <span class="nt">--module-version</span> latest <span class="nt">-g</span> https://github.com/bluk/decompose
 </code></pre>
 <h2 id='related-links' class='heading'>Related Links</h2>
 
@@ -139,13 +135,13 @@ jazzy -o docs/DecomposeJSON --module "DecomposeJSON" --module-version latest -g 
 </ul>
 <h2 id='license' class='heading'>License</h2>
 
-<p><a href="https://github.com/bluk/decompose/blob/master/LICENSE">Apache-2.0 License</a></p>
+<p><a href="LICENSE">Apache-2.0 License</a></p>
 
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2018 <a class="link" href="" target="_blank" rel="external"></a>. All rights reserved. (Last updated: 2018-09-14)</p>
-          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+          <p>&copy; 2019 <a class="link" href="" target="_blank" rel="external"></a>. All rights reserved. (Last updated: 2019-08-26)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.10.0</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>
     </div>

@@ -14,7 +14,7 @@
     <a title="Functions  Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="index.html">DecomposeOperators Docs</a> (100% documented)</p>
+        <p><a href="index.html">DecomposeOperators latest Docs</a> (100% documented)</p>
         <p class="header-right"><a href="https://github.com/bluk/decompose"><img src="img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
@@ -83,9 +83,10 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="o">&lt;|&gt;&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">V1</span><span class="o">&gt;</span><span class="p">(</span>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="o">&lt;|&gt;</span> <span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">V1</span><span class="o">&gt;</span><span class="p">(</span>
     <span class="nv">lhs</span><span class="p">:</span> <span class="kt">Parser</span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">V1</span><span class="o">&gt;</span><span class="p">,</span>
-    <span class="nv">rhs</span><span class="p">:</span> <span class="kt">Parser</span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">V1</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Parser</span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">V1</span><span class="o">&gt;</span></code></pre>
+    <span class="nv">rhs</span><span class="p">:</span> <span class="kt">Parser</span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">V1</span><span class="o">&gt;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Parser</span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">V1</span><span class="o">&gt;</span></code></pre>
 
                         </div>
                       </div>
@@ -148,9 +149,10 @@ with the label parameter.</p>
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="o">&lt;*&gt;&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">V1</span><span class="p">,</span> <span class="kt">V2</span><span class="o">&gt;</span><span class="p">(</span>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="o">&lt;*&gt;</span> <span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">V1</span><span class="p">,</span> <span class="kt">V2</span><span class="o">&gt;</span><span class="p">(</span>
     <span class="nv">lhs</span><span class="p">:</span> <span class="kt">Parser</span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="p">((</span><span class="kt">V1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">V2</span><span class="p">)</span><span class="o">&gt;</span><span class="p">,</span>
-    <span class="nv">rhs</span><span class="p">:</span> <span class="kt">Parser</span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">V1</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Parser</span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">V2</span><span class="o">&gt;</span></code></pre>
+    <span class="nv">rhs</span><span class="p">:</span> <span class="kt">Parser</span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">V1</span><span class="o">&gt;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Parser</span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">V2</span><span class="o">&gt;</span></code></pre>
 
                         </div>
                       </div>
@@ -213,9 +215,10 @@ with the label parameter.</p>
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="o">&lt;^&gt;&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">V1</span><span class="p">,</span> <span class="kt">V2</span><span class="o">&gt;</span><span class="p">(</span>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="o">&lt;^&gt;</span> <span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">V1</span><span class="p">,</span> <span class="kt">V2</span><span class="o">&gt;</span><span class="p">(</span>
     <span class="nv">lhs</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">V1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">V2</span><span class="p">,</span>
-    <span class="nv">rhs</span><span class="p">:</span> <span class="kt">Parser</span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">V1</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Parser</span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">V2</span><span class="o">&gt;</span></code></pre>
+    <span class="nv">rhs</span><span class="p">:</span> <span class="kt">Parser</span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">V1</span><span class="o">&gt;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Parser</span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">V2</span><span class="o">&gt;</span></code></pre>
 
                         </div>
                       </div>
@@ -277,9 +280,10 @@ with the label parameter.</p>
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="o">*&gt;&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">V1</span><span class="p">,</span> <span class="kt">V2</span><span class="o">&gt;</span><span class="p">(</span>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="o">*&gt;</span> <span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">V1</span><span class="p">,</span> <span class="kt">V2</span><span class="o">&gt;</span><span class="p">(</span>
     <span class="nv">lhs</span><span class="p">:</span> <span class="kt">Parser</span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">V1</span><span class="o">&gt;</span><span class="p">,</span>
-    <span class="nv">rhs</span><span class="p">:</span> <span class="kt">Parser</span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">V2</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Parser</span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">V2</span><span class="o">&gt;</span></code></pre>
+    <span class="nv">rhs</span><span class="p">:</span> <span class="kt">Parser</span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">V2</span><span class="o">&gt;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Parser</span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">V2</span><span class="o">&gt;</span></code></pre>
 
                         </div>
                       </div>
@@ -342,9 +346,10 @@ with the label parameter.</p>
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="o">&lt;*&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">V1</span><span class="p">,</span> <span class="kt">V2</span><span class="o">&gt;</span><span class="p">(</span>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="o">&lt;*</span> <span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">V1</span><span class="p">,</span> <span class="kt">V2</span><span class="o">&gt;</span><span class="p">(</span>
     <span class="nv">lhs</span><span class="p">:</span> <span class="kt">Parser</span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">V1</span><span class="o">&gt;</span><span class="p">,</span>
-    <span class="nv">rhs</span><span class="p">:</span> <span class="kt">Parser</span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">V2</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Parser</span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">V1</span><span class="o">&gt;</span></code></pre>
+    <span class="nv">rhs</span><span class="p">:</span> <span class="kt">Parser</span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">V2</span><span class="o">&gt;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Parser</span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">V1</span><span class="o">&gt;</span></code></pre>
 
                         </div>
                       </div>
@@ -408,9 +413,10 @@ use the value parameter.</p>
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="o">&lt;</span><span class="p">??</span><span class="o">&gt;&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">V1</span><span class="o">&gt;</span><span class="p">(</span>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="o">&lt;</span><span class="p">??</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">V1</span><span class="o">&gt;</span><span class="p">(</span>
     <span class="nv">lhs</span><span class="p">:</span> <span class="kt">Parser</span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">V1</span><span class="o">&gt;</span><span class="p">,</span>
-    <span class="nv">rhs</span><span class="p">:</span> <span class="kt">V1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Parser</span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">V1</span><span class="o">&gt;</span></code></pre>
+    <span class="nv">rhs</span><span class="p">:</span> <span class="kt">V1</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Parser</span><span class="o">&lt;</span><span class="kt">I</span><span class="p">,</span> <span class="kt">V1</span><span class="o">&gt;</span></code></pre>
 
                         </div>
                       </div>
@@ -458,8 +464,8 @@ use the value parameter.</p>
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2018 <a class="link" href="" target="_blank" rel="external"></a>. All rights reserved. (Last updated: 2018-09-14)</p>
-          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+          <p>&copy; 2019 <a class="link" href="" target="_blank" rel="external"></a>. All rights reserved. (Last updated: 2019-08-26)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.10.0</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>
     </div>
